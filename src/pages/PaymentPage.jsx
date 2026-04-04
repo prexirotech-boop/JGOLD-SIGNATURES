@@ -110,7 +110,7 @@ export default function PaymentPage() {
             navigate('/success')
           })
         },
-        onCancel: () => {
+        onClose: () => {
           setLoading(false)
         },
         // Support older callback name just in case
