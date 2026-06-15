@@ -752,12 +752,10 @@ export default function LandingPage() {
         .lp-form-card {
           background-color: #FFFFFF;
           border-radius: 16px;
-          border-top: 5px solid #0A0F2C;
+          border-top: 5px solid #f59e0b;
           padding: 36px 30px;
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-          border-left: 1px solid rgba(255, 255, 255, 0.1);
-          border-right: 1px solid rgba(255, 255, 255, 0.1);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          overflow: hidden;
         }
         .lp-form-headline {
           font-family: 'FrankoSub', sans-serif;
