@@ -188,35 +188,28 @@ export default function WebinarPage() {
             <span className="btn-subtext">Click here to secure lifetime access</span>
           </button>
           
-          {/* Conversion Scarcity Panel */}
           <div className="wb-fomo-panel">
-            <div className="fomo-header">FAST ACTION PROMOTION ACTIVE</div>
-            
+            <div className="fomo-header">FAST ACTION TAKERS DISCOUNT</div>
             <div className="fomo-price-comparison">
               <div className="price-box old">
-                <span className="price-label">OLD PRICE</span>
-                <span className="price-val">₦20,000</span>
-                <span className="price-status-tag">Increased</span>
-              </div>
-              
-              <div className="price-box current">
-                <span className="price-label">SPECIAL OFFER (First 15 Only)</span>
-                <span className="price-val">₦35,000</span>
-                <span className="price-status-tag active-tag">Lock Price Now</span>
-              </div>
-              
-              <div className="price-box future">
-                <span className="price-label">INCOMING PRICE</span>
+                <span className="price-label">REGULAR PRICE</span>
                 <span className="price-val">₦60,000</span>
-                <span className="price-status-tag">Next Tier</span>
+              </div>
+              <div className="price-box current">
+                <span className="price-label">SPECIAL OFFER</span>
+                <span className="price-val">₦20,000</span>
+                <span className="price-status-tag active-tag">66% OFF</span>
+              </div>
+              <div className="price-box savings">
+                <span className="price-label">YOU SAVE</span>
+                <span className="price-val" style={{ color: '#10b981' }}>₦40,000</span>
               </div>
             </div>
 
             <div className="fomo-spots-alert">
-              <strong>Warning:</strong> The first 15 people to take action immediately will lock in the <strong>₦35,000</strong> price before it rises to ₦60,000!
+              ⚡ <strong>WARNING:</strong> Only <strong>4 spots remaining</strong> at this price. Price increases to ₦60,000 automatically once these spots are gone.
             </div>
 
-            {/* Price Increase Progress Bar */}
             <div className="fomo-progress-wrapper">
               <div className="progress-bar-container">
                 <div className="progress-bar-fill" style={{ width: '73%' }}>
@@ -230,31 +223,61 @@ export default function WebinarPage() {
           </div>
           
           <div className="wb-cta-benefits">
-            <h4 className="highlight-title">Here is what you get in the Full Mastery Blueprint Course:</h4>
+            <h4 className="highlight-title">Here is what you get in the Freelance Web Design Blueprint Course:</h4>
             <div className="benefits-grid">
               <div className="benefit-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <p><strong>Attract High Paying Clients Daily:</strong> The exact Client Avalanche System to secure local and international accounts paying in Dollars, Pounds, and Euros.</p>
+                <p>In-depth training on building professional, world-class websites for any type of business</p>
               </div>
               <div className="benefit-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <p><strong>Complete Website Customization:</strong> Learn how to fully customize any template to look premium and bespoke for high-paying corporate clients.</p>
+                <p>How to attract high-paying clients daily — on social media, WhatsApp, LinkedIn, and referrals — without spending money on ads</p>
               </div>
               <div className="benefit-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <p><strong>WordPress & Drag-and-Drop Tools:</strong> Build stunning, highly functional business websites using industry-standard tools like Elementor and WordPress, without writing code.</p>
+                <p>How to close clients on the phone, on WhatsApp, or in person — with confidence and without feeling salesy</p>
               </div>
               <div className="benefit-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <p><strong>Handover Like a Pro:</strong> Step-by-step systems to deliver websites, transfer hosting, and secure high-paying recurring support contracts every year.</p>
+                <p>How to price your services correctly so you never undercharge again — and what to charge for websites in Nigeria vs. international clients</p>
+              </div>
+              <div className="benefit-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <p>How to get paid upfront, manage client expectations, and deliver projects like a complete professional</p>
+              </div>
+              <div className="benefit-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <p>How to set up recurring revenue — charging clients a monthly fee to maintain and manage their websites every year</p>
+              </div>
+              <div className="benefit-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <p>Real projects you will build inside the course to strengthen your portfolio from day one</p>
+              </div>
+              <div className="benefit-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <p>How to register your freelance business, set up your payment accounts (including Dollar accounts), and get paid from any country in the world</p>
+              </div>
+              <div className="benefit-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <p>Lifetime access to all course materials — including all future updates at no extra cost</p>
               </div>
             </div>
           </div>
@@ -319,6 +342,70 @@ export default function WebinarPage() {
           </div>
         </div>
 
+        {/* WHAT YOU GET IN THE FULL BLUEPRINT (Upsell Value Stack) */}
+        <div className="wb-upsell-section">
+          <div className="wb-upsell-inner">
+            <h2 className="upsell-headline">
+              You Have Seen What 10 Minutes Can Do.<br />
+              Here Is What The Full Blueprint Will Do For Your Life.
+            </h2>
+            <p className="upsell-intro">
+              The free training gave you a taste. The Freelance Web Design Blueprint gives you the FULL meal.
+            </p>
+            <p className="upsell-body-lead">
+              This is the complete A-to-Z course that takes you from beginner to professional — with everything you need to attract high-paying clients, close them with confidence, deliver stunning websites, and build a recurring income from this one powerful skill.
+            </p>
+            
+            <div className="upsell-bullets">
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>In-depth training on building professional, world-class websites for any type of business</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>How to attract high-paying clients daily — on social media, WhatsApp, LinkedIn, and referrals — without spending money on ads</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>How to close clients on the phone, on WhatsApp, or in person — with confidence and without feeling salesy</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>How to price your services correctly so you never undercharge again — and what to charge for websites in Nigeria vs. international clients</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>How to get paid upfront, manage client expectations, and deliver projects like a complete professional</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>How to set up recurring revenue — charging clients a monthly fee to maintain and manage their websites every year</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>Real projects you will build inside the course to strengthen your portfolio from day one</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>How to register your freelance business, set up your payment accounts (including Dollar accounts), and get paid from any country in the world</p>
+              </div>
+              <div className="upsell-bullet-item">
+                <span className="bullet-emoji">🔥</span>
+                <p>Lifetime access to all course materials — including all future updates at no extra cost</p>
+              </div>
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '48px' }}>
+              <button onClick={handleCTA} className="wb-cta-btn">
+                <span>🚀 GET THE FULL BLUEPRINT & START EARNING — JOIN NOW →</span>
+                <span style={{ fontSize: '11px', fontWeight: '700', opacity: 0.9, letterSpacing: '0.5px' }}>
+                  SECURE ACCESS FOR ONLY ₦20,000 (REGULAR PRICE ₦60,000)
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
       {/* SECTION 11 — FOOTER */}
       <footer className="lp-footer">
         <div className="lp-footer-inner">
@@ -342,10 +429,15 @@ export default function WebinarPage() {
       {showSale && currentSale && (
         <div className="wb-sales-toast">
           <div className="toast-border-accent"></div>
+          <img 
+            src="https://zisbhfwxaiqtxtkecyow.supabase.co/storage/v1/object/public/course-assets/course-covers/x1mdbk6f6db_1781534283461.jpg" 
+            alt="Freelance Web Design Blueprint Course" 
+            className="toast-course-image"
+          />
           <div className="toast-content">
-            <p className="toast-title">Verified Enrollment</p>
+            <p className="toast-title">VERIFIED PAYMENT</p>
             <p className="toast-body">
-              <strong>{currentSale.name}</strong> just secured their Masterclass spot!
+              <strong>{currentSale.name.split(' secured ')[0].split(' just ')[0]}</strong> just purchased <strong>Freelance Web Design Blueprint</strong>!
             </p>
           </div>
         </div>
@@ -358,7 +450,7 @@ export default function WebinarPage() {
           background: linear-gradient(135deg, #0A0F2C 0%, #151C47 100%);
           min-height: 100vh;
           color: #ffffff;
-          padding-bottom: 80px;
+          padding-bottom: 0px;
         }
 
         /* WARNING BANNER */
@@ -398,9 +490,9 @@ export default function WebinarPage() {
           font-size: 10.5px;
           font-weight: 900;
           letter-spacing: 1.5px;
-          color: var(--red);
-          background: rgba(220, 38, 38, 0.1);
-          border: 1px solid rgba(220, 38, 38, 0.3);
+          color: #f59e0b;
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid rgba(245, 158, 11, 0.35);
           padding: 4px 12px;
           border-radius: 30px;
           margin-bottom: 16px;
@@ -450,7 +542,76 @@ export default function WebinarPage() {
           padding: 48px 20px;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           text-align: center;
-          margin-top: 60px;
+          margin: 0;
+        }
+
+        /* UPSELL VALUE STACK */
+        .wb-upsell-section {
+          background-color: #0A0F2C;
+          color: #ffffff;
+          padding: 80px 24px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .wb-upsell-inner {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .upsell-headline {
+          font-family: 'Asimov', var(--font-heading), sans-serif !important;
+          font-size: clamp(1.8rem, 4vw, 2.5rem);
+          font-weight: 900;
+          line-height: 1.25;
+          text-align: center;
+          margin-bottom: 24px;
+          color: #ffffff;
+        }
+        .upsell-intro {
+          font-size: 18px;
+          font-weight: 700;
+          color: #f59e0b;
+          text-align: center;
+          margin-bottom: 16px;
+        }
+        .upsell-body-lead {
+          font-size: 16px;
+          line-height: 1.6;
+          color: rgba(255, 255, 255, 0.85);
+          text-align: center;
+          margin-bottom: 40px;
+        }
+        .upsell-bullets {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          max-width: 700px;
+          margin: 0 auto;
+        }
+        .upsell-bullet-item {
+          display: flex;
+          gap: 14px;
+          align-items: flex-start;
+          text-align: left;
+        }
+        .bullet-emoji {
+          font-size: 20px;
+          line-height: 1.4;
+          flex-shrink: 0;
+        }
+        .upsell-bullet-item p {
+          font-size: 15.5px;
+          line-height: 1.5;
+          margin: 0;
+          color: rgba(255, 255, 255, 0.9);
+        }
+        .toast-course-image {
+          width: 45px;
+          height: 45px;
+          border-radius: 6px;
+          object-fit: cover;
+          flex-shrink: 0;
+          align-self: center;
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .lp-footer-inner {
           max-width: 800px;

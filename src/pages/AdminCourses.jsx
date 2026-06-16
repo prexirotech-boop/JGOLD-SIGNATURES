@@ -544,22 +544,29 @@ export default function AdminCourses() {
                     <span style={{ fontSize: 18, fontWeight: 800, color: '#0f172a' }}>₦{(p.price || 0).toLocaleString()}</span>
                   </div>
 
-                  <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
                     <Link 
                       to={`/admin/courses/${c.id}`}
-                      style={{ flex: 1.2, textAlign: 'center', background: '#2563eb', color: '#fff', padding: '10px', borderRadius: 8, fontWeight: 600, fontSize: 13, textDecoration: 'none', boxShadow: '0 2px 4px rgba(37,99,235,0.1)' }}
+                      style={{ flex: '1 1 40%', textAlign: 'center', background: '#2563eb', color: '#fff', padding: '10px', borderRadius: 8, fontWeight: 600, fontSize: 13, textDecoration: 'none', boxShadow: '0 2px 4px rgba(37,99,235,0.1)' }}
                     >
                       Builder
                     </Link>
+                    <Link 
+                      to={`/course/${c.id}`}
+                      target="_blank"
+                      style={{ flex: '1 1 40%', textAlign: 'center', background: '#f59e0b', color: '#fff', padding: '10px', borderRadius: 8, fontWeight: 600, fontSize: 13, textDecoration: 'none', boxShadow: '0 2px 4px rgba(245,158,11,0.1)' }}
+                    >
+                      View Course
+                    </Link>
                     <button 
                       onClick={() => handleOpenBulkSyllabus(c.id)}
-                      style={{ flex: 1.2, background: '#10b981', color: '#fff', border: 'none', padding: '10px', borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: 'pointer', boxShadow: '0 2px 4px rgba(16,185,129,0.1)' }}
+                      style={{ flex: '1 1 40%', background: '#10b981', color: '#fff', border: 'none', padding: '10px', borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: 'pointer', boxShadow: '0 2px 4px rgba(16,185,129,0.1)' }}
                     >
                       Bulk Syllabus
                     </button>
                     <button 
                       onClick={() => handleOpenEdit(c)}
-                      style={{ flex: 0.8, background: '#f8fafc', color: '#475569', border: '1px solid #cbd5e1', padding: '10px', borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
+                      style={{ flex: '1 1 40%', background: '#f8fafc', color: '#475569', border: '1px solid #cbd5e1', padding: '10px', borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
                     >
                       Edit
                     </button>
@@ -610,6 +617,27 @@ export default function AdminCourses() {
                         </td>
                         <td style={{ padding: '18px 24px', textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+                            <Link 
+                              to={`/course/${c.id}`} 
+                              target="_blank"
+                              style={{
+                                display: 'inline-block',
+                                background: '#f59e0b',
+                                color: '#fff',
+                                padding: '8px 14px',
+                                borderRadius: 6,
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                                fontSize: 13,
+                                boxShadow: '0 2px 4px rgba(245,158,11,0.08)',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseOver={e => e.currentTarget.style.backgroundColor = '#d97706'}
+                              onMouseOut={e => e.currentTarget.style.backgroundColor = '#f59e0b'}
+                            >
+                              View Course
+                            </Link>
+
                             <Link 
                               to={`/admin/courses/${c.id}`} 
                               style={{

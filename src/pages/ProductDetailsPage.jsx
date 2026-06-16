@@ -28,7 +28,7 @@ const StarRating = ({ rating = 0, count = 0 }) => {
 export default function ProductDetailsPage() {
   const { productId } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [product, setProduct] = useState(null)
   const [courseData, setCourseData] = useState(null)
   const [modules, setModules] = useState([])
@@ -102,14 +102,14 @@ export default function ProductDetailsPage() {
       }
 
       // Set user flags
-      setIsEnrolled(!!enrRes.data)
+      setIsEnrolled(!!enrRes.data || profile?.role === 'admin')
       setWishlistAdded(!!wlRes.data)
 
       setLoading(false)
     }
 
     load()
-  }, [productId, user, navigate])
+  }, [productId, user, profile, navigate])
 
   const handleEnrollOrBuy = () => {
     if (product?.is_free) {
@@ -262,7 +262,7 @@ export default function ProductDetailsPage() {
       : 'Get Instant Access'
 
   const ctaAction = isEnrolled
-    ? () => navigate(`/course/${productId}`)
+    ? () => navigate(`/course/${product?.id}`)
     : handleEnrollOrBuy
 
   const previewVideo = courseData?.preview_video || product?.preview_video || null

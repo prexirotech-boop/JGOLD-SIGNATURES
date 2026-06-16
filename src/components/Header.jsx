@@ -211,7 +211,7 @@ export default function Header() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '11px',
-                background: isActive ? 'rgba(37,99,235,0.06)' : (idx % 2 === 0 ? '#ffffff' : '#f8fafc'),
+                background: isActive ? 'rgba(37,99,235,0.06)' : '#ffffff',
                 borderLeft: isActive ? '3px solid #2563eb' : '3px solid transparent',
                 borderBottom: '1px solid rgba(0,0,0,0.02)',
                 transition: 'all 0.15s ease',

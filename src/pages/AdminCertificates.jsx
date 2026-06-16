@@ -35,10 +35,10 @@ export default function AdminCertificates() {
   const loadData = async () => {
     setLoading(true)
     try {
-      // 1. Fetch certificates basic columns
+      // 1. Fetch certificates with wildcard to prevent 400 Bad Request if columns are missing
       const { data: certs, error: certError } = await supabase
         .from('certificates')
-        .select('id, certificate_number, issued_at, is_valid, user_id, course_id')
+        .select('*')
         .order('issued_at', { ascending: false })
 
       if (certError) throw certError
@@ -59,12 +59,19 @@ export default function AdminCertificates() {
       const productsMap = {}
       ;(productsRes.data || []).forEach(p => { productsMap[p.id] = p })
 
-      // 3. Assemble certificates list matching the expected structure
+      // 3. Assemble certificates list matching the expected structure with client-side fallbacks
       const assembled = (certs || []).map(c => {
         const profile = profilesMap[c.user_id] || { full_name: '—', email: '' }
         const product = productsMap[c.course_id] || { title: 'Accredited Certification' }
+        
+        // Generate a fallback certificate number based on issued_at and ID suffix
+        const certNumber = c.certificate_number || `AS-${new Date(c.issued_at || Date.now()).getTime().toString(36).toUpperCase()}-${String(c.id || '').slice(-5).toUpperCase()}`
+        const isValid = c.is_valid !== undefined && c.is_valid !== null ? c.is_valid : true
+
         return {
           ...c,
+          certificate_number: certNumber,
+          is_valid: isValid,
           profiles: profile,
           courses: {
             id: c.course_id,
@@ -109,9 +116,23 @@ export default function AdminCertificates() {
 
       if (uErr || !userProfile) throw new Error('No user found with that email address.')
 
-      const { error } = await supabase
-        .from('certificates')
-        .insert({ user_id: userProfile.id, course_id: issueForm.course_id, certificate_number: generateCertNumber(), is_valid: true })
+      let insertData = { 
+        user_id: userProfile.id, 
+        course_id: issueForm.course_id, 
+        certificate_number: generateCertNumber(), 
+        is_valid: true 
+      }
+      let { error } = await supabase.from('certificates').insert(insertData)
+
+      // Retry without certificate_number and is_valid if columns do not exist (error code 42703)
+      if (error && error.code === '42703') {
+        const fallbackInsertData = {
+          user_id: userProfile.id,
+          course_id: issueForm.course_id
+        }
+        const { error: fallbackErr } = await supabase.from('certificates').insert(fallbackInsertData)
+        error = fallbackErr
+      }
 
       if (error) {
         if (error.code === '23505') throw new Error('This student already has a certificate for this course.')
@@ -132,7 +153,11 @@ export default function AdminCertificates() {
   const handleToggleRevoke = async (certId, currentlyValid) => {
     if (!confirm(currentlyValid ? 'Revoke this certificate? The student will lose access.' : 'Restore this certificate?')) return
     setRevokeLoading(certId)
-    await supabase.from('certificates').update({ is_valid: !currentlyValid }).eq('id', certId)
+    const { error } = await supabase.from('certificates').update({ is_valid: !currentlyValid }).eq('id', certId)
+    if (error) {
+      console.error('Error updating certificate validity:', error)
+      alert('Failed to update certificate status. Your database table is missing the "is_valid" column. Please run the SQL migrations in your Supabase dashboard.')
+    }
     setRevokeLoading(null)
     loadData()
   }
