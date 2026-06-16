@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { getShortDesc } from './ProductsPage'
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([])
@@ -102,7 +103,7 @@ export default function HomePage() {
                     <div className="product-card-body" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0 0 8px', lineHeight: '1.4' }}>{product.title.replace(/\s+slug$/i, '')}</h3>
                       <p className="product-desc" style={{ fontSize: '13.5px', color: '#64748b', lineHeight: '1.5', margin: '0 0 16px', flex: 1 }}>
-                        {product.description}
+                        {product.short_description || getShortDesc(product)}
                       </p>
                       
                       {features.length > 0 && (

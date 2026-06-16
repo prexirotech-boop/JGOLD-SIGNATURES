@@ -183,7 +183,6 @@ export default function LandingPage() {
       {/* SECTION 1 — STICKY URGENCY BAR */}
       <div className="lp-urgency-bar">
         <div className="lp-urgency-inner">
-          <span className="lp-blinking-dot"></span>
           <span>WARNING: This Page Could Come Down At ANY Moment — Access The Free Training Before It's Gone Forever</span>
         </div>
       </div>
@@ -199,7 +198,7 @@ export default function LandingPage() {
             </div>
             
             <h1 className="lp-hero-headline">
-              Discover The Simple AI-Powered Skill Letting Ordinary Nigerians Earn In <span className="highlight-orange">Dollars, Pounds & Naira</span> — Building Websites For Business Owners Around The World From Their Bedrooms, Using Just Their Phones… With <span className="highlight-underline">Zero Coding Skills</span>
+              Discover The Simple AI-Powered Skill Letting Ordinary Nigerians Earn In <span className="highlight-orange">Dollars, Pounds & Naira</span> — Building Websites For Business Owners Around The World From Their Bedrooms, Using Just Their Phones or PC… With <span className="highlight-underline">Zero Coding Skills</span>
             </h1>
 
             <p className="lp-hero-subheadline">
