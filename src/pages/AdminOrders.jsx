@@ -22,6 +22,138 @@ const fmtDT  = d  => d ? new Date(d).toLocaleString ('en-NG',  { day:'2-digit', 
 const idStr  = v  => String(v || '')  // safe stringify for any id type (int or uuid)
 const truncR = (s, n=20) => (s||'').length > n ? (s||'').slice(0,n)+'…' : (s || 'N/A')
 
+function StatusDropdown({ value, onChange }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const currentOpt = value === 'all' 
+    ? { label: 'All Statuses', icon: '🕒' } 
+    : { label: STATUS[value]?.label || value, icon: STATUS[value]?.icon || '' }
+
+  const options = [
+    { value: 'all', label: 'All Statuses', icon: '🕒' },
+    ...Object.entries(STATUS).map(([k, v]) => ({
+      value: k,
+      label: v.label,
+      icon: v.icon,
+      color: v.color
+    }))
+  ]
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative', minWidth: 160 }}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+          width: '100%',
+          textAlign: 'left',
+          cursor: 'pointer',
+          background: '#fff',
+          border: '1.5px solid #cbd5e1',
+          borderRadius: 9,
+          padding: '10px 14px',
+          fontSize: 13.5,
+          fontWeight: 600,
+          color: '#334155',
+          height: 38,
+          boxSizing: 'border-box'
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span>{currentOpt.icon}</span>
+          <span>{currentOpt.label}</span>
+        </span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#64748b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
+          <path d="m1 1 4 4 4-4"/>
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 6,
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          borderRadius: 12,
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+          zIndex: 9999,
+          padding: 6,
+          boxSizing: 'border-box'
+        }}>
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => {
+                onChange(opt.value)
+                setIsOpen(false)
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                padding: '8px 10px',
+                border: 'none',
+                background: value === opt.value ? '#eff6ff' : 'transparent',
+                color: value === opt.value ? '#2563eb' : '#475569',
+                fontSize: 13,
+                fontWeight: value === opt.value ? '700' : '500',
+                borderRadius: 8,
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.15s',
+                boxSizing: 'border-box'
+              }}
+              onMouseEnter={e => {
+                if (value !== opt.value) {
+                  e.target.style.background = '#f8fafc'
+                  e.target.style.color = '#0f172a'
+                }
+              }}
+              onMouseLeave={e => {
+                if (value !== opt.value) {
+                  e.target.style.background = 'transparent'
+                  e.target.style.color = '#475569'
+                }
+              }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>{opt.icon}</span>
+                <span>{opt.label}</span>
+              </span>
+              {value === opt.value && (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+
 // ─────────────────────────────────────────────────────────────────────────────
 // STATUS BADGE
 // ─────────────────────────────────────────────────────────────────────────────
@@ -308,6 +440,9 @@ function CreateOrderModal({ isOpen, onClose, products, onCreated }) {
             </button>
           </div>
           {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>{error}</div>}
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '11px 13px', fontSize: '12px', color: '#1e40af', lineHeight: 1.45, marginBottom: 16 }}>
+            💡 <strong>No Password Needed:</strong> If the student doesn't have an account, they can simply sign up later at <strong>/register</strong> using this exact email (or click <strong>Forgot Password</strong> to set a password). The system will automatically link their manual orders and course access.
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} style={{ padding: '0 26px 26px', display: 'flex', flexDirection: 'column', gap: 15 }}>
@@ -614,10 +749,7 @@ export default function AdminOrders() {
           <input type="text" className="ao-filter-control ao-filter-search" placeholder="Search reference, email, name…" value={search} onChange={e => setSearch(e.target.value)} />
           {search && <button onClick={()=>setSearch('')} style={{ position:'absolute', right:10, background:'none', border:'none', color:'#94a3b8', cursor:'pointer', padding:4 }}>✕</button>}
         </div>
-        <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="ao-filter-control">
-          <option value="all">All Statuses</option>
-          {Object.entries(STATUS).map(([k,v])=><option key={k} value={k}>{v.icon} {v.label}</option>)}
-        </select>
+        <StatusDropdown value={statusFilter} onChange={setStatusFilter} />
         <input 
           type={dateFrom ? "date" : "text"} 
           placeholder="From Date" 

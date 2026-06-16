@@ -226,7 +226,6 @@ export default function Header() {
               alignItems: 'center',
               justifyContent: 'center',
               padding: '8px',
-              marginRight: '8px',
               transition: 'color 0.2s'
             }}
             title="View Cart"

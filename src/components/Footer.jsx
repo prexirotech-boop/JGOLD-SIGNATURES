@@ -157,13 +157,13 @@ export default function Footer() {
               letterSpacing: '2px',
               marginBottom: 20,
               fontFamily: 'var(--font-sub)'
-            }}>Programs</h4>
+            }}>Menu</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[
-                { label: 'All Courses', path: '/products' },
-                { label: 'Blueprints', path: '/products?type=blueprint' },
-                { label: 'E-Books', path: '/products?type=ebook' },
-                { label: 'FAQs & Help', path: '/faq' },
+                { label: 'Home', path: '/' },
+                { label: 'Products', path: '/products' },
+                { label: 'Blog', path: '/blog' },
+                { label: 'FAQs', path: '/faq' },
                 { label: 'About Us', path: '/about' },
                 { label: 'Contact', path: '/contact' },
               ].map(({ label, path }) => (

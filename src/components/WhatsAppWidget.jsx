@@ -70,8 +70,7 @@ export default function WhatsAppWidget() {
                     height: '100%',
                     borderRadius: '50%',
                     background: '#fff',
-                    objectFit: 'contain',
-                    padding: 4,
+                    objectFit: 'cover',
                     border: '1px solid rgba(255,255,255,0.2)'
                   }}
                   onError={e => {

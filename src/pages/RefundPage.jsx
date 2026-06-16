@@ -1,39 +1,196 @@
 import React from 'react';
-
-const layout = {
-    minHeight: '100vh',
-    padding: '60px 20px',
-    background: 'var(--w)',
-    maxWidth: 800,
-    margin: '0 auto',
-};
-
-const headings = {
-    marginBottom: '24px',
-    color: 'var(--g900)',
-    fontWeight: '900',
-};
-
 import { useNavigate } from 'react-router-dom';
 
 export default function RefundPage() {
-    const navigate = useNavigate();
-    return (
-        <div style={layout}>
-            <button onClick={() => navigate('/')} className="btn-ghost" style={{ color: 'var(--g700)', marginBottom: 20 }}>← Back to Home</button>
-            <h1 style={headings}>Refund Policy</h1>
+  const navigate = useNavigate();
 
-            <p style={{ marginBottom: 16 }}>At The N50K Blueprint, we are committed to providing you with the highest quality information and strategies to build your business in Nigeria.</p>
+  return (
+    <div className="policy-page-layout">
+      <div className="policy-container">
+        
+        {/* Back Link */}
+        <button onClick={() => navigate('/')} className="back-home-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Home
+        </button>
 
-            <h3 style={{ marginTop: 24, marginBottom: 12, fontWeight: 700 }}>1. No Refund Policy</h3>
-            <p style={{ marginBottom: 16 }}>Due to the nature of digital products, all sales of The N50K Blueprint are final. Once the purchase is complete and the download link has been delivered to your email, the product is considered "used".</p>
-            <p style={{ marginBottom: 16 }}><strong>We do not offer refunds, returns, or exchanges for any reason.</strong> This is because digital files cannot be "returned" in the same way a physical product can.</p>
+        {/* Title Header */}
+        <header className="policy-header">
+          <span className="policy-badge">Company Policy</span>
+          <h1 className="policy-title">Refund Policy</h1>
+          <p className="policy-meta">Last updated: {new Date().getFullYear()}</p>
+        </header>
 
-            <h3 style={{ marginTop: 24, marginBottom: 12, fontWeight: 700 }}>2. Delivery Guarantee</h3>
-            <p style={{ marginBottom: 16 }}>While we do not offer refunds, we do guarantee delivery. If you have any trouble accessing your file after purchase, or if you did not receive your download link, please contact us immediately.</p>
+        {/* Content Details */}
+        <div className="policy-card">
+          <p className="policy-intro">
+            At <strong>Amplified Skills</strong>, we are committed to providing you with the highest quality training programs, resources, and digital blueprints to build a highly profitable freelance and digital service business.
+          </p>
 
-            <h3 style={{ marginTop: 24, marginBottom: 12, fontWeight: 700 }}>3. Support</h3>
-            <p style={{ marginBottom: 16 }}>If you have any questions about the content of the guide or need assistance with your order, please reach out to us at <strong>nprecious.official@gmail.com</strong>. We are here to help you succeed.</p>
+          <section className="policy-section">
+            <h2 className="section-title">1. No Refund Policy</h2>
+            <p>
+              Due to the nature of digital products (including courses, downloadable blueprints, guides, templates, and video lessons), all sales are final. Once your purchase is complete and your product access or student dashboard account is activated, the product is considered "used."
+            </p>
+            <p className="policy-alert">
+              <strong>We do not offer refunds, returns, or exchanges for any reason.</strong> This is because digital materials cannot be "returned" or deactivated in the same way physical goods can.
+            </p>
+          </section>
+
+          <section className="policy-section">
+            <h2 className="section-title">2. Delivery Guarantee</h2>
+            <p>
+              While we do not offer refunds, we do guarantee successful delivery. If you experience any technical issues accessing your student dashboard, logging in, or retrieving your purchased blueprints, please contact us immediately. We will make sure your access is restored.
+            </p>
+          </section>
+
+          <section className="policy-section">
+            <h2 className="section-title">3. Support & Inquiries</h2>
+            <p>
+              If you have any questions about the content of our blueprints, need help navigating the student area, or have any issues with your payment, please reach out to our dedicated support helpdesk at:
+            </p>
+            <div className="policy-support-box">
+              <strong>Email Support:</strong> <a href="mailto:nprecious.official@gmail.com">nprecious.official@gmail.com</a>
+            </div>
+            <p>
+              Our response team is active Monday through Friday, and we aim to respond to all technical queries within 24 hours.
+            </p>
+          </section>
         </div>
-    );
+
+      </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .policy-page-layout {
+          background-color: #f8fafc;
+          min-height: 100vh;
+          color: #334155;
+          font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+          padding: 80px 20px;
+          box-sizing: border-box;
+        }
+        .policy-container {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .back-home-btn {
+          background: none;
+          border: none;
+          color: #64748b;
+          font-size: 14px;
+          fontWeight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0;
+          margin-bottom: 32px;
+          transition: color 0.15s ease;
+        }
+        .back-home-btn:hover {
+          color: #2563eb;
+        }
+        .policy-header {
+          margin-bottom: 40px;
+        }
+        .policy-badge {
+          display: inline-block;
+          background: rgba(37, 99, 235, 0.06);
+          color: #2563eb;
+          border: 1px solid rgba(37, 99, 235, 0.15);
+          padding: 5px 12px;
+          border-radius: 50px;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 12px;
+        }
+        .policy-title {
+          font-size: 38px;
+          font-weight: 850;
+          color: #0f172a;
+          margin: 0 0 8px;
+          letter-spacing: -0.8px;
+        }
+        .policy-meta {
+          font-size: 13.5px;
+          color: #64748b;
+          margin: 0;
+        }
+        .policy-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 40px;
+          box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04);
+        }
+        .policy-intro {
+          font-size: 16px;
+          line-height: 1.7;
+          color: #475569;
+          margin-top: 0;
+          margin-bottom: 32px;
+        }
+        .policy-section {
+          margin-bottom: 32px;
+          border-top: 1px solid #f1f5f9;
+          padding-top: 28px;
+        }
+        .policy-section:last-of-type {
+          margin-bottom: 0;
+        }
+        .section-title {
+          font-size: 20px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 16px;
+        }
+        .policy-section p {
+          font-size: 15px;
+          line-height: 1.7;
+          color: #475569;
+          margin: 0 0 16px;
+        }
+        .policy-section p:last-child {
+          margin-bottom: 0;
+        }
+        .policy-alert {
+          background: #fef2f2;
+          border-left: 4px solid #ef4444;
+          padding: 16px;
+          border-radius: 0 12px 12px 0;
+          color: #991b1b !important;
+          margin-top: 20px;
+        }
+        .policy-support-box {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 16px 20px;
+          font-size: 15px;
+          margin: 16px 0;
+        }
+        .policy-support-box a {
+          color: #2563eb;
+          text-decoration: none;
+          font-weight: 700;
+        }
+        .policy-support-box a:hover {
+          text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+          .policy-card {
+            padding: 24px;
+          }
+          .policy-title {
+            font-size: 30px;
+          }
+        }
+      `}} />
+    </div>
+  );
 }

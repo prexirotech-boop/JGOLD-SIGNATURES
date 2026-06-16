@@ -79,14 +79,14 @@ export default function FAQPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#f3f4f6', fontFamily: 'var(--font)', padding: '120px 20px 80px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#334155', fontFamily: "'Outfit', 'Inter', sans-serif", padding: '120px 20px 80px' }}>
       <div style={{ maxWidth: 840, margin: '0 auto' }}>
         
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 50 }}>
           <span style={{ 
-            background: 'rgba(245, 197, 24, 0.1)', 
-            color: 'var(--gold)', 
+            background: 'rgba(37, 99, 235, 0.06)', 
+            color: '#2563eb', 
             padding: '6px 16px', 
             borderRadius: 50, 
             fontSize: 12, 
@@ -95,14 +95,14 @@ export default function FAQPage() {
             textTransform: 'uppercase', 
             display: 'inline-block',
             marginBottom: 20,
-            border: '1px solid rgba(245, 197, 24, 0.2)'
+            border: '1px solid rgba(37, 99, 235, 0.15)'
           }}>
             Help Center & FAQs
           </span>
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, letterSpacing: '-1.2px', color: '#fff', margin: '0 0 16px', lineHeight: 1.2 }}>
-            Frequently Asked <span style={{ color: 'var(--gold)' }}>Questions</span>
+          <h1 style={{ fontSize: 'clamp(2.2rem, 5vw, 3rem)', fontWeight: 850, letterSpacing: '-1.2px', color: '#0f172a', margin: '0 0 16px', lineHeight: 1.2 }}>
+            Frequently Asked <span style={{ color: '#2563eb' }}>Questions</span>
           </h1>
-          <p style={{ fontSize: 16, color: '#9ca3af', maxWidth: 550, margin: '0 auto 32px', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 16, color: '#64748b', maxWidth: 550, margin: '0 auto 32px', lineHeight: 1.6 }}>
             Quick solutions, onboarding guides, and common answers regarding student enrollment and course playback.
           </p>
 
@@ -115,30 +115,31 @@ export default function FAQPage() {
               onChange={e => setSearch(e.target.value)}
               style={{
                 width: '100%',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
                 borderRadius: 12,
                 padding: '14px 16px 14px 48px',
                 fontSize: 14.5,
-                color: '#fff',
+                color: '#0f172a',
                 outline: 'none',
                 transition: 'all 0.3s ease',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
               }}
               onFocus={e => {
-                e.target.style.borderColor = 'rgba(245, 197, 24, 0.5)'
-                e.target.style.boxShadow = '0 0 20px rgba(245, 197, 24, 0.12)'
+                e.target.style.borderColor = '#2563eb'
+                e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.12)'
               }}
               onBlur={e => {
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'
+                e.target.style.borderColor = '#e2e8f0'
                 e.target.style.boxShadow = 'none'
               }}
             />
             <svg 
               viewBox="0 0 24 24" 
               fill="none" 
-              stroke="#6b7280" 
-              strokeWidth="2" 
+              stroke="#64748b" 
+              strokeWidth="2.5" 
               width="16"
               height="16"
               style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
@@ -158,26 +159,27 @@ export default function FAQPage() {
                   setOpenIndex(null)
                 }}
                 style={{
-                  background: activeCategory === cat ? 'var(--gold)' : 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  padding: '7px 14px',
+                  background: activeCategory === cat ? '#2563eb' : '#ffffff',
+                  border: activeCategory === cat ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                  padding: '7px 16px',
                   borderRadius: 50,
                   fontSize: 12.5,
                   fontWeight: activeCategory === cat ? '700' : '600',
-                  color: activeCategory === cat ? '#000' : '#9ca3af',
+                  color: activeCategory === cat ? '#ffffff' : '#64748b',
                   transition: 'all 0.2s ease',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.02)'
                 }}
                 onMouseEnter={e => {
                   if (activeCategory !== cat) {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.08)'
-                    e.target.style.color = '#fff'
+                    e.target.style.borderColor = '#cbd5e1'
+                    e.target.style.color = '#0f172a'
                   }
                 }}
                 onMouseLeave={e => {
                   if (activeCategory !== cat) {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.04)'
-                    e.target.style.color = '#9ca3af'
+                    e.target.style.borderColor = '#e2e8f0'
+                    e.target.style.color = '#64748b'
                   }
                 }}
               >
@@ -190,9 +192,9 @@ export default function FAQPage() {
         {/* FAQ Accordion List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 60 }}>
           {filteredFaqs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '48px 20px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 14 }}>
+            <div style={{ textAlign: 'center', padding: '48px 20px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
               <span style={{ fontSize: 32, display: 'block', marginBottom: 12 }}>🔍</span>
-              <p style={{ color: '#9ca3af', margin: 0 }}>No help items match your search. Try different keywords.</p>
+              <p style={{ color: '#64748b', margin: 0 }}>No help items match your search. Try different keywords.</p>
             </div>
           ) : (
             filteredFaqs.map((faq, idx) => {
@@ -201,11 +203,12 @@ export default function FAQPage() {
                 <div 
                   key={idx}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
                     borderRadius: 12,
                     overflow: 'hidden',
-                    transition: 'all 0.25s ease'
+                    transition: 'all 0.25s ease',
+                    boxShadow: isOpen ? '0 4px 20px rgba(0, 0, 0, 0.04)' : '0 1px 3px rgba(0, 0, 0, 0.02)'
                   }}
                 >
                   <button
@@ -220,15 +223,15 @@ export default function FAQPage() {
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      color: '#fff',
-                      fontSize: 15.5,
+                      color: '#0f172a',
+                      fontSize: 16,
                       fontWeight: 700,
                       gap: 16
                     }}
                   >
                     <span>{faq.question}</span>
                     <span style={{
-                      color: isOpen ? 'var(--gold)' : '#9ca3af',
+                      color: isOpen ? '#2563eb' : '#64748b',
                       fontSize: 20,
                       fontWeight: '300',
                       transition: 'transform 0.25s ease',
@@ -244,9 +247,9 @@ export default function FAQPage() {
                     maxHeight: isOpen ? 250 : 0,
                     overflow: 'hidden',
                     transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    background: 'rgba(255, 255, 255, 0.005)'
+                    background: '#f8fafc'
                   }}>
-                    <div style={{ padding: '0 24px 20px', color: '#9ca3af', fontSize: 14.5, lineHeight: 1.7, borderTop: '1px solid rgba(255, 255, 255, 0.02)', paddingTop: 12 }}>
+                    <div style={{ padding: '0 24px 20px', color: '#475569', fontSize: 14.5, lineHeight: 1.7, borderTop: '1px solid #e2e8f0', paddingTop: 12 }}>
                       {faq.answer}
                     </div>
                   </div>
@@ -258,33 +261,39 @@ export default function FAQPage() {
 
         {/* Contact Banner */}
         <div style={{ 
-          background: 'linear-gradient(135deg, #0d3b2d 0%, #052817 100%)', 
-          border: '1px solid rgba(93, 191, 133, 0.2)', 
+          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', 
+          border: '1px solid rgba(37, 99, 235, 0.1)', 
           borderRadius: 16, 
           padding: '40px', 
           textAlign: 'center',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.3)'
+          boxShadow: '0 10px 30px rgba(37, 99, 235, 0.15)'
         }}>
-          <h3 style={{ fontSize: 20, color: '#fff', fontWeight: 800, margin: '0 0 10px' }}>Still need assistance?</h3>
-          <p style={{ color: '#a7f3d0', fontSize: 14.5, margin: '0 0 24px', lineHeight: 1.6, maxWidth: 500, marginInline: 'auto' }}>
+          <h3 style={{ fontSize: 20, color: '#ffffff', fontWeight: 800, margin: '0 0 10px' }}>Still need assistance?</h3>
+          <p style={{ color: '#bfdbfe', fontSize: 14.5, margin: '0 0 24px', lineHeight: 1.6, maxWidth: 500, marginInline: 'auto' }}>
             Precious is always available to assist. Drop a line directly and we will get back to you within 24 hours.
           </p>
           <Link 
             to="/contact" 
             style={{ 
-              background: 'var(--gold)', 
-              color: '#000', 
+              background: '#ffffff', 
+              color: '#1e40af', 
               padding: '12px 28px', 
               borderRadius: 8, 
               fontWeight: 700, 
-              fontSize: 14, 
+              fontSize: 14.5, 
               textDecoration: 'none',
               display: 'inline-block',
-              boxShadow: '0 4px 14px rgba(245, 197, 24, 0.3)',
-              transition: 'transform 0.2s'
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.2s, background-color 0.2s'
             }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.backgroundColor = '#f8fafc'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'none'
+              e.currentTarget.style.backgroundColor = '#ffffff'
+            }}
           >
             Contact Precious
           </Link>

@@ -182,13 +182,58 @@ function RichTextEditor({ value, onChange, placeholder }) {
 
   const handlePaste = (e) => {
     e.preventDefault()
-    const text = e.clipboardData.getData('text/plain')
-    const selection = window.getSelection()
-    if (!selection.rangeCount) return
-    selection.deleteFromDocument()
-    const textNode = document.createTextNode(text)
-    selection.getRangeAt(0).insertNode(textNode)
-    selection.collapseToEnd()
+    const html = e.clipboardData.getData('text/html')
+    const plainText = e.clipboardData.getData('text/plain')
+    
+    let contentToInsert = ''
+    
+    if (html) {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html, 'text/html')
+      
+      const cleanNode = (node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return node.cloneNode(true)
+        }
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase()
+          const allowedTags = ['p', 'h2', 'h3', 'ul', 'ol', 'li', 'b', 'strong', 'i', 'em', 'u', 'a', 'br']
+          if (allowedTags.includes(tag)) {
+            const cleanEl = document.createElement(tag)
+            if (tag === 'a' && node.getAttribute('href')) {
+              cleanEl.setAttribute('href', node.getAttribute('href'))
+              cleanEl.setAttribute('target', '_blank')
+              cleanEl.setAttribute('rel', 'noopener noreferrer')
+            }
+            node.childNodes.forEach(child => {
+              cleanEl.appendChild(cleanNode(child))
+            })
+            return cleanEl
+          }
+        }
+        const fragment = document.createDocumentFragment()
+        node.childNodes.forEach(child => {
+          fragment.appendChild(cleanNode(child))
+        })
+        return fragment
+      }
+      
+      const fragment = document.createDocumentFragment()
+      doc.body.childNodes.forEach(child => {
+        fragment.appendChild(cleanNode(child))
+      })
+      
+      const tempDiv = document.createElement('div')
+      tempDiv.appendChild(fragment)
+      contentToInsert = tempDiv.innerHTML
+    } else {
+      contentToInsert = plainText
+        .split('\n')
+        .map(p => p.trim() ? `<p>${p.trim()}</p>` : '')
+        .join('')
+    }
+    
+    document.execCommand('insertHTML', false, contentToInsert)
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML)
     }

@@ -34,17 +34,43 @@ export default function ContactPage() {
         return Object.keys(tempErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
 
         setIsSubmitting(true);
-        
-        // Simulate ticket transmission
-        setTimeout(() => {
+        try {
+            const honeypot = document.getElementById('website_verify')?.value || '';
+            const response = await fetch('/contact.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                    website_verify: honeypot
+                })
+            });
+            const result = await response.json();
+            if (response.ok && result.success) {
+                setSubmitStatus('success');
+            } else {
+                setErrors({ submit: result.error || 'Unable to send message. Please try again.' });
+            }
+        } catch (err) {
+            console.error('[ContactPage] Submission failed:', err);
+            // Local developer mode fallback simulation
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                setSubmitStatus('success');
+            } else {
+                setErrors({ submit: 'Unable to connect to the mail server. Please email directly or try again later.' });
+            }
+        } finally {
             setIsSubmitting(false);
-            setSubmitStatus('success');
-        }, 1200);
+        }
     };
 
     const handleReset = () => {
@@ -185,10 +211,26 @@ export default function ContactPage() {
                                     </div>
                                 ) : (
                                     <form onSubmit={handleSubmit} className="business-form">
+                                        {/* Honeypot anti-spam input */}
+                                        <input 
+                                            type="text" 
+                                            id="website_verify" 
+                                            name="website_verify" 
+                                            style={{ display: 'none' }} 
+                                            tabIndex={-1} 
+                                            autoComplete="off" 
+                                        />
+
                                         <div className="form-head">
                                             <h3>Send us a Message</h3>
                                             <p>Fill out the form below and our response team will review it.</p>
                                         </div>
+
+                                        {errors.submit && (
+                                            <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', color: '#b91c1c', padding: '12px 14px', borderRadius: '10px', marginBottom: '20px', fontSize: '13.5px', fontWeight: 500 }}>
+                                                {errors.submit}
+                                            </div>
+                                        )}
 
                                         {/* Name & Email Group */}
                                         <div className="form-group-grid">
@@ -291,11 +333,21 @@ export default function ContactPage() {
                     padding: 0 24px;
                 }
 
+                .text-center {
+                    text-align: center;
+                }
+
                 /* Hero styling */
                 .contact-hero {
                     padding: 80px 0 48px;
                     background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
                     border-bottom: 1px solid #e2e8f0;
+                }
+                .contact-hero .contact-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
                 }
                 .contact-badge {
                     display: inline-block;

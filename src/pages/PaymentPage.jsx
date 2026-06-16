@@ -335,7 +335,9 @@ export default function PaymentPage() {
         onClose: () => {
           if (!paidRef.current) {
             if (pendingOrderIdRef.current) {
-              supabase.from('orders').update({ status: 'cancelled' }).eq('id', pendingOrderIdRef.current).catch(() => {})
+              supabase.from('orders').update({ status: 'cancelled' }).eq('id', pendingOrderIdRef.current).then(({ error }) => {
+                if (error) console.error('[PaymentPage] Error cancelling order:', error)
+              })
             }
             setLoading(false)
           }
