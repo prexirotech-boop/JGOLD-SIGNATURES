@@ -196,9 +196,9 @@ export default function Header() {
           {[
             { label: 'Home', path: '/' },
             { label: 'Products', path: '/products' },
-            { label: 'Blog', path: '/blog' },
-            { label: 'FAQs', path: '/faq' },
             { label: 'About Us', path: '/about' },
+            { label: 'FAQs', path: '/faq' },
+            { label: 'Blog', path: '/blog' },
             { label: 'Contact', path: '/contact' }
           ].map(item => (
             <Link
@@ -280,9 +280,9 @@ export default function Header() {
         {[
           { label: 'Home', path: '/', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
           { label: 'Products', path: '/products', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> },
-          { label: 'Blog', path: '/blog', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg> },
-          { label: 'FAQs', path: '/faq', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> },
           { label: 'About Us', path: '/about', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg> },
+          { label: 'FAQs', path: '/faq', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> },
+          { label: 'Blog', path: '/blog', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg> },
           { label: 'Contact', path: '/contact', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> }
         ].map((item, idx) => {
           const isActive = location.pathname === item.path
@@ -319,8 +319,18 @@ export default function Header() {
       <div className={`cart-drawer-overlay ${showCartDrawer ? 'active' : ''}`} onClick={() => setShowCartDrawer(false)}>
         <div className={`cart-drawer ${showCartDrawer ? 'active' : ''}`} onClick={e => e.stopPropagation()}>
           <div className="cart-drawer-header">
-            <h3>Your Cart</h3>
-            <button onClick={() => setShowCartDrawer(false)} className="cart-close-btn">✕</button>
+            <div>
+              <h3>Your Cart</h3>
+              <p className="cart-drawer-subtitle">
+                {cartItems.length === 0 
+                  ? 'Your selected items' 
+                  : `You have ${cartItems.length} ${cartItems.length === 1 ? 'item' : 'items'} in your cart`
+                }
+              </p>
+            </div>
+            <button onClick={() => setShowCartDrawer(false)} className="cart-close-btn" title="Close cart">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
           </div>
           
           <div className="cart-drawer-body">
@@ -370,7 +380,7 @@ export default function Header() {
                       className="cart-item-remove-btn"
                       title="Remove item"
                     >
-                      ✕
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     </button>
                   </div>
                 ))}
@@ -435,27 +445,37 @@ export default function Header() {
           justify-content: space-between;
           align-items: center;
         }
+        .cart-drawer-subtitle {
+          margin: 4px 0 0 0;
+          font-size: 12.5px;
+          color: #64748b;
+          font-weight: 500;
+        }
         .cart-drawer-header h3 {
           margin: 0;
           font-size: 18px;
-          font-weight: 800;
+          font-weight: 850;
           color: #0f172a;
           font-family: var(--font-heading), sans-serif;
+          letter-spacing: -0.5px;
         }
         .cart-close-btn {
-          background: none;
-          border: none;
-          font-size: 20px;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
           color: #64748b;
           cursor: pointer;
-          padding: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: color 0.15s;
+          transition: all 0.2s ease;
         }
         .cart-close-btn:hover {
           color: #0f172a;
+          background: #e2e8f0;
+          transform: rotate(90deg);
         }
         .cart-drawer-body {
           flex: 1;
@@ -498,14 +518,18 @@ export default function Header() {
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 12px;
-          border: 1px solid #f1f5f9;
+          padding: 14px;
+          border: 1px solid #e2e8f0;
           border-radius: 12px;
           position: relative;
-          transition: border-color 0.15s;
+          background: #ffffff;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.01);
+          transition: all 0.2s ease;
         }
         .cart-item-card:hover {
-          border-color: #e2e8f0;
+          border-color: #cbd5e1;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
         }
         .cart-item-thumb {
           width: 60px;
@@ -537,7 +561,7 @@ export default function Header() {
         .cart-item-price {
           font-size: 14px;
           font-weight: 800;
-          color: #0f172a;
+          color: #2563eb;
         }
         .cart-item-old-price {
           font-size: 12px;
@@ -545,30 +569,38 @@ export default function Header() {
           text-decoration: line-through;
         }
         .cart-item-remove-btn {
-          background: none;
-          border: none;
-          font-size: 14px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          width: 28px;
+          height: 28px;
           color: #94a3b8;
           cursor: pointer;
-          padding: 4px;
-          transition: color 0.15s;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           position: absolute;
-          top: 8px;
-          right: 8px;
+          top: 12px;
+          right: 12px;
         }
         .cart-item-remove-btn:hover {
           color: #ef4444;
+          background: #fef2f2;
+          border-color: #fee2e2;
+          transform: scale(1.05);
         }
         .cart-drawer-footer {
           padding: 24px;
-          border-top: 1px solid #f1f5f9;
-          background: #f8fafc;
+          border-top: 1px solid #e2e8f0;
+          background: #ffffff;
+          box-shadow: 0 -4px 10px rgba(0,0,0,0.01);
         }
         .cart-total-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 16px;
+          margin-bottom: 20px;
         }
         .cart-total-row span:first-child {
           font-size: 14px;
@@ -585,17 +617,19 @@ export default function Header() {
           background: linear-gradient(135deg, #2563eb, #1d4ed8);
           color: #ffffff;
           border: none;
-          padding: 14px;
+          padding: 15px;
           border-radius: 10px;
           font-weight: 700;
-          font-size: 14.5px;
+          font-size: 15px;
           cursor: pointer;
           transition: all 0.2s;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
+          font-family: var(--font), sans-serif;
         }
         .cart-checkout-btn:hover {
+          background: linear-gradient(135deg, #1d4ed8, #1e40af);
           transform: translateY(-1px);
-          box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
         }
       `}} />
     </>

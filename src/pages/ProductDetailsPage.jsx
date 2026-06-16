@@ -1614,25 +1614,25 @@ export default function ProductDetailsPage() {
         .wysiwyg-content-area {
           font-size: 15px;
           line-height: 1.65;
-          color: #e2e8f0;
+          color: #334155;
         }
         .wysiwyg-content-area h2 {
           font-size: 1.6rem;
           font-weight: 800;
           margin-top: 1.5em;
           margin-bottom: 0.5em;
-          color: #ffffff;
+          color: #0f172a;
         }
         .wysiwyg-content-area h3 {
           font-size: 1.3rem;
           font-weight: 700;
           margin-top: 1.5em;
           margin-bottom: 0.5em;
-          color: #ffffff;
+          color: #0f172a;
         }
         .wysiwyg-content-area p {
           margin-bottom: 1.2em;
-          color: rgba(255, 255, 255, 0.8);
+          color: #475569;
         }
         .wysiwyg-content-area ul {
           list-style-type: disc;
@@ -1646,14 +1646,14 @@ export default function ProductDetailsPage() {
         }
         .wysiwyg-content-area li {
           margin-bottom: 0.4em;
-          color: rgba(255, 255, 255, 0.85);
+          color: #475569;
         }
         .wysiwyg-content-area a {
-          color: #3b82f6;
+          color: #2563eb;
           text-decoration: underline;
         }
         .wysiwyg-content-area a:hover {
-          color: #60a5fa;
+          color: #1d4ed8;
         }
       `}</style>
     </div>

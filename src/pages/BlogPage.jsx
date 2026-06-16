@@ -66,7 +66,7 @@ export default function BlogPage() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#334155', fontFamily: "'Outfit', 'Inter', sans-serif", padding: '120px 20px 80px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#334155', fontFamily: "'Outfit', 'Inter', sans-serif", padding: '80px 20px 80px' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         
         {/* Header */}

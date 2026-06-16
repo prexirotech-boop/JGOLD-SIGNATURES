@@ -25,15 +25,12 @@ export default function AdminPages() {
 
       {/* Search */}
       <div style={{ position: 'relative', marginBottom: 20, maxWidth: 400 }}>
-        <svg style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: '#94a3b8', pointerEvents: 'none' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
-        </svg>
         <input
           type="text"
           placeholder="Search pages..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          style={{ width: '100%', paddingLeft: 40, paddingRight: 16, paddingTop: 10, paddingBottom: 10, border: '1px solid #e3e8ee', borderRadius: 8, fontSize: 13, color: '#1a1f36', background: '#fff', outline: 'none', boxSizing: 'border-box' }}
+          style={{ width: '100%', paddingLeft: 14, paddingRight: 16, paddingTop: 10, paddingBottom: 10, border: '1px solid #e3e8ee', borderRadius: 8, fontSize: 13, color: '#1a1f36', background: '#fff', outline: 'none', boxSizing: 'border-box' }}
         />
       </div>
 

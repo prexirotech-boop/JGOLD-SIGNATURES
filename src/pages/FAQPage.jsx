@@ -79,7 +79,7 @@ export default function FAQPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#334155', fontFamily: "'Outfit', 'Inter', sans-serif", padding: '120px 20px 80px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#334155', fontFamily: "'Outfit', 'Inter', sans-serif", padding: '80px 20px 80px' }}>
       <div style={{ maxWidth: 840, margin: '0 auto' }}>
         
         {/* Header */}
@@ -118,7 +118,7 @@ export default function FAQPage() {
                 background: '#ffffff',
                 border: '1px solid #e2e8f0',
                 borderRadius: 12,
-                padding: '14px 16px 14px 48px',
+                padding: '14px 16px',
                 fontSize: 14.5,
                 color: '#0f172a',
                 outline: 'none',
@@ -135,18 +135,6 @@ export default function FAQPage() {
                 e.target.style.boxShadow = 'none'
               }}
             />
-            <svg 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="#64748b" 
-              strokeWidth="2.5" 
-              width="16"
-              height="16"
-              style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
           </div>
 
           {/* Category tabs */}

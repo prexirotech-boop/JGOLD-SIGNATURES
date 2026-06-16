@@ -162,9 +162,9 @@ export default function Footer() {
               {[
                 { label: 'Home', path: '/' },
                 { label: 'Products', path: '/products' },
-                { label: 'Blog', path: '/blog' },
-                { label: 'FAQs', path: '/faq' },
                 { label: 'About Us', path: '/about' },
+                { label: 'FAQs', path: '/faq' },
+                { label: 'Blog', path: '/blog' },
                 { label: 'Contact', path: '/contact' },
               ].map(({ label, path }) => (
                 <Link key={label} to={path} onClick={scrollToTop} className="footer-nav-link"
