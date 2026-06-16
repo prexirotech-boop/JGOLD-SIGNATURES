@@ -524,7 +524,13 @@ export default function AdminOrders() {
   return (
     <div style={{ fontFamily: 'var(--font, system-ui, sans-serif)', maxWidth: '100%' }}>
       <style>{`
-        @media (max-width: 767px) { .orders-desktop-table { display:none !important; } }
+        @media (max-width: 767px) { 
+          .orders-desktop-table { display:none !important; } 
+          .ao-filter-control {
+            flex: 1 !important;
+            min-width: 130px !important;
+          }
+        }
         @media (min-width: 768px) { .orders-mobile-cards { display:none !important; } }
         
         .ao-filter-control {
@@ -548,7 +554,7 @@ export default function AdminOrders() {
         }
         .ao-filter-search {
           width: 100% !important;
-          padding-left: 40px !important;
+          padding-left: 14px !important;
           cursor: text !important;
         }
         .ao-filter-control::placeholder {
@@ -603,7 +609,6 @@ export default function AdminOrders() {
       {/* ── Filters ────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ flex: 1, minWidth: 200, position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" style={{ position:'absolute', left:12, pointerEvents:'none' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" className="ao-filter-control ao-filter-search" placeholder="Search reference, email, name…" value={search} onChange={e => setSearch(e.target.value)} />
           {search && <button onClick={()=>setSearch('')} style={{ position:'absolute', right:10, background:'none', border:'none', color:'#94a3b8', cursor:'pointer', padding:4 }}>✕</button>}
         </div>
@@ -611,8 +616,24 @@ export default function AdminOrders() {
           <option value="all">All Statuses</option>
           {Object.entries(STATUS).map(([k,v])=><option key={k} value={k}>{v.icon} {v.label}</option>)}
         </select>
-        <input type="date" value={dateFrom} onChange={e=>setDateFrom(e.target.value)} className="ao-filter-control" />
-        <input type="date" value={dateTo}   onChange={e=>setDateTo(e.target.value)}   className="ao-filter-control" />
+        <input 
+          type={dateFrom ? "date" : "text"} 
+          placeholder="From Date" 
+          value={dateFrom} 
+          onFocus={(e) => e.target.type = 'date'} 
+          onBlur={(e) => { if (!e.target.value) e.target.type = 'text' }} 
+          onChange={e=>setDateFrom(e.target.value)} 
+          className="ao-filter-control" 
+        />
+        <input 
+          type={dateTo ? "date" : "text"} 
+          placeholder="To Date" 
+          value={dateTo} 
+          onFocus={(e) => e.target.type = 'date'} 
+          onBlur={(e) => { if (!e.target.value) e.target.type = 'text' }} 
+          onChange={e=>setDateTo(e.target.value)} 
+          className="ao-filter-control" 
+        />
         {hasFilter && (
           <button onClick={()=>{setSearch('');setStatusFilter('all');setDateFrom('');setDateTo('')}} style={{ padding:'10px 14px', borderRadius:9, border:'1px solid #fecaca', background:'#fef2f2', color:'#dc2626', fontSize:13, fontWeight:700, cursor:'pointer' }}>
             ✕ Clear

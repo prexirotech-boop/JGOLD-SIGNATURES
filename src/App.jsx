@@ -50,6 +50,13 @@ function ScrollToTop() {
 function AppLayout() {
   const location = useLocation()
   
+  // Track PageView on location changes for Facebook Pixel
+  useEffect(() => {
+    if (window.fbq) {
+      window.fbq('track', 'PageView')
+    }
+  }, [location])
+  
   // Hide global Header and Footer on admin, student portal, course player, landing, and auth paths
   const hideHeaderFooter = 
     location.pathname.startsWith('/admin') || 

@@ -175,7 +175,7 @@ export default function WebinarPage() {
             <wistia-player 
               media-id="sbeep923r7" 
               aspect="0.5625" 
-              style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '0.5625' }}
+              style={{ width: '100%', height: '100%', display: 'block' }}
             ></wistia-player>
           </div>
           <p className="wb-video-caption">Ensure your audio is turned ON. Do not refresh this page.</p>
@@ -184,8 +184,8 @@ export default function WebinarPage() {
         {/* Direct Checkout Call to Action & FOMO Section */}
         <div className="wb-cta-section text-center">
           <button onClick={handleCTA} className="wb-cta-btn" style={{ marginBottom: '32px' }}>
-            Claim Your Masterclass Spot Now!
-            <span className="btn-subtext">Click here to secure lifetime access to the blueprint and start earning in foreign currency</span>
+            Claim Your Spot Now!
+            <span className="btn-subtext">Click here to secure lifetime access</span>
           </button>
           
           {/* Conversion Scarcity Panel */}
@@ -319,7 +319,24 @@ export default function WebinarPage() {
           </div>
         </div>
 
-      </div>
+      {/* SECTION 11 — FOOTER */}
+      <footer className="lp-footer">
+        <div className="lp-footer-inner">
+          <p>© 2026 Amplified Skills | All Rights Reserved</p>
+          <p className="lp-footer-disclaimer">
+            This site is not affiliated with Facebook, Google, or Meta in any way. Results mentioned on this page are not typical and individual results will vary. This training is 100% free. No hidden fees or charges.
+          </p>
+          <div className="lp-footer-links">
+            <a href="/privacy" className="lp-footer-link">Privacy Policy</a>
+            <span className="lp-footer-divider">|</span>
+            <a href="/terms" className="lp-footer-link">Terms of Service</a>
+            <span className="lp-footer-divider">|</span>
+            <a href="/contact" className="lp-footer-link">Contact Us</a>
+          </div>
+        </div>
+      </footer>
+
+    </div>
 
       {/* Redesigned clean, emoji-less sales notifications in brand colors */}
       {showSale && currentSale && (
@@ -336,16 +353,9 @@ export default function WebinarPage() {
 
       {/* Inline styles */}
       <style>{`
-        wistia-player[media-id='sbeep923r7']:not(:defined) {
-          background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/sbeep923r7/swatch');
-          display: block;
-          filter: blur(5px);
-          padding-top: 177.78%;
-        }
-
         .wb-root {
           font-family: var(--font);
-          background: #050b14;
+          background: linear-gradient(135deg, #0A0F2C 0%, #151C47 100%);
           min-height: 100vh;
           color: #ffffff;
           padding-bottom: 80px;
@@ -361,6 +371,17 @@ export default function WebinarPage() {
           font-weight: 700;
           line-height: 1.45;
           box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+        }
+        wistia-player {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+        wistia-player[media-id='sbeep923r7']:not(:defined) {
+          background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/sbeep923r7/swatch');
+          display: block;
+          filter: blur(5px);
+          padding-top: 177.78%;
         }
 
         .wb-container {
@@ -416,6 +437,50 @@ export default function WebinarPage() {
           border-radius: 10px;
           overflow: hidden;
           background: #000;
+          aspect-ratio: 9/16;
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+        }
+
+        /* FOOTER */
+        .lp-footer {
+          background-color: #0A0F2C;
+          color: #9CA3AF;
+          padding: 48px 20px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          text-align: center;
+          margin-top: 60px;
+        }
+        .lp-footer-inner {
+          max-width: 800px;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .lp-footer-disclaimer {
+          font-size: 11px;
+          line-height: 1.6;
+          color: #6B7280;
+        }
+        .lp-footer-links {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          font-size: 12px;
+          margin-top: 8px;
+        }
+        .lp-footer-link {
+          color: #9CA3AF;
+          transition: color 0.2s ease;
+        }
+        .lp-footer-link:hover {
+          color: #f59e0b;
+        }
+        .lp-footer-divider {
+          color: #374151;
         }
         .wb-video-caption {
           text-align: center;

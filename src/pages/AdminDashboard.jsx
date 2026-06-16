@@ -148,10 +148,10 @@ function AdminOverview() {
   
   const width = 500
   const height = 150
-  const paddingLeft = 35
-  const paddingRight = 15
+  const paddingLeft = 48
+  const paddingRight = 18
   const paddingTop = 15
-  const paddingBottom = 30
+  const paddingBottom = 32
   
   const plotWidth = width - paddingLeft - paddingRight
   const plotHeight = height - paddingTop - paddingBottom
@@ -342,7 +342,7 @@ function AdminOverview() {
       <div style={{ display: 'grid', gridTemplateColumns: isSmall ? '1fr' : '1fr 1fr', gap: 16 }}>
         
         {/* Chart 1: Revenue Volume – Gradient Area Chart */}
-        <div style={{ background: '#fff', border: '1px solid #e8edf3', borderRadius: 12, padding: '20px 20px 12px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+        <div style={{ background: '#fff', border: '1px solid #e8edf3', borderRadius: 12, padding: '20px 20px 12px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', overflow: 'visible' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
             <div>
               <h4 style={{ margin: '0 0 3px', fontSize: 14, fontWeight: 700, color: '#0f172a', letterSpacing: '-0.2px' }}>Revenue Growth</h4>
@@ -361,7 +361,7 @@ function AdminOverview() {
           </div>
 
           <div style={{ position: 'relative', width: '100%' }}>
-            <svg viewBox="0 0 500 160" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
+            <svg onClick={() => setHoveredRevenue(null)} viewBox="0 0 500 160" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
               <defs>
                 <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#2563eb" stopOpacity="0.25" />
@@ -382,7 +382,7 @@ function AdminOverview() {
               {revenueGridLines.map((line, idx) => (
                 <g key={idx}>
                   <line x1={paddingLeft} y1={line.y} x2={width - paddingRight} y2={line.y} stroke="#f1f5f9" strokeWidth="1" />
-                  <text x={paddingLeft - 6} y={line.y + 4} textAnchor="end" fill="#cbd5e1" fontSize="9" fontWeight="500">
+                  <text x={paddingLeft - 6} y={line.y + 4} textAnchor="end" fill="#334155" fontSize="10" fontWeight="600">
                     {line.value >= 1000 ? `₦${(line.value/1000).toFixed(0)}k` : `₦${line.value.toFixed(0)}`}
                   </text>
                 </g>
@@ -407,7 +407,14 @@ function AdminOverview() {
                           r={isHovered ? "5.5" : "3.5"}
                           fill={isHovered ? "#1d4ed8" : "#2563eb"}
                           stroke="#fff" strokeWidth="2"
-                          style={{ cursor: 'pointer', transition: 'r 0.15s ease, fill 0.15s ease' }}
+                          style={{ transition: 'r 0.15s ease, fill 0.15s ease', pointerEvents: 'none' }}
+                        />
+                        {/* Large transparent hover trigger area for easy interactivity */}
+                        <circle
+                          cx={x} cy={y}
+                          r="18"
+                          fill="transparent"
+                          style={{ cursor: 'pointer' }}
                           onMouseEnter={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect()
                             const svgRect = e.currentTarget.ownerSVGElement.getBoundingClientRect()
@@ -416,6 +423,14 @@ function AdminOverview() {
                             setHoveredRevenue({ leftPct, topPct, value: `₦${p.amount.toLocaleString()}`, date: new Date(p.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }), idx })
                           }}
                           onMouseLeave={() => setHoveredRevenue(null)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            const svgRect = e.currentTarget.ownerSVGElement.getBoundingClientRect()
+                            const leftPct = ((rect.left + rect.width/2) - svgRect.left) / svgRect.width * 100
+                            const topPct = (rect.top - svgRect.top) / svgRect.height * 100
+                            setHoveredRevenue({ leftPct, topPct, value: `₦${p.amount.toLocaleString()}`, date: new Date(p.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }), idx })
+                          }}
                         />
                       </g>
                     )
@@ -425,7 +440,7 @@ function AdminOverview() {
 
               {/* X-axis date labels */}
               {revenueDateLabels.map((lbl, idx) => (
-                <text key={idx} x={lbl.x} y={height - 8} textAnchor="middle" fill="#cbd5e1" fontSize="9" fontWeight="500">
+                <text key={idx} x={lbl.x} y={height - 8} textAnchor="middle" fill="#334155" fontSize="10" fontWeight="600">
                   {lbl.label}
                 </text>
               ))}
@@ -436,7 +451,7 @@ function AdminOverview() {
                 position: 'absolute',
                 left: `${hoveredRevenue.leftPct}%`,
                 top: `${hoveredRevenue.topPct}%`,
-                transform: 'translate(-50%, -120%)',
+                transform: `translate(${hoveredRevenue.idx === 0 ? '0%' : (hoveredRevenue.idx === 6 ? '-100%' : '-50%')}, -120%)`,
                 background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                 border: '1px solid rgba(37,99,235,0.3)',
                 color: '#fff',
@@ -457,7 +472,7 @@ function AdminOverview() {
         </div>
 
         {/* Chart 2: Order Volume – Modern Bar Chart */}
-        <div style={{ background: '#fff', border: '1px solid #e8edf3', borderRadius: 12, padding: '20px 20px 12px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+        <div style={{ background: '#fff', border: '1px solid #e8edf3', borderRadius: 12, padding: '20px 20px 12px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', overflow: 'visible' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
             <div>
               <h4 style={{ margin: '0 0 3px', fontSize: 14, fontWeight: 700, color: '#0f172a', letterSpacing: '-0.2px' }}>Order Volume</h4>
@@ -474,7 +489,7 @@ function AdminOverview() {
           </div>
 
           <div style={{ position: 'relative', width: '100%' }}>
-            <svg viewBox="0 0 500 160" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
+            <svg onClick={() => setHoveredOrder(null)} viewBox="0 0 500 160" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
               <defs>
                 <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#10b981" stopOpacity="1" />
@@ -490,7 +505,7 @@ function AdminOverview() {
               {orderGridLines.map((line, idx) => (
                 <g key={idx}>
                   <line x1={paddingLeft} y1={line.y} x2={width - paddingRight} y2={line.y} stroke="#f1f5f9" strokeWidth="1" />
-                  <text x={paddingLeft - 6} y={line.y + 4} textAnchor="end" fill="#cbd5e1" fontSize="9" fontWeight="500">
+                  <text x={paddingLeft - 6} y={line.y + 4} textAnchor="end" fill="#334155" fontSize="10" fontWeight="600">
                     {Math.round(line.value)}
                   </text>
                 </g>
@@ -504,22 +519,39 @@ function AdminOverview() {
                 const isHov = hoveredOrder && hoveredOrder.idx === idx
                 return (
                   <g key={idx}>
-                    {isHov && <rect x={x - 1} y={y - 1} width={barWidth + 2} height={barHeight + 1} rx="5" fill="rgba(16,185,129,0.15)" />}
+                    {isHov && <rect x={x - 2} y={y - 2} width={barWidth + 4} height={barHeight + 2} rx="5" fill="rgba(16,185,129,0.15)" />}
                     <rect
                       x={x} y={y}
                       width={barWidth}
                       height={Math.max(barHeight, 2)}
                       rx="4" ry="4"
                       fill={isHov ? "url(#barGradHover)" : "url(#barGrad)"}
-                      style={{ cursor: 'pointer', transition: 'all 0.15s ease' }}
+                      style={{ pointerEvents: 'none' }}
+                    />
+                    {/* Full height column hover target trigger */}
+                    <rect
+                      x={xCenter - 20}
+                      y={paddingTop}
+                      width={40}
+                      height={plotHeight + 5}
+                      fill="transparent"
+                      style={{ cursor: 'pointer' }}
                       onMouseEnter={(e) => {
                         const rect = e.currentTarget.getBoundingClientRect()
                         const svgRect = e.currentTarget.ownerSVGElement.getBoundingClientRect()
                         const leftPct = ((rect.left + rect.width/2) - svgRect.left) / svgRect.width * 100
-                        const topPct = (rect.top - svgRect.top) / svgRect.height * 100
+                        const topPct = (y - 10) / height * 100
                         setHoveredOrder({ leftPct, topPct, value: `${p.count} checkout${p.count === 1 ? '' : 's'}`, date: new Date(p.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }), idx })
                       }}
                       onMouseLeave={() => setHoveredOrder(null)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        const svgRect = e.currentTarget.ownerSVGElement.getBoundingClientRect()
+                        const leftPct = ((rect.left + rect.width/2) - svgRect.left) / svgRect.width * 100
+                        const topPct = (y - 10) / height * 100
+                        setHoveredOrder({ leftPct, topPct, value: `${p.count} checkout${p.count === 1 ? '' : 's'}`, date: new Date(p.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }), idx })
+                      }}
                     />
                   </g>
                 )
@@ -527,7 +559,7 @@ function AdminOverview() {
 
               {/* X-axis labels */}
               {orderDateLabels.map((lbl, idx) => (
-                <text key={idx} x={lbl.x} y={height - 8} textAnchor="middle" fill="#cbd5e1" fontSize="9" fontWeight="500">
+                <text key={idx} x={lbl.x} y={height - 8} textAnchor="middle" fill="#334155" fontSize="10" fontWeight="600">
                   {lbl.label}
                 </text>
               ))}
@@ -538,7 +570,7 @@ function AdminOverview() {
                 position: 'absolute',
                 left: `${hoveredOrder.leftPct}%`,
                 top: `${hoveredOrder.topPct}%`,
-                transform: 'translate(-50%, -120%)',
+                transform: `translate(${hoveredOrder.idx === 0 ? '0%' : (hoveredOrder.idx === 6 ? '-100%' : '-50%')}, -120%)`,
                 background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                 border: '1px solid rgba(16,185,129,0.3)',
                 color: '#fff',
@@ -1276,24 +1308,27 @@ export default function AdminDashboard() {
           .order('created_at', { ascending: false })
           .limit(3)
 
+        const readAlerts = JSON.parse(localStorage.getItem('adminReadAlerts') || '[]')
         const merged = []
         if (recentOrders) {
           recentOrders.forEach(o => {
+            const id = `order-${o.id}`
             merged.push({
-              id: `order-${o.id}`,
+              id,
               msg: `New Payment: ₦${o.amount.toLocaleString()} from ${o.customer_name || 'Customer'} (Ref: ${o.reference.slice(0, 8)})`,
               time: new Date(o.created_at).toLocaleDateString() + ' ' + new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              read: false
+              read: readAlerts.includes(id)
             })
           })
         }
         if (recentProfiles) {
           recentProfiles.forEach(p => {
+            const id = `user-${p.id}`
             merged.push({
-              id: `user-${p.id}`,
+              id,
               msg: `New Student registered: ${p.email}`,
               time: new Date(p.created_at).toLocaleDateString() + ' ' + new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              read: true
+              read: readAlerts.includes(id)
             })
           })
         }
@@ -1366,7 +1401,6 @@ export default function AdminDashboard() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-
   // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(e) {
@@ -1380,13 +1414,18 @@ export default function AdminDashboard() {
         setGlobalResults([])
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
   }, [])
-
   useEffect(() => {
     setMobileMenuOpen(false)
   }, [location])
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/login')
+    }
+  }, [user, loading, navigate])
 
   const toggleSidebar = () => {
     const nextVal = !sidebarCollapsed
@@ -1395,12 +1434,27 @@ export default function AdminDashboard() {
   }
 
   const handleMarkAllRead = () => {
+    const allIds = alerts.map(a => a.id)
+    localStorage.setItem('adminReadAlerts', JSON.stringify(allIds))
     setAlerts(alerts.map(a => ({ ...a, read: true })))
+  }
+
+  const handleMarkSingleRead = (id) => {
+    const readAlerts = JSON.parse(localStorage.getItem('adminReadAlerts') || '[]')
+    if (!readAlerts.includes(id)) {
+      readAlerts.push(id)
+      localStorage.setItem('adminReadAlerts', JSON.stringify(readAlerts))
+    }
+    setAlerts(alerts.map(a => a.id === id ? { ...a, read: true } : a))
   }
 
   if (loading) return <div style={{ padding: 40, textAlign: 'center', color: '#697386', fontFamily: 'var(--font)' }}>Loading Admin Session...</div>
   
-  if (!user || (profile?.role !== 'admin' && user?.app_metadata?.role !== 'admin')) {
+  if (!user) {
+    return null
+  }
+
+  if (profile?.role !== 'admin' && user?.app_metadata?.role !== 'admin') {
     return (
       <div style={{ padding: '100px 20px', textAlign: 'center', background: '#f8fafc', minHeight: '100vh', fontFamily: 'var(--font)' }}>
         <h1 style={{ fontSize: 26, fontWeight: 600, color: '#1a1f36' }}>Access Denied</h1>
@@ -1899,8 +1953,12 @@ export default function AdminDashboard() {
                       <div style={{ padding: '16px', textAlign: 'center', color: '#64748b', fontSize: 12 }}>No new activity logs.</div>
                     ) : (
                       alerts.map(a => (
-                        <div key={a.id} style={{ padding: '10px 16px', borderBottom: '1px solid #f7f8f9', background: a.read ? '#fff' : '#f7f8f9' }}>
-                          <p style={{ margin: 0, fontSize: 12, color: '#3c4257', lineHeight: 1.4 }}>{a.msg}</p>
+                        <div 
+                          key={a.id} 
+                          onClick={() => handleMarkSingleRead(a.id)}
+                          style={{ padding: '10px 16px', borderBottom: '1px solid #f7f8f9', background: a.read ? '#fff' : '#f7f8f9', cursor: 'pointer', transition: 'background 0.15s' }}
+                        >
+                          <p style={{ margin: 0, fontSize: 12, color: '#3c4257', lineHeight: 1.4, fontWeight: a.read ? 400 : 600 }}>{a.msg}</p>
                           <span style={{ fontSize: 10, color: '#8792a2', marginTop: 4, display: 'block' }}>{a.time}</span>
                         </div>
                       ))

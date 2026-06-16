@@ -185,10 +185,9 @@ export default function Header() {
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
         </div>
-      </header>
 
-      {/* Mobile Dropdown Menu — Premium Glassmorphic */}
-      <div id="mobile-nav" style={{ display: 'none', flexDirection: 'column', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '8px 0 16px', position: 'fixed', top: 57, left: 0, width: '100%', zIndex: 999, boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}>
+        {/* Mobile Dropdown Menu — Solid White with Alternating Items */}
+        <div id="mobile-nav" style={{ display: 'none', flexDirection: 'column', background: '#ffffff', borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '8px 0 16px', position: 'absolute', top: '100%', left: 0, width: '100%', zIndex: 999, boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}>
         {/* Nav Links */}
         {[
           { label: 'Home', path: '/', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
@@ -212,8 +211,9 @@ export default function Header() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '11px',
-                background: isActive ? 'rgba(37,99,235,0.06)' : 'transparent',
+                background: isActive ? 'rgba(37,99,235,0.06)' : (idx % 2 === 0 ? '#ffffff' : '#f8fafc'),
                 borderLeft: isActive ? '3px solid #2563eb' : '3px solid transparent',
+                borderBottom: '1px solid rgba(0,0,0,0.02)',
                 transition: 'all 0.15s ease',
                 letterSpacing: '0.01em'
               }}
@@ -225,6 +225,7 @@ export default function Header() {
           )
         })}
       </div>
+      </header>
     </>
   )
 }

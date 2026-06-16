@@ -63,8 +63,16 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch (err) {
+      console.error('Error signing out:', err)
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, refreshProfile, logout }}>
       {loading ? (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,

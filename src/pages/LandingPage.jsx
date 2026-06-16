@@ -75,7 +75,36 @@ export default function LandingPage() {
   // Intersection Observer for scroll fade-up animations
   const animatedElements = useRef([])
 
-  // Load Wistia Scripts Asynchronously
+  // Auto-cycling social proof popup with non-distractive 25s intervals (5s show, 20s delay)
+  useEffect(() => {
+    const runCarousel = () => {
+      setShowToast(true)
+      const hideTimer = setTimeout(() => {
+        setShowToast(false)
+        setTimeout(() => {
+          setActiveNotifIdx((prev) => (prev + 1) % SOCIAL_PROOF_NOTIFICATIONS.length)
+        }, 500)
+      }, 5000)
+
+      return hideTimer
+    }
+
+    const startTimer = setTimeout(() => {
+      let currentTimer = runCarousel()
+      const interval = setInterval(() => {
+        currentTimer = runCarousel()
+      }, 25000)
+
+      return () => {
+        clearTimeout(currentTimer)
+        clearInterval(interval)
+      }
+    }, 6000)
+
+    return () => clearTimeout(startTimer)
+  }, [])
+
+  // Load Wistia scripts for n7ski2kp6w
   useEffect(() => {
     const script1 = document.createElement('script')
     script1.src = 'https://fast.wistia.com/player.js'
@@ -87,35 +116,6 @@ export default function LandingPage() {
     script2.async = true
     script2.type = 'module'
     document.body.appendChild(script2)
-  }, [])
-
-  // Auto-cycling social proof popup every 7.5 seconds
-  useEffect(() => {
-    const runCarousel = () => {
-      setShowToast(true)
-      const hideTimer = setTimeout(() => {
-        setShowToast(false)
-        setTimeout(() => {
-          setActiveNotifIdx((prev) => (prev + 1) % SOCIAL_PROOF_NOTIFICATIONS.length)
-        }, 300)
-      }, 4000)
-
-      return hideTimer
-    }
-
-    const startTimer = setTimeout(() => {
-      let currentTimer = runCarousel()
-      const interval = setInterval(() => {
-        currentTimer = runCarousel()
-      }, 7500)
-
-      return () => {
-        clearTimeout(currentTimer)
-        clearInterval(interval)
-      }
-    }, 3000)
-
-    return () => clearTimeout(startTimer)
   }, [])
 
   // Scroll animations setup
@@ -150,8 +150,8 @@ export default function LandingPage() {
     setErrorMsg('')
 
     try {
-      let { error } = await supabase
-        .from('subscribers')
+      const { error } = await supabase
+        .from('freelance_training_list')
         .insert({
           email: email.trim().toLowerCase(),
           name: name.trim(),
@@ -159,18 +159,7 @@ export default function LandingPage() {
           source: 'freelance_blueprint_lp'
         })
 
-      if (error && (error.message?.includes('phone') || error.message?.includes('column'))) {
-        const fallbackRes = await supabase
-          .from('subscribers')
-          .insert({
-            email: email.trim().toLowerCase(),
-            name: `${name.trim()} (Phone: ${phone.trim()})`,
-            source: 'freelance_blueprint_lp'
-          })
-        error = fallbackRes.error
-      }
-
-      if (error && !error.message?.includes('duplicate key')) throw error
+      if (error) throw error
 
       setSubmitted(true)
       if (window.fbq) {
@@ -230,7 +219,11 @@ export default function LandingPage() {
               </div>
               
               <div className="lp-video-card-container">
-                <wistia-player media-id="n7ski2kp6w" aspect="0.5625" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '0.5625' }}></wistia-player>
+                <wistia-player 
+                  media-id="n7ski2kp6w" 
+                  aspect="0.5625" 
+                  style={{ width: '100%', height: '100%', display: 'block' }}
+                ></wistia-player>
               </div>
             </div>
 
@@ -289,7 +282,16 @@ export default function LandingPage() {
                     </div>
 
                     <button type="submit" className="lp-cta-button" disabled={submitting}>
-                      {submitting ? "SECURING YOUR SEAT..." : "GIVE ME FREE ACCESS NOW →"}
+                      {submitting ? (
+                        <span className="lp-btn-loading-wrapper">
+                          <svg className="lp-spinner" viewBox="0 0 24 24">
+                            <circle className="path" cx="12" cy="12" r="10" fill="none" strokeWidth="3" />
+                          </svg>
+                          SECURING YOUR SEAT...
+                        </span>
+                      ) : (
+                        "GIVE ME FREE ACCESS NOW →"
+                      )}
                     </button>
 
                     <div className="lp-form-trust">
@@ -535,7 +537,16 @@ export default function LandingPage() {
                   </div>
 
                   <button type="submit" className="lp-cta-button pulsing-animation" disabled={submitting}>
-                    {submitting ? "SECURING YOUR SEAT..." : "CLAIM MY FREE SPOT NOW — BEFORE IT'S GONE →"}
+                    {submitting ? (
+                      <span className="lp-btn-loading-wrapper">
+                        <svg className="lp-spinner" viewBox="0 0 24 24">
+                          <circle className="path" cx="12" cy="12" r="10" fill="none" strokeWidth="3" />
+                        </svg>
+                        SECURING YOUR SEAT...
+                      </span>
+                    ) : (
+                      "CLAIM MY FREE SPOT NOW — BEFORE IT'S GONE →"
+                    )}
                   </button>
 
                   <div className="lp-form-trust">
@@ -572,17 +583,17 @@ export default function LandingPage() {
       </footer>
 
       {/* SECTION 4 — SOCIAL PROOF NOTIFICATION WIDGET */}
-      <div className={`lp-social-toast-container ${showToast ? 'visible' : ''}`}>
-        <div className="lp-social-toast-card">
-          <div className="lp-toast-indicator">
-            <span className="lp-toast-pulse"></span>
-          </div>
-          <div className="lp-toast-body">
-            <p className="lp-toast-text">{currentNotification.text}</p>
-            <span className="lp-toast-time">{currentNotification.time}</span>
+      {showToast && currentNotification && (
+        <div className="lp-sales-toast">
+          <div className="toast-border-accent"></div>
+          <div className="toast-content">
+            <p className="toast-title">Verified Registration</p>
+            <p className="toast-body">
+              <strong>{currentNotification.text.split(' just ')[0]}</strong> just joined the free training!
+            </p>
           </div>
         </div>
-      </div>
+      )}
 
       {/* INJECTED STYLES */}
       <style>{`
@@ -602,7 +613,7 @@ export default function LandingPage() {
         /* SECTION 1: STICKY URGENCY BAR */
         .lp-urgency-bar {
           background-color: #f59e0b;
-          color: #FFFFFF;
+          color: #0A0F2C;
           font-weight: 700;
           font-size: 13px;
           text-align: center;
@@ -707,6 +718,7 @@ export default function LandingPage() {
           display: flex;
           flex-direction: column;
           gap: 0px; /* Zero gap between label and video as requested */
+          width: 100%;
         }
         .lp-video-title {
           color: #FFFFFF;
@@ -720,6 +732,10 @@ export default function LandingPage() {
           border-top-left-radius: 12px;
           border-top-right-radius: 12px;
           line-height: 1.2;
+          width: 100%;
+          max-width: 480px;
+          margin: 0 auto;
+          box-sizing: border-box;
         }
         .lp-video-card-container {
           background: #000000;
@@ -728,19 +744,18 @@ export default function LandingPage() {
           overflow: hidden;
           box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          position: relative;
           width: 100%;
-          padding-top: 177.78%; /* Aspect Ratio 0.5625 (9:16) */
+          max-width: 480px;
+          margin: 0 auto;
+          aspect-ratio: 9/16;
+          display: flex;
+          flex-direction: column;
         }
         wistia-player {
-          position: absolute;
-          top: 0;
-          left: 0;
+          display: block;
           width: 100%;
           height: 100%;
-          display: block;
         }
-
         wistia-player[media-id='n7ski2kp6w']:not(:defined) {
           background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/n7ski2kp6w/swatch');
           display: block;
@@ -837,11 +852,57 @@ export default function LandingPage() {
           box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
         }
         .lp-cta-button:disabled {
-          background-color: #E5E7EB;
-          color: #9CA3AF;
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          color: #FFFFFF;
           cursor: not-allowed;
-          animation: none;
+          animation: submittingPulse 1.5s infinite ease-in-out;
           box-shadow: none;
+          opacity: 0.9;
+        }
+
+        .lp-btn-loading-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .lp-spinner {
+          animation: rotate 2s linear infinite;
+          width: 20px;
+          height: 20px;
+        }
+
+        .lp-spinner .path {
+          stroke: #ffffff;
+          stroke-linecap: round;
+          animation: dash 1.5s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes dash {
+          0% {
+            stroke-dasharray: 1, 150;
+            stroke-dashoffset: 0;
+          }
+          50% {
+            stroke-dasharray: 90, 150;
+            stroke-dashoffset: -35;
+          }
+          100% {
+            stroke-dasharray: 90, 150;
+            stroke-dashoffset: -124;
+          }
+        }
+
+        @keyframes submittingPulse {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
         }
         
         @keyframes pulseGlow {
@@ -1194,65 +1255,56 @@ export default function LandingPage() {
           color: #374151;
         }
 
-        /* FLOATING bottom-left popup activity notifications */
-        .lp-social-toast-container {
+        /* REDESIGNED VERIFIED SALES TOAST */
+        .lp-sales-toast {
           position: fixed;
           bottom: 24px;
           left: 24px;
-          z-index: 9999;
-          transform: translateY(120px);
-          opacity: 0;
-          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-          pointer-events: none;
-        }
-        .lp-social-toast-container.visible {
-          transform: translateY(0);
-          opacity: 1;
-          pointer-events: auto;
-        }
-        .lp-social-toast-card {
-          background-color: #FFFFFF;
-          border-radius: 30px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-          border: 1px solid rgba(0, 0, 0, 0.06);
-          padding: 12px 24px;
+          background: #0b1329;
+          border: 1px solid #1e3a8a;
+          border-radius: 12px;
+          padding: 16px 20px;
+          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
           display: flex;
-          align-items: center;
-          gap: 12px;
-          max-width: 320px;
+          align-items: stretch;
+          gap: 16px;
+          z-index: 10000;
+          max-width: 360px;
+          backdrop-filter: blur(8px);
+          animation: toastSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .lp-toast-indicator {
-          background-color: #F0FDF4;
-          border: 1px solid #BBF7D0;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .toast-border-accent {
+          width: 4px;
+          background: #f59e0b;
+          border-radius: 4px;
           flex-shrink: 0;
         }
-        .lp-toast-pulse {
-          width: 8px;
-          height: 8px;
-          background-color: #22C55E;
-          border-radius: 50%;
-          animation: blink 1.2s infinite;
-        }
-        .lp-toast-body {
+        .toast-content {
           display: flex;
           flex-direction: column;
+          gap: 4px;
         }
-        .lp-toast-text {
-          font-size: 12px;
-          font-weight: 600;
-          color: #1F2937;
-          margin: 0;
+        .toast-title {
+          margin: 0 !important;
+          font-size: 10.5px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+          color: #f59e0b !important;
+          text-align: left;
+        }
+        .toast-body {
+          margin: 0 !important;
+          font-size: 13px;
+          color: #ffffff !important;
+          font-weight: 500;
           line-height: 1.4;
+          text-align: left;
         }
-        .lp-toast-time {
-          font-size: 10px;
-          color: #6B7280;
+
+        @keyframes toastSlideIn {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         /* SCROLL ENTRANCE ANIMATIONS */
@@ -1278,7 +1330,8 @@ export default function LandingPage() {
         /* MEDIA QUERIES: RESPONSIVE SCREEN ADJUSTMENTS */
         @media (max-width: 479px) {
           .lp-screenshots-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
           }
         }
 
@@ -1295,6 +1348,10 @@ export default function LandingPage() {
           .lp-two-column-wrapper {
             grid-template-columns: 1fr 1fr;
             gap: 40px;
+            align-items: stretch;
+          }
+          .lp-video-col {
+            align-items: center;
           }
           .lp-bullets-grid {
             grid-template-columns: 1fr 1fr;
@@ -1305,9 +1362,9 @@ export default function LandingPage() {
             gap: 30px;
           }
           .lp-video-card-container {
-            aspect-ratio: 0.5625;
-            padding-top: 0;
-            height: auto;
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 9/16;
           }
         }
 
