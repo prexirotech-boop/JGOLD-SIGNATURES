@@ -8,6 +8,7 @@ import { supabase, createEnrollment } from '../lib/supabase'
 const STATUS = {
   paid:      { label: 'Paid',      bg: 'rgba(22,163,74,0.1)',   color: '#15803d', border: 'rgba(22,163,74,0.25)',  dot: '#22c55e',  icon: '✓' },
   pending:   { label: 'Pending',   bg: 'rgba(234,179,8,0.1)',   color: '#a16207', border: 'rgba(234,179,8,0.25)',  dot: '#eab308',  icon: '◷' },
+  cancelled: { label: 'Cancelled', bg: 'rgba(239,68,68,0.08)',  color: '#b91c1c', border: 'rgba(239,68,68,0.15)',  dot: '#ef4444',  icon: '✕' },
   abandoned: { label: 'Abandoned', bg: 'rgba(100,116,139,0.1)', color: '#475569', border: 'rgba(100,116,139,0.2)', dot: '#94a3b8',  icon: '✕' },
   refunded:  { label: 'Refunded',  bg: 'rgba(220,38,38,0.09)',  color: '#dc2626', border: 'rgba(220,38,38,0.2)',   dot: '#ef4444',  icon: '↩' },
   failed:    { label: 'Failed',    bg: 'rgba(249,115,22,0.09)', color: '#c2410c', border: 'rgba(249,115,22,0.2)',  dot: '#f97316',  icon: '!' },
@@ -231,7 +232,7 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
 
           <DSection title="Actions">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {(order.status === 'pending' || order.status === 'abandoned') &&
+              {(order.status === 'pending' || order.status === 'abandoned' || order.status === 'cancelled') &&
                 <DAction color="#059669" icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>} onClick={() => onStatusChange(order, 'paid')}>Mark as Paid & Grant Access</DAction>}
               {order.status === 'paid' && order.products?.type === 'course' &&
                 <DAction color="#2563eb" icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>} onClick={() => onEnroll(order)}>Re-Grant Course Access</DAction>}
@@ -601,6 +602,7 @@ export default function AdminOrders() {
           <StatCard icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>} label="Total" value={orders.length} sub="all orders" accent="#7c3aed" onClick={()=>setStatusFilter('all')} active={false} />
           <StatCard icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>} label="Paid" value={st.paid||0} sub="completed" accent="#059669" onClick={()=>setStatusFilter(statusFilter==='paid'?'all':'paid')} active={statusFilter==='paid'} />
           <StatCard icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>} label="Pending" value={st.pending||0} sub="awaiting payment" accent="#d97706" onClick={()=>setStatusFilter(statusFilter==='pending'?'all':'pending')} active={statusFilter==='pending'} />
+          <StatCard icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>} label="Cancelled" value={st.cancelled||0} sub="user cancelled" accent="#ef4444" onClick={()=>setStatusFilter(statusFilter==='cancelled'?'all':'cancelled')} active={statusFilter==='cancelled'} />
           <StatCard icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>} label="Refunded" value={st.refunded||0} sub="processed" accent="#dc2626" onClick={()=>setStatusFilter(statusFilter==='refunded'?'all':'refunded')} active={statusFilter==='refunded'} />
           <StatCard icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>} label="Abandoned" value={st.abandoned||0} sub="dropped" accent="#64748b" onClick={()=>setStatusFilter(statusFilter==='abandoned'?'all':'abandoned')} active={statusFilter==='abandoned'} />
         </div>

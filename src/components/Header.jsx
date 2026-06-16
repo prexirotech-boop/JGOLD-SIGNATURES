@@ -14,6 +14,48 @@ export default function Header() {
   const { user } = useAuth()
   const dropdownRef = useRef(null)
 
+  const [cartItems, setCartItems] = useState([])
+  const [showCartDrawer, setShowCartDrawer] = useState(false)
+
+  // Initialize and synchronize cart items from localStorage
+  useEffect(() => {
+    try {
+      const items = JSON.parse(localStorage.getItem('amplified_cart')) || []
+      setCartItems(items)
+    } catch (e) {}
+
+    const syncCart = () => {
+      try {
+        const items = JSON.parse(localStorage.getItem('amplified_cart')) || []
+        setCartItems(items)
+      } catch (e) {}
+    }
+    window.addEventListener('cart_updated', syncCart)
+    window.addEventListener('storage', syncCart)
+    return () => {
+      window.removeEventListener('cart_updated', syncCart)
+      window.removeEventListener('storage', syncCart)
+    }
+  }, [])
+
+  const handleRemoveFromCart = (itemId) => {
+    const updated = cartItems.filter(item => item.id !== itemId)
+    localStorage.setItem('amplified_cart', JSON.stringify(updated))
+    setCartItems(updated)
+    window.dispatchEvent(new Event('cart_updated'))
+  }
+
+  const handleProceedToCheckout = () => {
+    setShowCartDrawer(false)
+    if (cartItems.length > 0) {
+      navigate(`/checkout?product=${cartItems[0].id}`)
+    } else {
+      navigate('/checkout')
+    }
+  }
+
+  const cartSubtotal = cartItems.reduce((acc, item) => acc + (parseInt(item.price) || 0), 0)
+
   // Fetch all published products on mount for autocomplete search
   useEffect(() => {
     async function fetchProducts() {
@@ -170,6 +212,53 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
+          {/* Cart Toggle Button */}
+          <button 
+            onClick={() => setShowCartDrawer(true)} 
+            className="cart-toggle-btn"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#1e293b',
+              cursor: 'pointer',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px',
+              marginRight: '8px',
+              transition: 'color 0.2s'
+            }}
+            title="View Cart"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            {cartItems.length > 0 && (
+              <span className="cart-badge" style={{
+                position: 'absolute',
+                top: '-2px',
+                right: '-2px',
+                background: '#ef4444',
+                color: '#fff',
+                borderRadius: '50%',
+                minWidth: '17px',
+                height: '17px',
+                fontSize: '10px',
+                fontWeight: '800',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 4px',
+                boxShadow: '0 2px 4px rgba(239,68,68,0.3)'
+              }}>
+                {cartItems.length}
+              </span>
+            )}
+          </button>
+
           {user ? (
             <UserMenu user={user} />
           ) : (
@@ -226,6 +315,290 @@ export default function Header() {
         })}
       </div>
       </header>
+
+      {/* Sleek Slide-Out Cart Drawer */}
+      <div className={`cart-drawer-overlay ${showCartDrawer ? 'active' : ''}`} onClick={() => setShowCartDrawer(false)}>
+        <div className={`cart-drawer ${showCartDrawer ? 'active' : ''}`} onClick={e => e.stopPropagation()}>
+          <div className="cart-drawer-header">
+            <h3>Your Cart</h3>
+            <button onClick={() => setShowCartDrawer(false)} className="cart-close-btn">✕</button>
+          </div>
+          
+          <div className="cart-drawer-body">
+            {cartItems.length === 0 ? (
+              <div className="cart-empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" style={{ marginBottom: 16 }}>
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <p>Your cart is empty</p>
+                <button 
+                  onClick={() => {
+                    setShowCartDrawer(false);
+                    navigate('/products');
+                  }} 
+                  className="cart-shop-btn"
+                >
+                  Browse Products
+                </button>
+              </div>
+            ) : (
+              <div className="cart-items-list">
+                {cartItems.map(item => (
+                  <div key={item.id} className="cart-item-card">
+                    <img 
+                      src={item.cover_image} 
+                      alt={item.title} 
+                      className="cart-item-thumb"
+                      onError={e => { e.currentTarget.src = '/logo.png' }}
+                    />
+                    <div className="cart-item-details">
+                      <h4 className="cart-item-title">{item.title.replace(/\s+slug$/i, '')}</h4>
+                      <div className="cart-item-price-row">
+                        <span className="cart-item-price">
+                          {item.price ? `₦${Number(item.price).toLocaleString()}` : 'Free'}
+                        </span>
+                        {item.old_price && (
+                          <span className="cart-item-old-price">
+                            ₦{Number(item.old_price).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => handleRemoveFromCart(item.id)} 
+                      className="cart-item-remove-btn"
+                      title="Remove item"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {cartItems.length > 0 && (
+            <div className="cart-drawer-footer">
+              <div className="cart-total-row">
+                <span>Subtotal</span>
+                <span className="cart-total-price">₦{cartSubtotal.toLocaleString()}</span>
+              </div>
+              <button onClick={handleProceedToCheckout} className="cart-checkout-btn">
+                Complete Payment
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .cart-drawer-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(5, 11, 20, 0.6);
+          backdrop-filter: blur(4px);
+          z-index: 10000;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        .cart-drawer-overlay.active {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .cart-drawer {
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          max-width: 400px;
+          background: #ffffff;
+          box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+          z-index: 10001;
+          transform: translateX(100%);
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          flex-direction: column;
+        }
+        .cart-drawer.active {
+          transform: translateX(0);
+        }
+        .cart-drawer-header {
+          padding: 20px 24px;
+          border-bottom: 1px solid #f1f5f9;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .cart-drawer-header h3 {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 800;
+          color: #0f172a;
+          font-family: var(--font-heading), sans-serif;
+        }
+        .cart-close-btn {
+          background: none;
+          border: none;
+          font-size: 20px;
+          color: #64748b;
+          cursor: pointer;
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.15s;
+        }
+        .cart-close-btn:hover {
+          color: #0f172a;
+        }
+        .cart-drawer-body {
+          flex: 1;
+          overflow-y: auto;
+          padding: 24px;
+        }
+        .cart-empty-state {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: #64748b;
+          text-align: center;
+        }
+        .cart-empty-state p {
+          font-size: 15px;
+          font-weight: 500;
+          margin: 0 0 20px;
+        }
+        .cart-shop-btn {
+          background: #2563eb;
+          color: #ffffff;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .cart-shop-btn:hover {
+          background: #1d4ed8;
+        }
+        .cart-items-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .cart-item-card {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 12px;
+          border: 1px solid #f1f5f9;
+          border-radius: 12px;
+          position: relative;
+          transition: border-color 0.15s;
+        }
+        .cart-item-card:hover {
+          border-color: #e2e8f0;
+        }
+        .cart-item-thumb {
+          width: 60px;
+          height: 60px;
+          border-radius: 8px;
+          object-fit: cover;
+          background: #f8fafc;
+          flex-shrink: 0;
+        }
+        .cart-item-details {
+          flex: 1;
+          min-width: 0;
+        }
+        .cart-item-title {
+          margin: 0 0 6px;
+          font-size: 14px;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1.4;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .cart-item-price-row {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+        }
+        .cart-item-price {
+          font-size: 14px;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .cart-item-old-price {
+          font-size: 12px;
+          color: #94a3b8;
+          text-decoration: line-through;
+        }
+        .cart-item-remove-btn {
+          background: none;
+          border: none;
+          font-size: 14px;
+          color: #94a3b8;
+          cursor: pointer;
+          padding: 4px;
+          transition: color 0.15s;
+          position: absolute;
+          top: 8px;
+          right: 8px;
+        }
+        .cart-item-remove-btn:hover {
+          color: #ef4444;
+        }
+        .cart-drawer-footer {
+          padding: 24px;
+          border-top: 1px solid #f1f5f9;
+          background: #f8fafc;
+        }
+        .cart-total-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+        .cart-total-row span:first-child {
+          font-size: 14px;
+          font-weight: 600;
+          color: #64748b;
+        }
+        .cart-total-price {
+          font-size: 18px;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .cart-checkout-btn {
+          width: 100%;
+          background: linear-gradient(135deg, #2563eb, #1d4ed8);
+          color: #ffffff;
+          border: none;
+          padding: 14px;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 14.5px;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+        .cart-checkout-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+      `}} />
     </>
   )
 }

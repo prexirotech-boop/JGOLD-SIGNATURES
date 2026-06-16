@@ -161,6 +161,105 @@ const parseSyllabusText = (text) => {
   return parsed;
 };
 
+function RichTextEditor({ value, onChange, placeholder }) {
+  const editorRef = useRef(null)
+  const isFirstMount = useRef(true)
+
+  useEffect(() => {
+    if (editorRef.current) {
+      if (isFirstMount.current) {
+        editorRef.current.innerHTML = value || ''
+        isFirstMount.current = false
+      } else if (editorRef.current.innerHTML !== value) {
+        editorRef.current.innerHTML = value || ''
+      }
+    }
+  }, [value])
+
+  const handleInput = (e) => {
+    onChange(e.currentTarget.innerHTML)
+  }
+
+  const exec = (cmd, val = null) => {
+    document.execCommand(cmd, false, val)
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML)
+    }
+  }
+
+  const addLink = () => {
+    const url = prompt('Enter URL:')
+    if (url) {
+      exec('createLink', url)
+    }
+  }
+
+  return (
+    <div className="wysiwyg-editor-container" style={{ border: '1.5px solid #cbd5e1', borderRadius: 8, overflow: 'hidden', background: '#fff' }}>
+      <div className="wysiwyg-toolbar" style={{ display: 'flex', flexWrap: 'wrap', gap: 4, padding: '6px 8px', background: '#f8fafc', borderBottom: '1.5px solid #cbd5e1', alignItems: 'center' }}>
+        <button type="button" onClick={() => exec('bold')} style={btnStyle} title="Bold"><b>B</b></button>
+        <button type="button" onClick={() => exec('italic')} style={btnStyle} title="Italic"><i>I</i></button>
+        <button type="button" onClick={() => exec('underline')} style={btnStyle} title="Underline"><u>U</u></button>
+        <span style={dividerStyle} />
+        <button type="button" onClick={() => exec('formatBlock', '<h2>')} style={btnStyle} title="Heading 2">H2</button>
+        <button type="button" onClick={() => exec('formatBlock', '<h3>')} style={btnStyle} title="Heading 3">H3</button>
+        <button type="button" onClick={() => exec('formatBlock', '<p>')} style={btnStyle} title="Paragraph">P</button>
+        <span style={dividerStyle} />
+        <button type="button" onClick={() => exec('insertUnorderedList')} style={btnStyle} title="Bullet List">• List</button>
+        <button type="button" onClick={() => exec('insertOrderedList')} style={btnStyle} title="Numbered List">1. List</button>
+        <span style={dividerStyle} />
+        <button type="button" onClick={addLink} style={btnStyle} title="Insert Link">🔗 Link</button>
+        <button type="button" onClick={() => exec('unlink')} style={btnStyle} title="Remove Link">🔗✕</button>
+        <span style={dividerStyle} />
+        <button type="button" onClick={() => exec('removeFormat')} style={btnStyle} title="Clear Formatting">✕ Clear</button>
+      </div>
+
+      <div 
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        placeholder={placeholder}
+        className="wysiwyg-content-area"
+        style={{ 
+          minHeight: 220, 
+          maxHeight: 500, 
+          overflowY: 'auto', 
+          padding: '16px', 
+          outline: 'none', 
+          fontSize: 14, 
+          lineHeight: 1.6,
+          color: '#334155',
+          textAlign: 'left'
+        }}
+      />
+    </div>
+  )
+}
+
+const btnStyle = {
+  background: '#ffffff',
+  border: '1px solid #e2e8f0',
+  borderRadius: 4,
+  padding: '4px 8px',
+  fontSize: '11px',
+  fontWeight: '700',
+  color: '#475569',
+  cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  transition: 'all 0.15s',
+  minWidth: 26,
+  height: 26
+}
+
+const dividerStyle = {
+  width: 1,
+  height: 16,
+  background: '#e2e8f0',
+  margin: '0 4px'
+}
+
 export default function AdminCourseBuilder() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -208,9 +307,11 @@ export default function AdminCourseBuilder() {
   const [showLessonDraftBanner, setShowLessonDraftBanner] = useState(false)
 
   // Course Details State
+  const [hasShortDescColumn, setHasShortDescColumn] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    short_description: '',
     price: 0,
     level: 'beginner',
     is_published: false,
@@ -388,9 +489,12 @@ export default function AdminCourseBuilder() {
       if (cErr) throw cErr
 
       if (courseData) {
+        const hasCol = 'short_description' in (courseData.products || {})
+        setHasShortDescColumn(hasCol)
         const dbData = {
           title: courseData.products?.title || '',
           description: courseData.products?.description || '',
+          short_description: courseData.products?.short_description || '',
           price: courseData.products?.price || 0,
           level: courseData.level || 'beginner',
           is_published: courseData.products?.is_published || false,
@@ -470,19 +574,25 @@ export default function AdminCourseBuilder() {
     setMessage('')
 
     try {
+      const updateFields = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        price: parseInt(formData.price) || 0,
+        cover_image: formData.cover_image.trim(),
+        is_published: formData.is_published,
+        slug: formData.slug.trim(),
+        meta_title: formData.meta_title.trim() || null,
+        meta_desc: formData.meta_desc.trim() || null,
+        features: Array.isArray(formData.bonuses) ? formData.bonuses.filter(b => b.trim()) : []
+      }
+
+      if (hasShortDescColumn) {
+        updateFields.short_description = formData.short_description?.trim() || null
+      }
+
       const { error: pErr } = await supabase
         .from('products')
-        .update({
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          price: parseInt(formData.price) || 0,
-          cover_image: formData.cover_image.trim(),
-          is_published: formData.is_published,
-          slug: formData.slug.trim(),
-          meta_title: formData.meta_title.trim() || null,
-          meta_desc: formData.meta_desc.trim() || null,
-          features: Array.isArray(formData.bonuses) ? formData.bonuses.filter(b => b.trim()) : []
-        })
+        .update(updateFields)
         .eq('id', id)
 
       if (pErr) throw pErr
@@ -753,6 +863,21 @@ export default function AdminCourseBuilder() {
 
   return (
     <div>
+      <style dangerouslySetInnerHTML={{__html: `
+        .wysiwyg-content-area h2 { font-size: 1.5em; font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; color: #0f172a; }
+        .wysiwyg-content-area h3 { font-size: 1.25em; font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; color: #0f172a; }
+        .wysiwyg-content-area p { margin-bottom: 1em; }
+        .wysiwyg-content-area ul { list-style-type: disc; padding-left: 20px; margin-bottom: 1em; }
+        .wysiwyg-content-area ol { list-style-type: decimal; padding-left: 20px; margin-bottom: 1em; }
+        .wysiwyg-content-area li { margin-bottom: 0.25em; }
+        .wysiwyg-content-area a { color: #2563eb; text-decoration: underline; }
+        .wysiwyg-content-area:empty::before {
+          content: attr(placeholder);
+          color: #94a3b8;
+          pointer-events: none;
+          display: block;
+        }
+      `}} />
       {/* Header Info */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
@@ -963,16 +1088,32 @@ export default function AdminCourseBuilder() {
               </div>
             </div>
 
+            {/* Short Description */}
             <div>
-              <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Description</label>
+              <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>
+                Short Description {!hasShortDescColumn && <span style={{ color: '#ea580c', fontWeight: 'normal', fontSize: '11px', marginLeft: '6px' }}>⚠️ Falling back to first paragraph (schema column missing)</span>}
+              </label>
               <textarea 
-                value={formData.description} 
-                onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                placeholder="Enter course description. Use double line breaks to start new paragraphs."
-                style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1.5px solid #cbd5e1', fontSize: 13, minHeight: 220, lineHeight: 1.5, resize: 'vertical' }} 
+                value={formData.short_description || ''} 
+                onChange={e => setFormData({ ...formData, short_description: e.target.value })} 
+                placeholder="Enter a brief, plain-text summary (1-2 sentences) for the hero subtitle and course cards."
+                style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1.5px solid #cbd5e1', fontSize: 13, minHeight: 80, lineHeight: 1.5, resize: 'vertical' }} 
               />
               <p style={{ fontSize: 11, color: '#697386', marginTop: 4 }}>
-                💡 Tip: Press Enter twice to create paragraph breaks. This will be formatted automatically on the product details page.
+                💡 Tip: This will be used in course listing cards and in the course details page hero subtitle.
+              </p>
+            </div>
+
+            {/* Formatted Description */}
+            <div>
+              <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Description (Formatted)</label>
+              <RichTextEditor 
+                value={formData.description} 
+                onChange={val => setFormData({ ...formData, description: val })} 
+                placeholder="Enter course description with rich text formatting (WordPress/Google Docs style)..."
+              />
+              <p style={{ fontSize: 11, color: '#697386', marginTop: 4 }}>
+                💡 Use the toolbar above to style headings, bold text, italicize, insert lists, and link text.
               </p>
             </div>
 

@@ -17,6 +17,27 @@ const StarRating = ({ rating = 4.8 }) => (
 
 const FILTERS = ['All', 'Courses', 'E-Books']
 
+export function getShortDesc(product) {
+  if (!product) return ''
+  if (product.short_description) return product.short_description
+  const desc = product.description || ''
+  if (!desc) return ''
+  if (desc.includes('<')) {
+    const pMatch = desc.match(/<p[^>]*>(.*?)<\/p>/i)
+    if (pMatch && pMatch[1]) {
+      const stripped = pMatch[1].replace(/<[^>]*>/g, '').trim()
+      if (stripped) return stripped
+    }
+    const plainText = desc.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    return plainText.length > 160 ? plainText.substring(0, 160) + '...' : plainText
+  }
+  const paragraphs = desc.split(/\n\s*\n/)
+  if (paragraphs.length > 0 && paragraphs[0].trim()) {
+    return paragraphs[0].trim()
+  }
+  return desc
+}
+
 export default function ProductsPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -243,7 +264,7 @@ export default function ProductsPage() {
                   {/* Card Body */}
                   <div className="lib-card-body">
                     <h2 className="lib-card-title">{product.title.replace(/\s+slug$/i, '')}</h2>
-                    <p className="lib-card-desc">{product.description}</p>
+                    <p className="lib-card-desc">{product.short_description || getShortDesc(product)}</p>
 
                     {(() => {
                       const ratingInfo = reviewsMap[product.id] || { rating: 0, count: 0 }

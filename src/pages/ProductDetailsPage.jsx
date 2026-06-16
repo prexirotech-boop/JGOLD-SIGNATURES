@@ -25,6 +25,27 @@ const StarRating = ({ rating = 0, count = 0 }) => {
   )
 }
 
+export function getShortDesc(product) {
+  if (!product) return ''
+  if (product.short_description) return product.short_description
+  const desc = product.description || ''
+  if (!desc) return ''
+  if (desc.includes('<')) {
+    const pMatch = desc.match(/<p[^>]*>(.*?)<\/p>/i)
+    if (pMatch && pMatch[1]) {
+      const stripped = pMatch[1].replace(/<[^>]*>/g, '').trim()
+      if (stripped) return stripped
+    }
+    const plainText = desc.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    return plainText.length > 160 ? plainText.substring(0, 160) + '...' : plainText
+  }
+  const paragraphs = desc.split(/\n\s*\n/)
+  if (paragraphs.length > 0 && paragraphs[0].trim()) {
+    return paragraphs[0].trim()
+  }
+  return desc
+}
+
 export default function ProductDetailsPage() {
   const { productId } = useParams()
   const navigate = useNavigate()
@@ -306,7 +327,7 @@ export default function ProductDetailsPage() {
             )}
 
             <h1 className="pd-title">{product.title.replace(/\s+slug$/i, '')}</h1>
-            <p className="pd-subtitle" style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
+            <p className="pd-subtitle" style={{ whiteSpace: 'pre-wrap' }}>{product.short_description || getShortDesc(product)}</p>
 
             <div className="pd-meta-row">
               <StarRating rating={reviewsAvg} count={reviewsCount} />
@@ -446,12 +467,15 @@ export default function ProductDetailsPage() {
               </div>
             )}
 
-            {/* Detailed Description */}
             <div className="pd-card pd-card-desc">
               <h2 className="pd-card-title">About This {isCourse ? 'Course' : 'Product'}</h2>
-              <div className="pd-desc-content" style={{ whiteSpace: 'pre-wrap' }}>
-                {product.description}
-              </div>
+              {product.description && product.description.includes('<') ? (
+                <div className="pd-desc-content wysiwyg-content-area" dangerouslySetInnerHTML={{ __html: product.description }} />
+              ) : (
+                <div className="pd-desc-content" style={{ whiteSpace: 'pre-wrap' }}>
+                  {product.description}
+                </div>
+              )}
             </div>
 
             {/* Requirements & Who is this for */}
@@ -1584,6 +1608,52 @@ export default function ProductDetailsPage() {
             overflow: hidden;
             text-overflow: ellipsis;
           }
+        }
+
+        /* WYSIWYG Content Styles */
+        .wysiwyg-content-area {
+          font-size: 15px;
+          line-height: 1.65;
+          color: #e2e8f0;
+        }
+        .wysiwyg-content-area h2 {
+          font-size: 1.6rem;
+          font-weight: 800;
+          margin-top: 1.5em;
+          margin-bottom: 0.5em;
+          color: #ffffff;
+        }
+        .wysiwyg-content-area h3 {
+          font-size: 1.3rem;
+          font-weight: 700;
+          margin-top: 1.5em;
+          margin-bottom: 0.5em;
+          color: #ffffff;
+        }
+        .wysiwyg-content-area p {
+          margin-bottom: 1.2em;
+          color: rgba(255, 255, 255, 0.8);
+        }
+        .wysiwyg-content-area ul {
+          list-style-type: disc;
+          padding-left: 24px;
+          margin-bottom: 1.2em;
+        }
+        .wysiwyg-content-area ol {
+          list-style-type: decimal;
+          padding-left: 24px;
+          margin-bottom: 1.2em;
+        }
+        .wysiwyg-content-area li {
+          margin-bottom: 0.4em;
+          color: rgba(255, 255, 255, 0.85);
+        }
+        .wysiwyg-content-area a {
+          color: #3b82f6;
+          text-decoration: underline;
+        }
+        .wysiwyg-content-area a:hover {
+          color: #60a5fa;
         }
       `}</style>
     </div>

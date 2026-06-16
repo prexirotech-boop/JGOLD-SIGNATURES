@@ -6,6 +6,27 @@ import { supabase, recoverEnrollmentFromOrders } from '../lib/supabase'
 import StudentCertificates from './StudentCertificates'
 import UserAvatar from '../components/UserAvatar'
 
+export function getShortDesc(product) {
+  if (!product) return ''
+  if (product.short_description) return product.short_description
+  const desc = product.description || ''
+  if (!desc) return ''
+  if (desc.includes('<')) {
+    const pMatch = desc.match(/<p[^>]*>(.*?)<\/p>/i)
+    if (pMatch && pMatch[1]) {
+      const stripped = pMatch[1].replace(/<[^>]*>/g, '').trim()
+      if (stripped) return stripped
+    }
+    const plainText = desc.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    return plainText.length > 160 ? plainText.substring(0, 160) + '...' : plainText
+  }
+  const paragraphs = desc.split(/\n\s*\n/)
+  if (paragraphs.length > 0 && paragraphs[0].trim()) {
+    return paragraphs[0].trim()
+  }
+  return desc
+}
+
 // ─── SUB-COMPONENTS ─────────────────────────────────────────────────────────
 
 function MyLearningTab({ user }) {
@@ -706,7 +727,7 @@ function WishlistTab({ user }) {
 
       const { data: prodData, error: prodError } = await supabase
         .from('products')
-        .select('id, title, description, price, old_price, cover_image, type')
+        .select('id, title, description, short_description, price, old_price, cover_image, type')
         .in('id', productIds)
 
       if (prodError) throw prodError
@@ -783,7 +804,7 @@ function WishlistTab({ user }) {
             <div className="ud-course-card-body" style={{ justifyContent: 'space-between' }}>
               <div>
                 <h3 className="ud-course-card-title">{prod.title.replace(/\s+slug$/i, '')}</h3>
-                <p style={{ color: '#64748b', fontSize: 13, margin: '0 0 16px', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prod.description}</p>
+                <p style={{ color: '#64748b', fontSize: 13, margin: '0 0 16px', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prod.short_description || getShortDesc(prod)}</p>
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
@@ -978,7 +999,43 @@ export default function LMSDashboard() {
   }, [user])
 
   if (loading) {
-    return <div style={{ padding: 80, textAlign: 'center', fontSize: 18, color: '#64748b', fontWeight: 600 }}>Loading portal session...</div>
+    return (
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        background: '#050b14', color: '#fff',
+        fontFamily: "var(--font)", zIndex: 9999
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+          <div style={{ position: 'absolute', width: 160, height: 160, background: 'radial-gradient(circle, rgba(37,99,235,0.25) 0%, rgba(37,99,235,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', filter: 'blur(24px)', animation: 'ambient-glow 3s ease-in-out infinite' }} />
+          <img src="/logo.png" alt="Amplified Skills" style={{ height: 64, width: 'auto', maxWidth: 220, objectFit: 'contain', marginBottom: 36, filter: 'drop-shadow(0 0 10px rgba(37,99,235,0.15))', animation: 'logo-pulse 2.2s ease-in-out infinite' }} />
+          <div className="premium-spinner" />
+          <p style={{ color: '#94a3b8', marginTop: 16, fontSize: '14px', letterSpacing: '0.5px', position: 'relative', zIndex: 1 }}>Loading portal session...</p>
+        </div>
+        <style dangerouslySetInnerHTML={{__html: `
+          .premium-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-top-color: #2563eb;
+            border-right-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin-loader 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+          }
+          @keyframes spin-loader {
+            to { transform: rotate(360deg); }
+          }
+          @keyframes logo-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(37,99,235,0.1)); }
+            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 16px rgba(37,99,235,0.4)); }
+          }
+          @keyframes ambient-glow {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+          }
+        `}} />
+      </div>
+    )
   }
 
   if (!user) {

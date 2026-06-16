@@ -76,7 +76,11 @@ export default function PaymentPage() {
   const [product, setProduct] = useState(null)
 
   // Form fields
-  const [form, setForm] = useState({ name: '', email: '', phone: '' })
+  const [form, setForm] = useState({ 
+    name: '', 
+    email: '', 
+    phone: typeof window !== 'undefined' ? localStorage.getItem('checkout_phone') || '' : '' 
+  })
   const [errors, setErrors] = useState({})
 
   // Authentication check states
@@ -115,20 +119,63 @@ export default function PaymentPage() {
       : Math.max(0, basePrice - appliedCoupon.value)
     : basePrice
 
-  // Load product from database
+  // Load product from database and sync with cart
   useEffect(() => {
     async function load() {
-      if (!productIdParam) return
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productIdParam)
-      let q = supabase.from('products').select('*')
-      q = isUUID ? q.eq('id', productIdParam) : q.eq('slug', productIdParam)
-      const { data } = await q.maybeSingle()
-      if (data) setProduct(data)
-      else {
+      let activeProduct = null
+      
+      if (productIdParam) {
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productIdParam)
+        let q = supabase.from('products').select('*')
+        q = isUUID ? q.eq('id', productIdParam) : q.eq('slug', productIdParam)
+        const { data } = await q.maybeSingle()
+        if (data) activeProduct = data
+      }
+      
+      if (!activeProduct) {
+        // Try loading from cart
+        try {
+          const cart = JSON.parse(localStorage.getItem('amplified_cart')) || []
+          if (cart.length > 0) {
+            const { data } = await supabase.from('products').select('*').eq('id', cart[0].id).maybeSingle()
+            if (data) activeProduct = data
+          }
+        } catch (e) {
+          console.error('[PaymentPage] Error reading cart:', e)
+        }
+      }
+      
+      if (!activeProduct) {
+        // Fallback to latest published course
         const { data: fb } = await supabase.from('products').select('*')
           .eq('type', 'course').eq('is_published', true)
           .order('created_at', { ascending: false }).limit(1).maybeSingle()
-        if (fb) setProduct(fb)
+        if (fb) activeProduct = fb
+      }
+      
+      if (activeProduct) {
+        setProduct(activeProduct)
+        
+        // Auto-add checkout product to cart if not present
+        try {
+          const cartKey = 'amplified_cart'
+          let cart = JSON.parse(localStorage.getItem(cartKey)) || []
+          if (!cart.some(item => item.id === activeProduct.id)) {
+            cart.push({
+              id: activeProduct.id,
+              title: activeProduct.title,
+              price: activeProduct.price,
+              old_price: activeProduct.old_price,
+              cover_image: activeProduct.cover_image,
+              type: activeProduct.type,
+              slug: activeProduct.slug
+            })
+            localStorage.setItem(cartKey, JSON.stringify(cart))
+            window.dispatchEvent(new Event('cart_updated'))
+          }
+        } catch (e) {
+          console.error('[PaymentPage] Error writing cart:', e)
+        }
       }
     }
     load()
@@ -173,6 +220,9 @@ export default function PaymentPage() {
   const set = (k, v) => {
     setForm(f => ({ ...f, [k]: v }))
     if (errors[k]) setErrors(e => ({ ...e, [k]: '' }))
+    if (k === 'phone') {
+      localStorage.setItem('checkout_phone', v)
+    }
   }
 
   const validate = () => {
@@ -285,7 +335,7 @@ export default function PaymentPage() {
         onClose: () => {
           if (!paidRef.current) {
             if (pendingOrderIdRef.current) {
-              supabase.from('orders').update({ status: 'abandoned' }).eq('id', pendingOrderIdRef.current).catch(() => {})
+              supabase.from('orders').update({ status: 'cancelled' }).eq('id', pendingOrderIdRef.current).catch(() => {})
             }
             setLoading(false)
           }

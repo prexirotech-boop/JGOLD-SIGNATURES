@@ -197,12 +197,12 @@ export default function WebinarPage() {
               </div>
               <div className="price-box current">
                 <span className="price-label">SPECIAL OFFER</span>
-                <span className="price-val">₦20,000</span>
-                <span className="price-status-tag active-tag">66% OFF</span>
+                <span className="price-val">₦35,000</span>
+                <span className="price-status-tag active-tag">42% OFF</span>
               </div>
               <div className="price-box savings">
                 <span className="price-label">YOU SAVE</span>
-                <span className="price-val" style={{ color: '#10b981' }}>₦40,000</span>
+                <span className="price-val" style={{ color: '#10b981' }}>₦25,000</span>
               </div>
             </div>
 
@@ -341,70 +341,7 @@ export default function WebinarPage() {
             ))}
           </div>
         </div>
-
-        {/* WHAT YOU GET IN THE FULL BLUEPRINT (Upsell Value Stack) */}
-        <div className="wb-upsell-section">
-          <div className="wb-upsell-inner">
-            <h2 className="upsell-headline">
-              You Have Seen What 10 Minutes Can Do.<br />
-              Here Is What The Full Blueprint Will Do For Your Life.
-            </h2>
-            <p className="upsell-intro">
-              The free training gave you a taste. The Freelance Web Design Blueprint gives you the FULL meal.
-            </p>
-            <p className="upsell-body-lead">
-              This is the complete A-to-Z course that takes you from beginner to professional — with everything you need to attract high-paying clients, close them with confidence, deliver stunning websites, and build a recurring income from this one powerful skill.
-            </p>
-            
-            <div className="upsell-bullets">
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>In-depth training on building professional, world-class websites for any type of business</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>How to attract high-paying clients daily — on social media, WhatsApp, LinkedIn, and referrals — without spending money on ads</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>How to close clients on the phone, on WhatsApp, or in person — with confidence and without feeling salesy</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>How to price your services correctly so you never undercharge again — and what to charge for websites in Nigeria vs. international clients</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>How to get paid upfront, manage client expectations, and deliver projects like a complete professional</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>How to set up recurring revenue — charging clients a monthly fee to maintain and manage their websites every year</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>Real projects you will build inside the course to strengthen your portfolio from day one</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>How to register your freelance business, set up your payment accounts (including Dollar accounts), and get paid from any country in the world</p>
-              </div>
-              <div className="upsell-bullet-item">
-                <span className="bullet-emoji">🔥</span>
-                <p>Lifetime access to all course materials — including all future updates at no extra cost</p>
-              </div>
-            </div>
-
-            <div style={{ textAlign: 'center', marginTop: '48px' }}>
-              <button onClick={handleCTA} className="wb-cta-btn">
-                <span>🚀 GET THE FULL BLUEPRINT & START EARNING — JOIN NOW →</span>
-                <span style={{ fontSize: '11px', fontWeight: '700', opacity: 0.9, letterSpacing: '0.5px' }}>
-                  SECURE ACCESS FOR ONLY ₦20,000 (REGULAR PRICE ₦60,000)
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
+      </div> {/* Close wb-container */}
 
       {/* SECTION 11 — FOOTER */}
       <footer className="lp-footer">
@@ -422,8 +359,6 @@ export default function WebinarPage() {
           </div>
         </div>
       </footer>
-
-    </div>
 
       {/* Redesigned clean, emoji-less sales notifications in brand colors */}
       {showSale && currentSale && (
@@ -543,66 +478,6 @@ export default function WebinarPage() {
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           text-align: center;
           margin: 0;
-        }
-
-        /* UPSELL VALUE STACK */
-        .wb-upsell-section {
-          background-color: #0A0F2C;
-          color: #ffffff;
-          padding: 80px 24px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .wb-upsell-inner {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        .upsell-headline {
-          font-family: 'Asimov', var(--font-heading), sans-serif !important;
-          font-size: clamp(1.8rem, 4vw, 2.5rem);
-          font-weight: 900;
-          line-height: 1.25;
-          text-align: center;
-          margin-bottom: 24px;
-          color: #ffffff;
-        }
-        .upsell-intro {
-          font-size: 18px;
-          font-weight: 700;
-          color: #f59e0b;
-          text-align: center;
-          margin-bottom: 16px;
-        }
-        .upsell-body-lead {
-          font-size: 16px;
-          line-height: 1.6;
-          color: rgba(255, 255, 255, 0.85);
-          text-align: center;
-          margin-bottom: 40px;
-        }
-        .upsell-bullets {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          max-width: 700px;
-          margin: 0 auto;
-        }
-        .upsell-bullet-item {
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
-          text-align: left;
-        }
-        .bullet-emoji {
-          font-size: 20px;
-          line-height: 1.4;
-          flex-shrink: 0;
-        }
-        .upsell-bullet-item p {
-          font-size: 15.5px;
-          line-height: 1.5;
-          margin: 0;
-          color: rgba(255, 255, 255, 0.9);
         }
         .toast-course-image {
           width: 45px;
