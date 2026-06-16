@@ -258,7 +258,7 @@ export default function FAQPage() {
         }}>
           <h3 style={{ fontSize: 20, color: '#ffffff', fontWeight: 800, margin: '0 0 10px' }}>Still need assistance?</h3>
           <p style={{ color: '#bfdbfe', fontSize: 14.5, margin: '0 0 24px', lineHeight: 1.6, maxWidth: 500, marginInline: 'auto' }}>
-            Precious is always available to assist. Drop a line directly and we will get back to you within 24 hours.
+            Our support team is always available to assist. Drop a line directly and we will get back to you within 24 hours.
           </p>
           <Link 
             to="/contact" 
@@ -283,7 +283,7 @@ export default function FAQPage() {
               e.currentTarget.style.backgroundColor = '#ffffff'
             }}
           >
-            Contact Precious
+            Contact our team
           </Link>
         </div>
 
