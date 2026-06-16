@@ -180,6 +180,20 @@ function RichTextEditor({ value, onChange, placeholder }) {
     onChange(e.currentTarget.innerHTML)
   }
 
+  const handlePaste = (e) => {
+    e.preventDefault()
+    const text = e.clipboardData.getData('text/plain')
+    const selection = window.getSelection()
+    if (!selection.rangeCount) return
+    selection.deleteFromDocument()
+    const textNode = document.createTextNode(text)
+    selection.getRangeAt(0).insertNode(textNode)
+    selection.collapseToEnd()
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML)
+    }
+  }
+
   const exec = (cmd, val = null) => {
     document.execCommand(cmd, false, val)
     if (editorRef.current) {
@@ -218,6 +232,7 @@ function RichTextEditor({ value, onChange, placeholder }) {
         ref={editorRef}
         contentEditable
         onInput={handleInput}
+        onPaste={handlePaste}
         placeholder={placeholder}
         className="wysiwyg-content-area"
         style={{ 
@@ -229,7 +244,8 @@ function RichTextEditor({ value, onChange, placeholder }) {
           fontSize: 14, 
           lineHeight: 1.6,
           color: '#334155',
-          textAlign: 'left'
+          textAlign: 'left',
+          boxSizing: 'border-box'
         }}
       />
     </div>
@@ -1053,12 +1069,25 @@ export default function AdminCourseBuilder() {
         <div style={{ background: '#fff', border: '1px solid #cbd5e1', borderRadius: 6, padding: 24 }}>
           <h3 style={{ fontSize: 15, fontWeight: 600, color: '#1a1f36', marginBottom: 20 }}>Configure Course Information</h3>
           {showCourseDraftBanner && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fffbeb', border: '1px solid #fde68a', padding: '10px 14px', borderRadius: 6, marginBottom: 16, fontSize: 13, color: '#92400e' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: isMobile ? 'column' : 'row', 
+              gap: isMobile ? 12 : 8,
+              justifyContent: 'space-between', 
+              alignItems: isMobile ? 'flex-start' : 'center', 
+              background: '#fffbeb', 
+              border: '1px solid #fde68a', 
+              padding: '12px 14px', 
+              borderRadius: 6, 
+              marginBottom: 16, 
+              fontSize: 13, 
+              color: '#92400e' 
+            }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span>You have an unsaved draft from a previous session.</span>
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button type="button" onClick={handleRestoreCourseDraft} style={{ background: '#d97706', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: 4, cursor: 'pointer', fontSize: 11.5, fontWeight: 500 }}>Restore Draft</button>
+              <div style={{ display: 'flex', gap: 12, width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'flex-start' : 'flex-end', alignItems: 'center' }}>
+                <button type="button" onClick={handleRestoreCourseDraft} style={{ background: '#d97706', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 4, cursor: 'pointer', fontSize: 11.5, fontWeight: 500 }}>Restore Draft</button>
                 <button type="button" onClick={handleDiscardCourseDraft} style={{ background: 'none', border: 'none', color: '#78350f', textDecoration: 'underline', cursor: 'pointer', fontSize: 11.5 }}>Discard</button>
               </div>
             </div>

@@ -40,16 +40,7 @@ export default function Footer() {
       overflow: 'hidden',
       color: '#f8fafc'
     }}>
-      {/* Dynamic top glowing divider line */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent 0%, #2563eb 30%, #3b82f6 70%, transparent 100%)',
-        opacity: 0.8
-      }} />
+
 
       {/* Modern Ambient Radial Glow Spotlights */}
       <div style={{
