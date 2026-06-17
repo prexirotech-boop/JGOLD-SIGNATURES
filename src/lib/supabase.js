@@ -91,6 +91,7 @@ export async function completeOrder({
 
   try {
     // ── 1. Mark all orders as paid (main and bumps) ───────────────────────────
+    // PostgREST .or() needs comma-separated filters in a single string
     const { data: updatedOrders, error: updateErr } = await supabase
       .from('orders')
       .update({ status: 'paid', paid_at: new Date().toISOString() })
@@ -99,6 +100,12 @@ export async function completeOrder({
 
     if (updateErr) {
       console.error('[completeOrder] Failed to mark order paid:', updateErr)
+      // Fallback: try updating by reference only (no like pattern)
+      await supabase
+        .from('orders')
+        .update({ status: 'paid', paid_at: new Date().toISOString() })
+        .eq('reference', reference)
+        .select('product_id')
     } else {
       console.log('[completeOrder] ✅ Orders marked as paid:', reference)
     }
@@ -115,7 +122,7 @@ export async function completeOrder({
       enrolled = await createEnrollment({ userId, courseId: productId })
     }
 
-    // ── 3. Fire confirmation email (non-blocking) ────────────────────────────
+    // ── 3. Fire confirmation email (non-blocking, silently ignore 401/errors) ─
     supabase.functions
       .invoke('send-confirmation', {
         body: {
@@ -127,7 +134,7 @@ export async function completeOrder({
           }
         }
       })
-      .catch(e => console.warn('[completeOrder] Email edge function skipped:', e?.message))
+      .catch(() => { /* Email notification is optional — silently skip on failure */ })
 
     return { success: true, enrolled }
   } catch (err) {
@@ -135,6 +142,7 @@ export async function completeOrder({
     return { success: false, enrolled }
   }
 }
+
 
 /**
  * Create an enrollment for a user in a course.

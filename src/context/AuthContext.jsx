@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single()
+        .maybeSingle()  // maybeSingle() returns null instead of 406 when no row exists
       
       if (!error && data) {
         setProfile(data)

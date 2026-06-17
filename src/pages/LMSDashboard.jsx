@@ -972,26 +972,42 @@ function AffiliateTab({ user, profile }) {
 
   async function loadAffiliateData() {
     try {
-      const [affRes, commRes, payRes] = await Promise.all([
-        supabase.from('affiliates').select('*').eq('user_id', user.id).maybeSingle(),
-        supabase.from('affiliate_commissions')
-          .select('*, orders(reference, created_at)')
-          .eq('affiliate_id', (await supabase.from('affiliates').select('id').eq('user_id', user.id).maybeSingle()).data?.id || 'x')
-          .order('created_at', { ascending: false }).limit(20),
-        supabase.from('affiliate_payouts')
-          .select('*')
-          .eq('affiliate_id', (await supabase.from('affiliates').select('id').eq('user_id', user.id).maybeSingle()).data?.id || 'x')
-          .order('created_at', { ascending: false }).limit(10)
-      ])
-      setAffiliate(affRes.data)
-      setCommissions(commRes.data || [])
-      setPayouts(payRes.data || [])
+      // Step 1: fetch affiliate record for this user
+      const { data: affData } = await supabase
+        .from('affiliates')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      
+      setAffiliate(affData)
+
+      // Step 2: only query commissions & payouts if we have a real affiliate ID
+      if (affData?.id) {
+        const [commRes, payRes] = await Promise.all([
+          supabase.from('affiliate_commissions')
+            .select('*, orders(reference, created_at)')
+            .eq('affiliate_id', affData.id)
+            .order('created_at', { ascending: false })
+            .limit(20),
+          supabase.from('affiliate_payouts')
+            .select('*')
+            .eq('affiliate_id', affData.id)
+            .order('created_at', { ascending: false })
+            .limit(10)
+        ])
+        setCommissions(commRes.data || [])
+        setPayouts(payRes.data || [])
+      } else {
+        setCommissions([])
+        setPayouts([])
+      }
     } catch (e) {
       console.error('[AffiliateTab] load error:', e)
     } finally {
       setLoading(false)
     }
   }
+
 
   async function handleCopyLink() {
     if (!affiliateLink) return
