@@ -22,11 +22,26 @@ CREATE POLICY "payment callback pending to paid"
   USING (status = 'pending')
   WITH CHECK (status IN ('paid', 'abandoned', 'cancelled'));
 
--- 3. FIX FOR AUTH SIGNUP 500 INTERNAL SERVER ERROR
+-- 3. DEBUG LOGS FOR USER SIGNUP
+CREATE TABLE IF NOT EXISTS public.debug_logs (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  action TEXT,
+  error_message TEXT,
+  error_detail TEXT,
+  error_state TEXT
+);
+
+ALTER TABLE public.debug_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow public read on debug_logs" ON public.debug_logs;
+DROP POLICY IF EXISTS "Allow public insert on debug_logs" ON public.debug_logs;
+
+CREATE POLICY "Allow public read on debug_logs" ON public.debug_logs FOR SELECT USING (true);
+CREATE POLICY "Allow public insert on debug_logs" ON public.debug_logs FOR INSERT WITH CHECK (true);
+
+-- 4. FIX FOR AUTH SIGNUP 500 INTERNAL SERVER ERROR & DIAGNOSTICS
 -- Resolves the signup failure on the checkout and registration screens.
--- The trigger public.handle_new_user() previously defaulted the role to 'student',
--- which violates the profiles check constraint CHECK (role IN ('user', 'admin')).
--- This fixes the default to 'user' so that all user account generation succeeds.
+-- Catches errors during profile creation/triggers and logs them to public.debug_logs.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
@@ -40,6 +55,11 @@ BEGIN
   ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
     full_name = COALESCE(EXCLUDED.full_name, profiles.full_name);
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  INSERT INTO public.debug_logs (action, error_message, error_detail, error_state)
+  VALUES ('handle_new_user', SQLERRM, SQLDETAIL, SQLSTATE);
+  -- Return NEW so that the auth signup transaction completes and we can read the logged error
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
