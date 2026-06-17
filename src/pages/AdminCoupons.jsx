@@ -204,9 +204,9 @@ export default function AdminCoupons() {
                       borderRadius: 4, 
                       border: '1px solid #cbd5e1', 
                       fontSize: 13, 
-                      background: '#fff',
+                      backgroundColor: '#fff',
                       appearance: 'none',
-                      backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>\")",
+                      backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
                       backgroundRepeat: 'no-repeat',
                       backgroundPosition: 'right 10px center',
                       backgroundSize: '14px'
@@ -239,9 +239,9 @@ export default function AdminCoupons() {
                     borderRadius: 4, 
                     border: '1px solid #cbd5e1', 
                     fontSize: 13, 
-                    background: '#fff',
+                    backgroundColor: '#fff',
                     appearance: 'none',
-                    backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>\")",
+                    backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 10px center',
                     backgroundSize: '14px'

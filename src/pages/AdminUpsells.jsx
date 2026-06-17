@@ -36,7 +36,7 @@ const BLANK_FORM = {
   is_active: true,
 }
 
-const SELECT_ARROW = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>")`
+const SELECT_ARROW = `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -392,7 +392,7 @@ function OfferModal({ editOffer, products, onClose, onSaved }) {
     border: '1.5px solid #e2e8f0',
     fontSize: 13.5,
     color: '#1a1f36',
-    background: '#fafbfc',
+    backgroundColor: '#fafbfc',
     outline: 'none',
     boxSizing: 'border-box',
     transition: 'border-color 0.15s',

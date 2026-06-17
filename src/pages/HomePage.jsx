@@ -519,7 +519,7 @@ export default function HomePage() {
         }
 
         .hero-slide.active {
-          opacity: 0.75;
+          opacity: 0.45;
         }
 
         .hero-overlay {
@@ -530,7 +530,7 @@ export default function HomePage() {
           height: 100%;
           background: linear-gradient(135deg, #050b14 0%, #0c152d 100%);
           z-index: 2;
-          opacity: 0.65;
+          opacity: 0.80;
         }
 
         .hero-content {

@@ -788,7 +788,7 @@ export default function AdminCourses() {
                   <select 
                     value={courseForm.level} 
                     onChange={e => setCourseForm({ ...courseForm, level: e.target.value })} 
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 14, outline: 'none', background: '#fff', transition: 'border-color 0.2s, box-shadow 0.2s' }}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 14, outline: 'none', backgroundColor: '#fff', transition: 'border-color 0.2s, box-shadow 0.2s' }}
                     onFocus={e => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(37,99,235,0.1)' }}
                     onBlur={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.boxShadow = 'none' }}
                   >

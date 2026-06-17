@@ -333,7 +333,7 @@ export default function AdminCertificates() {
                   required
                   value={issueForm.course_id || ''}
                   onChange={e => setIssueForm(f => ({ ...f, course_id: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 13, outline: 'none', background: '#fff', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 13, outline: 'none', backgroundColor: '#fff', boxSizing: 'border-box' }}
                 >
                   <option value="">Select a course...</option>
                   {courses.map(c => (

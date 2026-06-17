@@ -819,6 +819,7 @@ export default function UpsellWidget({
   onAddToOrder,
   limit = 3,
 }) {
+  return null; // Upsell system disabled for now
   const navigate = useNavigate()
   const { user } = useAuth()
   const resolvedUserId = userId || user?.id

@@ -423,7 +423,7 @@ function CreateOrderModal({ isOpen, onClose, products, onCreated }) {
 
   if (!isOpen) return null
 
-  const inp = { width: '100%', padding: '10px 13px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13.5, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', background: '#fff', transition: 'border-color 0.18s' }
+  const inp = { width: '100%', padding: '10px 13px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13.5, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', backgroundColor: '#fff', transition: 'border-color 0.18s' }
   const lbl = { display: 'block', fontWeight: 700, fontSize: 12, marginBottom: 6, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.4 }
 
   return (

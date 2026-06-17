@@ -59,15 +59,7 @@ function AppLayout() {
     }
   }, [location])
 
-  // Affiliate referral tracking — reads ?ref= from URL and stores in localStorage
-  const { recordClick } = useAffiliate()
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const refCode = params.get('ref')
-    if (refCode) {
-      recordClick(refCode, location.pathname)
-    }
-  }, [location.search])
+  // Affiliate referral tracking disabled for now
   
   // Hide global Header and Footer on admin, student portal, course player, landing, and auth paths
   const hideHeaderFooter = 
@@ -133,7 +125,7 @@ function AppLayout() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/affiliate" element={<AffiliatePage />} />
+        <Route path="/affiliate" element={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050b14', color: '#fff' }}><h2>Affiliate System is temporarily disabled</h2></div>} />
 
         {/* Dynamic / Auto-registered user created pages */}
         {getPages().map(page => {

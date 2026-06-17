@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function OrderBump({ triggerProductId, onBumpsChange, currentTotal }) {
+  return null; // Order bumps disabled for now
   const [offers, setOffers] = useState([])
   const [selectedBumps, setSelectedBumps] = useState({})
   const [loading, setLoading] = useState(true)

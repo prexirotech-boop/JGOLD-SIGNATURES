@@ -1023,7 +1023,7 @@ export default function AdminAffiliates() {
             style={{
               padding: '9px 12px', border: '1.5px solid #e2e8f0', borderRadius: 9,
               fontSize: 13.5, color: '#334155', outline: 'none', cursor: 'pointer',
-              background: '#fafafa', minWidth: 140,
+              backgroundColor: '#fafafa', minWidth: 140,
             }}
           >
             <option value="all">All Statuses</option>
@@ -1039,7 +1039,7 @@ export default function AdminAffiliates() {
             style={{
               padding: '9px 12px', border: '1.5px solid #e2e8f0', borderRadius: 9,
               fontSize: 13.5, color: '#334155', outline: 'none', cursor: 'pointer',
-              background: '#fafafa', minWidth: 130,
+              backgroundColor: '#fafafa', minWidth: 130,
             }}
           >
             <option value="all">All Tiers</option>

@@ -1141,9 +1141,9 @@ function AdminProducts() {
                       borderRadius: 4, 
                       border: '1px solid #cbd5e1', 
                       fontSize: 13,
-                      background: '#fff',
+                      backgroundColor: '#fff',
                       appearance: 'none',
-                      backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>\")",
+                      backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
                       backgroundRepeat: 'no-repeat',
                       backgroundPosition: 'right 10px center',
                       backgroundSize: '14px'
@@ -1490,10 +1490,8 @@ export default function AdminDashboard() {
       subItems: [
         { name: 'Products', path: '/admin/products' },
         { name: 'Orders', path: '/admin/orders' },
-        { name: 'Discount Coupons', path: '/admin/coupons' },
-        { name: 'Affiliates', path: '/admin/affiliates' },
-        { name: 'Payouts', path: '/admin/payouts' },
-        { name: 'Upsells & Cross-sells', path: '/admin/upsells' }
+        { name: 'Discount Coupons', path: '/admin/coupons' }
+        // Affiliate, Payouts, and Upsells disabled for now
       ]
     },
     { 
@@ -2039,9 +2037,9 @@ export default function AdminDashboard() {
             <Route path="/certificates" element={<AdminCertificates />} />
             <Route path="/settings" element={<AdminSettings />} />
             <Route path="/pages" element={<AdminPages />} />
-            <Route path="/affiliates" element={<AdminAffiliates />} />
-            <Route path="/payouts" element={<AdminPayouts />} />
-            <Route path="/upsells" element={<AdminUpsells />} />
+            <Route path="/affiliates" element={<div style={{ padding: 28, color: '#64748b' }}><h3>Affiliate System is temporarily disabled</h3></div>} />
+            <Route path="/payouts" element={<div style={{ padding: 28, color: '#64748b' }}><h3>Payout System is temporarily disabled</h3></div>} />
+            <Route path="/upsells" element={<div style={{ padding: 28, color: '#64748b' }}><h3>Upsells & Cross-sells System is temporarily disabled</h3></div>} />
           </Routes>
         </main>
       </div>
