@@ -601,7 +601,7 @@ export default function HomePage() {
         }
 
         .gradient-text {
-          background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #3b82f6 100%);
+          background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -688,38 +688,44 @@ export default function HomePage() {
           background: #0b1329;
           border-top: 1px solid #1e293b;
           border-bottom: 1px solid #1e293b;
-          padding: 40px 0;
+          padding: 48px 0;
           color: white;
         }
 
         .stats-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
           gap: 24px;
           text-align: center;
         }
 
         .stats-grid .stat-card {
-          padding: 12px;
-          border-right: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 24px 20px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          transition: transform 0.3s ease, background 0.3s ease;
         }
 
-        .stats-grid .stat-card:last-child {
-          border-right: none;
+        .stats-grid .stat-card:hover {
+          background: rgba(255, 255, 255, 0.06);
+          transform: translateY(-4px);
         }
 
         .stat-value {
           font-family: var(--font-heading) !important;
           font-size: clamp(2rem, 4.5vw, 2.7rem);
           font-weight: 800;
-          color: #3b82f6;
+          background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           margin-bottom: 6px;
         }
 
         .stat-label {
           color: #94a3b8;
-          font-size: 14px;
-          font-weight: 500;
+          font-size: 13px;
+          font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
@@ -1450,17 +1456,13 @@ export default function HomePage() {
           }
 
           .stats-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
           }
 
           .stats-grid .stat-card {
             border-right: none;
-            padding: 8px;
-          }
-
-          .stats-grid .stat-card:nth-child(odd) {
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 16px;
           }
 
           .home-section {

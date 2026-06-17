@@ -108,7 +108,7 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_app_meta_data->>'role', 'student')
+    COALESCE(NEW.raw_app_meta_data->>'role', 'user')
   )
   ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
