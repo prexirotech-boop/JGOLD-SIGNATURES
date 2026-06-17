@@ -78,12 +78,12 @@ export default function PaymentPage() {
   const [product, setProduct] = useState(null)
   const [loadingProduct, setLoadingProduct] = useState(true)
 
-  // Form fields
-  const [form, setForm] = useState({ 
-    name: '', 
-    email: '', 
-    phone: typeof window !== 'undefined' ? localStorage.getItem('checkout_phone') || '' : '' 
-  })
+  // Form fields — persisted to localStorage so they survive page refreshes
+  const [form, setForm] = useState(() => ({
+    name:  localStorage.getItem('checkout_name')  || '',
+    email: localStorage.getItem('checkout_email') || '',
+    phone: localStorage.getItem('checkout_phone') || '',
+  }))
   const [errors, setErrors] = useState({})
 
   // Authentication check states
@@ -267,9 +267,10 @@ export default function PaymentPage() {
   const set = (k, v) => {
     setForm(f => ({ ...f, [k]: v }))
     if (errors[k]) setErrors(e => ({ ...e, [k]: '' }))
-    if (k === 'phone') {
-      localStorage.setItem('checkout_phone', v)
-    }
+    // Persist safe fields to localStorage so they survive refreshes
+    if (k === 'name')  localStorage.setItem('checkout_name',  v)
+    if (k === 'email') localStorage.setItem('checkout_email', v)
+    if (k === 'phone') localStorage.setItem('checkout_phone', v)
   }
 
   const validate = () => {
@@ -443,6 +444,11 @@ export default function PaymentPage() {
       name,
       phone,
     })
+
+    // Clear saved checkout fields on successful payment
+    localStorage.removeItem('checkout_name')
+    localStorage.removeItem('checkout_email')
+    localStorage.removeItem('checkout_phone')
 
     if (isEbook) {
       navigate('/success')
