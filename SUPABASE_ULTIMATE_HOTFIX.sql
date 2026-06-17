@@ -10,9 +10,10 @@
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- ── 1. CLEAN UP CRASH-PRONE TRIGGERS ON PROFILES ──────────────────────────
--- Drop triggers that fire BEFORE profiles insert and cause the transaction to fail.
+-- Drop triggers that fire BEFORE/AFTER profiles insert and cause the transaction to fail.
 DROP TRIGGER IF EXISTS trigger_assign_affiliate_code ON public.profiles;
 DROP TRIGGER IF EXISTS trigger_sync_profile_role ON public.profiles;
+DROP TRIGGER IF EXISTS trigger_create_affiliate ON public.profiles;
 
 -- ── 2. CREATE ROBUST AUTH SIGNUP TRIGGER FUNCTION ─────────────────────────
 -- Uses 'user' (valid role) and wraps in exception block to never crash signups.
