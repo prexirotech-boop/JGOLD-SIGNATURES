@@ -13,6 +13,9 @@ import AdminCoupons from './AdminCoupons'
 import AdminQnA from './AdminQnA'
 import AdminReviews from './AdminReviews'
 import AdminPages from './AdminPages'
+import AdminAffiliates from './AdminAffiliates'
+import AdminPayouts from './AdminPayouts'
+import AdminUpsells from './AdminUpsells'
 
 function AdminOverview() {
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0, productsCount: 0, conversionRate: 0, courseStats: [], unansweredQna: 0 })
@@ -1264,7 +1267,7 @@ export default function AdminDashboard() {
     const active = {}
     if (location.pathname.includes('/courses') || location.pathname.includes('/qna') || location.pathname.includes('/reviews')) active.Academics = true
     if (location.pathname.includes('/users')) active['Users & Staff'] = true
-    if (location.pathname.includes('/orders') || location.pathname.includes('/coupons') || location.pathname.includes('/products')) active['Sales & Catalog'] = true
+    if (location.pathname.includes('/orders') || location.pathname.includes('/coupons') || location.pathname.includes('/products') || location.pathname.includes('/affiliates') || location.pathname.includes('/payouts') || location.pathname.includes('/upsells')) active.Sales = true
     if (location.pathname.includes('/settings') || location.pathname.includes('/announcements')) active.Management = true
     return active
   })
@@ -1274,7 +1277,7 @@ export default function AdminDashboard() {
       const active = { ...prev }
       if (location.pathname.includes('/courses') || location.pathname.includes('/qna') || location.pathname.includes('/reviews')) active.Academics = true
       if (location.pathname.includes('/users')) active['Users & Staff'] = true
-      if (location.pathname.includes('/orders') || location.pathname.includes('/coupons') || location.pathname.includes('/products')) active['Sales & Catalog'] = true
+      if (location.pathname.includes('/orders') || location.pathname.includes('/coupons') || location.pathname.includes('/products') || location.pathname.includes('/affiliates') || location.pathname.includes('/payouts') || location.pathname.includes('/upsells')) active.Sales = true
       if (location.pathname.includes('/settings') || location.pathname.includes('/announcements')) active.Management = true
       return active
     })
@@ -1487,7 +1490,10 @@ export default function AdminDashboard() {
       subItems: [
         { name: 'Products', path: '/admin/products' },
         { name: 'Orders', path: '/admin/orders' },
-        { name: 'Discount Coupons', path: '/admin/coupons' }
+        { name: 'Discount Coupons', path: '/admin/coupons' },
+        { name: 'Affiliates', path: '/admin/affiliates' },
+        { name: 'Payouts', path: '/admin/payouts' },
+        { name: 'Upsells & Cross-sells', path: '/admin/upsells' }
       ]
     },
     { 
@@ -2033,6 +2039,9 @@ export default function AdminDashboard() {
             <Route path="/certificates" element={<AdminCertificates />} />
             <Route path="/settings" element={<AdminSettings />} />
             <Route path="/pages" element={<AdminPages />} />
+            <Route path="/affiliates" element={<AdminAffiliates />} />
+            <Route path="/payouts" element={<AdminPayouts />} />
+            <Route path="/upsells" element={<AdminUpsells />} />
           </Routes>
         </main>
       </div>

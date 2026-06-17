@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { CONFIG } from '../lib/config'
 import { supabase, createPendingOrder, completeOrder } from '../lib/supabase'
+import OrderBump from '../components/OrderBump'
+import { useAffiliate } from '../hooks/useAffiliate'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHOPIFY-STYLE FIELD COMPONENT
@@ -107,6 +109,31 @@ export default function PaymentPage() {
   const paidRef = useRef(false)
   const pendingOrderIdRef = useRef(null)
 
+  // Affiliate & Order Bump states
+  const [selectedBumps, setSelectedBumps] = useState([])
+  const { getReferralCode } = useAffiliate()
+  const [affiliateData, setAffiliateData] = useState(null)
+
+  useEffect(() => {
+    async function checkReferral() {
+      const code = getReferralCode()
+      if (code) {
+        try {
+          const { data } = await supabase
+            .from('affiliates')
+            .select('id, affiliate_code')
+            .eq('affiliate_code', code)
+            .eq('status', 'active')
+            .maybeSingle()
+          if (data) setAffiliateData(data)
+        } catch (e) {
+          console.warn('[PaymentPage] Referral check error:', e)
+        }
+      }
+    }
+    checkReferral()
+  }, [])
+
   // Derived attributes
   const isEbook = product ? product.type === 'ebook' : false
   const productTitle = product ? product.title.replace(/\s+slug$/i, '') : (isEbook ? 'The N50K Blueprint (PDF)' : CONFIG.BOOK_TITLE)
@@ -119,6 +146,19 @@ export default function PaymentPage() {
       ? Math.round(basePrice * (1 - appliedCoupon.value / 100))
       : Math.max(0, basePrice - appliedCoupon.value)
     : basePrice
+
+  const bumpsTotal = selectedBumps.reduce((sum, bump) => {
+    const base = bump.offered_product?.price || 0
+    if (bump.discount_type === 'percentage') {
+      return sum + Math.round(base * (1 - bump.discount_value / 100))
+    }
+    if (bump.discount_type === 'fixed') {
+      return sum + Math.max(0, base - bump.discount_value)
+    }
+    return sum + base
+  }, 0)
+
+  const finalTotal = discountedPrice + bumpsTotal
 
   // Load product from database and sync with cart
   useEffect(() => {
@@ -309,14 +349,38 @@ export default function PaymentPage() {
     }
 
     const ref = `n50k_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+    const affId = affiliateData?.id || null
+    const affCode = affiliateData?.affiliate_code || null
+
     const { orderId } = await createPendingOrder({
       reference: ref, name, email, phone,
       productId: product?.id || null,
       amount: discountedPrice,
+      affiliateCode: affCode,
+      affiliateId: affId,
     })
     pendingOrderIdRef.current = orderId
 
-    if (window.fbq) window.fbq('track', 'Lead', { content_name: productTitle, value: discountedPrice, currency: 'NGN' })
+    // Insert pending orders for selected bumps
+    for (const bump of selectedBumps) {
+      const base = bump.offered_product?.price || 0
+      const bumpPrice = bump.discount_type === 'percentage'
+        ? Math.round(base * (1 - bump.discount_value / 100))
+        : bump.discount_type === 'fixed'
+          ? Math.max(0, base - bump.discount_value)
+          : base
+
+      await createPendingOrder({
+        reference: `${ref}-bump-${bump.id}`,
+        name, email, phone,
+        productId: bump.offered_product_id,
+        amount: bumpPrice,
+        affiliateCode: affCode,
+        affiliateId: affId,
+      })
+    }
+
+    if (window.fbq) window.fbq('track', 'Lead', { content_name: productTitle, value: finalTotal, currency: 'NGN' })
 
     setLoading(false)
     paidRef.current = false
@@ -325,7 +389,7 @@ export default function PaymentPage() {
       const handler = window.PaystackPop.setup({
         key: CONFIG.PAYSTACK_PUBLIC_KEY,
         email,
-        amount: discountedPrice * 100,
+        amount: finalTotal * 100,
         currency: 'NGN',
         ref,
         metadata: {
@@ -341,11 +405,13 @@ export default function PaymentPage() {
         },
         onClose: () => {
           if (!paidRef.current) {
-            if (pendingOrderIdRef.current) {
-              supabase.from('orders').update({ status: 'cancelled' }).eq('id', pendingOrderIdRef.current).then(({ error }) => {
-                if (error) console.error('[PaymentPage] Error cancelling order:', error)
+            // Cancel all orders (main and bumps) sharing reference
+            supabase.from('orders')
+              .update({ status: 'cancelled' })
+              .or(`reference.eq.${ref},reference.like.${ref}-bump-%`)
+              .then(({ error }) => {
+                if (error) console.error('[PaymentPage] Error cancelling orders:', error)
               })
-            }
             setLoading(false)
           }
         },
@@ -360,7 +426,7 @@ export default function PaymentPage() {
 
   const handleSuccess = async ({ reference, userId, name, email, phone }) => {
     setLoading(true)
-    if (window.fbq) window.fbq('track', 'Purchase', { value: discountedPrice, currency: 'NGN', content_name: productTitle })
+    if (window.fbq) window.fbq('track', 'Purchase', { value: finalTotal, currency: 'NGN', content_name: productTitle })
 
     localStorage.setItem('paid_customer', JSON.stringify({
       name, email, phone, ref: reference,
@@ -424,6 +490,37 @@ export default function PaymentPage() {
           <span className="shopify-item-price">₦{basePrice.toLocaleString()}</span>
         </div>
       </div>
+
+      {/* Selected Order Bumps */}
+      {selectedBumps.map(bump => {
+        const base = bump.offered_product?.price || 0
+        const bumpPrice = bump.discount_type === 'percentage'
+          ? Math.round(base * (1 - bump.discount_value / 100))
+          : bump.discount_type === 'fixed'
+            ? Math.max(0, base - bump.discount_value)
+            : base
+        return (
+          <div key={bump.id} className="shopify-product-row bump-summary-row" style={{ marginTop: -12, borderTop: '1px dashed #e6e6e6', paddingTop: 12 }}>
+            <div className="shopify-thumbnail-container">
+              <div className="shopify-thumbnail-wrapper" style={{ width: 48, height: 48 }}>
+                {bump.offered_product?.cover_image ? (
+                  <img src={bump.offered_product.cover_image} alt="" className="shopify-thumbnail-img" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
+                ) : (
+                  <div className="shopify-thumbnail-fallback" style={{ fontSize: 10 }}>Addon</div>
+                )}
+                <span className="shopify-thumbnail-badge">1</span>
+              </div>
+            </div>
+            <div className="shopify-product-info">
+              <h4 className="shopify-product-title" style={{ fontSize: 13 }}>{bump.headline}</h4>
+              <span className="shopify-product-desc" style={{ fontSize: 11 }}>⚡ One-time Addon</span>
+            </div>
+            <div className="shopify-product-price-col" style={{ fontSize: 13 }}>
+              <span>₦{bumpPrice.toLocaleString()}</span>
+            </div>
+          </div>
+        )
+      })}
 
       {/* Bonuses */}
       {displayBonuses.length > 0 && (
@@ -504,13 +601,19 @@ export default function PaymentPage() {
             <span className="calc-value">-{appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}%` : `₦${appliedCoupon.value.toLocaleString()}`}</span>
           </div>
         )}
+        {selectedBumps.length > 0 && (
+          <div className="shopify-calc-row">
+            <span>Add-ons</span>
+            <span className="calc-value">₦{bumpsTotal.toLocaleString()}</span>
+          </div>
+        )}
 
         
         <div className="shopify-total-row">
           <span className="total-label">Total</span>
           <div className="total-price-wrapper">
             <span className="total-currency">NGN</span>
-            <span className="total-amount">₦{discountedPrice.toLocaleString()}</span>
+            <span className="total-amount">₦{finalTotal.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -1310,7 +1413,7 @@ export default function PaymentPage() {
           <span>{summaryOpen ? 'Hide order summary' : 'Show order summary'}</span>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: summaryOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <span className="sp-mobile-summary-bar-price">₦{discountedPrice.toLocaleString()}</span>
+        <span className="sp-mobile-summary-bar-price">₦{finalTotal.toLocaleString()}</span>
       </div>
       
       {/* Mobile dropdown cart details */}
@@ -1432,6 +1535,13 @@ export default function PaymentPage() {
               </div>
             </div>
 
+            {/* Order Bump Section */}
+            <OrderBump 
+              triggerProductId={product?.id} 
+              onBumpsChange={setSelectedBumps} 
+              currentTotal={discountedPrice} 
+            />
+
             {/* Payment Section */}
             <div className="sp-form-card">
               <h3 className="sp-section-title">Payment Method</h3>
@@ -1468,7 +1578,7 @@ export default function PaymentPage() {
                         <span>Securing Connection...</span>
                       </>
                     ) : (
-                      <span>Complete Payment — ₦{discountedPrice.toLocaleString()}</span>
+                      <span>Complete Payment — ₦{finalTotal.toLocaleString()}</span>
                     )}
                   </button>
                 </div>

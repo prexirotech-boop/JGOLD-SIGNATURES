@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import UpsellWidget from '../components/UpsellWidget'
 
 const StarRating = ({ rating = 0, count = 0 }) => {
   const full = Math.floor(rating)
@@ -648,6 +649,11 @@ export default function ProductDetailsPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Recommended Upsell Offers / Cross-sells */}
+        <div style={{ maxWidth: 1200, margin: '40px auto 0', padding: '0 24px 40px' }}>
+          <UpsellWidget placement="product" triggerProductId={product?.id} userId={user?.id} />
         </div>
       </div>
 

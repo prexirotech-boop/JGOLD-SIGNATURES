@@ -30,6 +30,8 @@ export async function createPendingOrder({
   phone,
   productId,
   amount,
+  affiliateCode,
+  affiliateId,
 }) {
   try {
     const cleanEmail = (email || '').trim().toLowerCase()
@@ -46,12 +48,13 @@ export async function createPendingOrder({
         status: 'pending',
         payment_method: 'paystack',
         currency: 'NGN',
+        affiliate_code: affiliateCode || null,
+        affiliate_id: affiliateId || null,
       })
       .select('id, product_id')
       .single()
 
     if (error) {
-      // If the reference was already used (duplicate), surface gracefully
       if (error.code === '23505') {
         console.warn('[createPendingOrder] Duplicate reference — order may already exist:', reference)
         return { orderId: null, productId, error: 'duplicate' }
@@ -72,38 +75,43 @@ export async function createPendingOrder({
  * STEP 2 — Complete the order after successful Paystack payment.
  *
  * This function:
- *  1. Updates the order status from "pending" to "paid"
- *  2. Creates the enrollment row synchronously (awaited — not fire-and-forget)
- *  3. Fires the confirmation email edge function (non-blocking)
- *
- * @returns {{ success: boolean, enrolled: boolean }}
+ *  1. Updates the order status from "pending" to "paid" for main and bumps
+ *  2. Creates the enrollment rows synchronously for courses
+ *  3. Fires the confirmation email edge function
  */
 export async function completeOrder({
   reference,
-  userId,       // auth user UUID — may be null for email-confirmation flows
+  userId,
   productId,
-  productType,  // 'course' | 'ebook'
+  productType,
   name,
   phone,
 }) {
   let enrolled = false
 
   try {
-    // ── 1. Mark order as paid ────────────────────────────────────────────────
-    const { error: updateErr } = await supabase
+    // ── 1. Mark all orders as paid (main and bumps) ───────────────────────────
+    const { data: updatedOrders, error: updateErr } = await supabase
       .from('orders')
       .update({ status: 'paid', paid_at: new Date().toISOString() })
-      .eq('reference', reference)
+      .or(`reference.eq.${reference},reference.like.${reference}-bump-%`)
+      .select('product_id, products(type)')
 
     if (updateErr) {
       console.error('[completeOrder] Failed to mark order paid:', updateErr)
-      // Continue anyway — enrollment is more important than order status
     } else {
-      console.log('[completeOrder] ✅ Order marked as paid:', reference)
+      console.log('[completeOrder] ✅ Orders marked as paid:', reference)
     }
 
-    // ── 2. Create enrollment (only for courses, only when userId is known) ───
-    if (productType === 'course' && productId && userId) {
+    // ── 2. Create enrollments for all courses in the transaction ─────────────
+    if (userId && updatedOrders) {
+      for (const ord of updatedOrders) {
+        if (ord.product_id && ord.products?.type === 'course') {
+          const success = await createEnrollment({ userId, courseId: ord.product_id })
+          if (ord.product_id === productId) enrolled = success
+        }
+      }
+    } else if (productType === 'course' && productId && userId) {
       enrolled = await createEnrollment({ userId, courseId: productId })
     }
 

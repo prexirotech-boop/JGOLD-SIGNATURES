@@ -38,6 +38,8 @@ import { useLocation } from 'react-router-dom'
 
 import { AuthProvider } from './context/AuthContext'
 import { getPages } from './lib/pagesScanner'
+import AffiliatePage from './pages/AffiliatePage'
+import { useAffiliate } from './hooks/useAffiliate'
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -56,6 +58,16 @@ function AppLayout() {
       window.fbq('track', 'PageView')
     }
   }, [location])
+
+  // Affiliate referral tracking — reads ?ref= from URL and stores in localStorage
+  const { recordClick } = useAffiliate()
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const refCode = params.get('ref')
+    if (refCode) {
+      recordClick(refCode, location.pathname)
+    }
+  }, [location.search])
   
   // Hide global Header and Footer on admin, student portal, course player, landing, and auth paths
   const hideHeaderFooter = 
@@ -121,6 +133,7 @@ function AppLayout() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/affiliate" element={<AffiliatePage />} />
 
         {/* Dynamic / Auto-registered user created pages */}
         {getPages().map(page => {

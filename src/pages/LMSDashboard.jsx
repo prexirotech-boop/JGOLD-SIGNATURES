@@ -951,6 +951,385 @@ function NotificationsTab({ user }) {
   )
 }
 
+// ─── AFFILIATE TAB ──────────────────────────────────────────────────────────
+
+function AffiliateTab({ user, profile }) {
+  const [affiliate, setAffiliate] = useState(null)
+  const [commissions, setCommissions] = useState([])
+  const [payouts, setPayouts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
+  const [activeSubTab, setActiveSubTab] = useState('overview')
+
+  const affiliateLink = profile?.affiliate_code
+    ? `${window.location.origin}/?ref=${profile.affiliate_code}`
+    : null
+
+  useEffect(() => {
+    if (!user) return
+    loadAffiliateData()
+  }, [user])
+
+  async function loadAffiliateData() {
+    try {
+      const [affRes, commRes, payRes] = await Promise.all([
+        supabase.from('affiliates').select('*').eq('user_id', user.id).maybeSingle(),
+        supabase.from('affiliate_commissions')
+          .select('*, orders(reference, created_at)')
+          .eq('affiliate_id', (await supabase.from('affiliates').select('id').eq('user_id', user.id).maybeSingle()).data?.id || 'x')
+          .order('created_at', { ascending: false }).limit(20),
+        supabase.from('affiliate_payouts')
+          .select('*')
+          .eq('affiliate_id', (await supabase.from('affiliates').select('id').eq('user_id', user.id).maybeSingle()).data?.id || 'x')
+          .order('created_at', { ascending: false }).limit(10)
+      ])
+      setAffiliate(affRes.data)
+      setCommissions(commRes.data || [])
+      setPayouts(payRes.data || [])
+    } catch (e) {
+      console.error('[AffiliateTab] load error:', e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleCopyLink() {
+    if (!affiliateLink) return
+    try {
+      await navigator.clipboard.writeText(affiliateLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch(e) {
+      const ta = document.createElement('textarea')
+      ta.value = affiliateLink
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  function formatNGN(kobo) {
+    return `₦${((kobo || 0) / 100).toLocaleString()}`
+  }
+
+  const TIER_CONFIG = {
+    bronze: { label: 'Bronze', color: '#c2410c', bg: '#fef3e2', emoji: '🥉' },
+    silver: { label: 'Silver', color: '#475569', bg: '#f1f5f9', emoji: '🥈' },
+    gold: { label: 'Gold', color: '#a16207', bg: '#fefce8', emoji: '🥇' },
+    platinum: { label: 'Platinum', color: '#6d28d9', bg: '#f5f3ff', emoji: '💎' }
+  }
+  const STATUS_COLORS = {
+    pending: { bg: '#fef9c3', text: '#854d0e' },
+    approved: { bg: '#dcfce7', text: '#166534' },
+    paid: { bg: '#dbeafe', text: '#1e40af' },
+    rejected: { bg: '#fee2e2', text: '#991b1b' },
+    cancelled: { bg: '#f3f4f6', text: '#374151' }
+  }
+
+  const tier = TIER_CONFIG[affiliate?.tier || 'bronze']
+  const pendingEarnings = (affiliate?.total_earnings || 0) - (affiliate?.total_paid || 0)
+
+  if (loading) {
+    return <div style={{ padding: '40px 0', color: '#64748b', fontWeight: 600 }}>Loading affiliate data...</div>
+  }
+
+  const subTabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'commissions', label: `Commissions (${commissions.length})` },
+    { id: 'payouts', label: 'Payout History' },
+    { id: 'howto', label: 'How It Works' }
+  ]
+
+  return (
+    <div style={{ fontFamily: 'var(--font)' }}>
+
+      {/* Hero Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+        borderRadius: 16,
+        padding: '32px 32px',
+        marginBottom: 28,
+        color: '#fff',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, background: 'radial-gradient(circle, rgba(167,139,250,0.3) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: -30, left: -30, width: 150, height: 150, background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <span style={{ fontSize: 28 }}>💸</span>
+            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: '-0.5px' }}>Your Affiliate Dashboard</h2>
+          </div>
+          <p style={{ margin: '0 0 20px', color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+            Share your unique link and earn <strong style={{ color: '#a78bfa' }}>{affiliate?.commission_rate || 20}% commission</strong> on every sale you refer.
+          </p>
+
+          {/* Affiliate Link Box */}
+          {affiliateLink ? (
+            <div style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, flexShrink: 0 }}>YOUR LINK</span>
+              <span style={{ flex: 1, fontSize: 13, color: '#e2e8f0', fontFamily: 'monospace', wordBreak: 'break-all' }}>{affiliateLink}</span>
+              <button
+                onClick={handleCopyLink}
+                style={{
+                  background: copied ? '#10b981' : '#7c3aed',
+                  color: '#fff', border: 'none', borderRadius: 8,
+                  padding: '8px 16px', fontWeight: 700, fontSize: 13,
+                  cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', gap: 6
+                }}
+              >
+                {copied ? '✓ Copied!' : '📋 Copy Link'}
+              </button>
+            </div>
+          ) : (
+            <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 10, padding: '12px 16px', color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
+              Your affiliate link is being generated. Please refresh in a moment.
+            </div>
+          )}
+
+          {/* Your Code */}
+          {profile?.affiliate_code && (
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Your code:</span>
+              <span style={{ background: 'rgba(167,139,250,0.2)', border: '1px solid rgba(167,139,250,0.4)', color: '#a78bfa', padding: '3px 10px', borderRadius: 20, fontWeight: 700, fontSize: 13, fontFamily: 'monospace' }}>
+                {profile.affiliate_code}
+              </span>
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>— share anywhere</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
+        {[
+          { label: 'Total Clicks', value: affiliate?.total_clicks || 0, icon: '🖱️', color: '#2563eb' },
+          { label: 'Conversions', value: affiliate?.total_referrals || 0, icon: '🎯', color: '#059669' },
+          { label: 'Total Earned', value: formatNGN(affiliate?.total_earnings), icon: '💰', color: '#7c3aed', isAmount: true },
+          { label: 'Pending Payout', value: formatNGN(pendingEarnings), icon: '⏳', color: '#d97706', isAmount: true },
+          { label: 'Total Paid Out', value: formatNGN(affiliate?.total_paid), icon: '✅', color: '#059669', isAmount: true },
+        ].map(stat => (
+          <div key={stat.label} style={{
+            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12,
+            padding: '20px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+          }}>
+            <div style={{ fontSize: 24, marginBottom: 8 }}>{stat.icon}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: stat.color }}>{stat.value}</div>
+            <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginTop: 4 }}>{stat.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tier + Commission Rate */}
+      <div style={{ display: 'flex', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
+        <div style={{
+          flex: 1, minWidth: 240,
+          background: tier.bg, border: `1.5px solid ${tier.color}30`,
+          borderRadius: 12, padding: '18px 20px',
+          display: 'flex', alignItems: 'center', gap: 14
+        }}>
+          <span style={{ fontSize: 36 }}>{tier.emoji}</span>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: tier.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Your Tier</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: tier.color }}>{tier.label}</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>Commission rate: <strong style={{ color: tier.color }}>{affiliate?.custom_rate || affiliate?.commission_rate || 20}%</strong></div>
+          </div>
+        </div>
+        <div style={{
+          flex: 1, minWidth: 240,
+          background: '#f0fdf4', border: '1.5px solid #bbf7d0',
+          borderRadius: 12, padding: '18px 20px'
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>🚀 Tier Progress</div>
+          <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6 }}>
+            <div>Bronze: 0+ sales → <strong>20%</strong></div>
+            <div>Silver: 6+ sales → <strong>25%</strong></div>
+            <div>Gold: 21+ sales → <strong>30%</strong></div>
+            <div>Platinum: 50+ sales → <strong>35%</strong></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sub-tabs */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #e2e8f0', marginBottom: 24 }}>
+        {subTabs.map(t => (
+          <button
+            key={t.id}
+            onClick={() => setActiveSubTab(t.id)}
+            style={{
+              background: 'none', border: 'none', padding: '10px 18px',
+              fontWeight: 700, fontSize: 13, cursor: 'pointer',
+              color: activeSubTab === t.id ? '#2563eb' : '#64748b',
+              borderBottom: `2px solid ${activeSubTab === t.id ? '#2563eb' : 'transparent'}`,
+              marginBottom: -2, transition: 'all 0.15s', fontFamily: 'var(--font)'
+            }}
+          >{t.label}</button>
+        ))}
+      </div>
+
+      {/* Overview Sub-tab */}
+      {activeSubTab === 'overview' && (
+        <div>
+          {/* Share CTA */}
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 20, marginBottom: 20 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: '#1e40af', marginBottom: 8 }}>📣 Share Your Link To Start Earning</div>
+            <p style={{ fontSize: 13, color: '#3b82f6', margin: '0 0 14px' }}>Every time someone buys through your link, you earn {affiliate?.commission_rate || 20}% of the sale.</p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              {[
+                { label: '💬 WhatsApp', bg: '#25D366', url: `https://wa.me/?text=${encodeURIComponent(`Check out Amplified Skills - the best platform to learn in-demand skills! ${affiliateLink || ''}`)}` },
+                { label: '📘 Facebook', bg: '#1877F2', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(affiliateLink || window.location.origin)}` },
+                { label: '🐦 Twitter/X', bg: '#000', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`I just discovered @AmplifiedSkills - amazing courses for career growth! ${affiliateLink || ''}`)}` },
+              ].map(s => (
+                <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                  <button style={{ background: s.bg, color: '#fff', border: 'none', padding: '9px 16px', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>{s.label}</button>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent commissions preview */}
+          {commissions.length > 0 && (
+            <div>
+              <div style={{ fontWeight: 700, color: '#0b1329', marginBottom: 12, fontSize: 15 }}>Recent Commissions</div>
+              {commissions.slice(0, 3).map(c => {
+                const sc = STATUS_COLORS[c.status] || STATUS_COLORS.pending
+                return (
+                  <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, marginBottom: 8 }}>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 13, color: '#0b1329' }}>Order #{c.orders?.reference?.slice(-8) || c.order_id}</div>
+                      <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{new Date(c.created_at).toLocaleDateString()}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontWeight: 800, fontSize: 15, color: '#059669' }}>{formatNGN(c.commission_amount)}</div>
+                      <span style={{ fontSize: 10, background: sc.bg, color: sc.text, padding: '2px 8px', borderRadius: 20, fontWeight: 700, textTransform: 'uppercase' }}>{c.status}</span>
+                    </div>
+                  </div>
+                )
+              })}
+              <button onClick={() => setActiveSubTab('commissions')} style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 700, fontSize: 13, cursor: 'pointer', padding: 0 }}>View all commissions →</button>
+            </div>
+          )}
+
+          {commissions.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px 24px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🎯</div>
+              <div style={{ fontWeight: 700, fontSize: 16, color: '#0b1329', marginBottom: 8 }}>No commissions yet</div>
+              <div style={{ fontSize: 13, color: '#64748b' }}>Share your link to start earning. Every sale through your link earns you {affiliate?.commission_rate || 20}% commission!</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Commissions Sub-tab */}
+      {activeSubTab === 'commissions' && (
+        <div>
+          {commissions.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 24px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>💸</div>
+              <div style={{ fontWeight: 700, fontSize: 16, color: '#0b1329', marginBottom: 8 }}>No commissions yet</div>
+              <div style={{ fontSize: 13, color: '#64748b' }}>Commissions appear here when someone buys through your referral link.</div>
+            </div>
+          ) : (
+            <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc' }}>
+                    {['Order Ref', 'Date', 'Order Amount', 'Commission Rate', 'You Earned', 'Status'].map(h => (
+                      <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {commissions.map(c => {
+                    const sc = STATUS_COLORS[c.status] || STATUS_COLORS.pending
+                    return (
+                      <tr key={c.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '12px 16px', fontSize: 13, fontFamily: 'monospace', color: '#0b1329' }}>#{c.orders?.reference?.slice(-8) || '—'}</td>
+                        <td style={{ padding: '12px 16px', fontSize: 12, color: '#64748b' }}>{new Date(c.created_at).toLocaleDateString()}</td>
+                        <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{formatNGN(c.order_amount)}</td>
+                        <td style={{ padding: '12px 16px', fontSize: 13, color: '#7c3aed', fontWeight: 700 }}>{c.commission_rate}%</td>
+                        <td style={{ padding: '12px 16px', fontSize: 14, fontWeight: 800, color: '#059669' }}>{formatNGN(c.commission_amount)}</td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <span style={{ fontSize: 11, background: sc.bg, color: sc.text, padding: '3px 10px', borderRadius: 20, fontWeight: 700, textTransform: 'uppercase' }}>{c.status}</span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Payouts Sub-tab */}
+      {activeSubTab === 'payouts' && (
+        <div>
+          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 13, color: '#92400e' }}>
+            ⏱️ Payouts are processed monthly. Minimum payout threshold: ₦5,000. Contact support to update your bank details.
+          </div>
+          {payouts.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 24px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🏦</div>
+              <div style={{ fontWeight: 700, fontSize: 16, color: '#0b1329' }}>No payouts yet</div>
+              <div style={{ fontSize: 13, color: '#64748b', marginTop: 8 }}>Payouts appear here once admin approves and processes your commissions.</div>
+            </div>
+          ) : (
+            <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc' }}>
+                    {['Date', 'Amount', 'Method', 'Reference', 'Status'].map(h => (
+                      <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {payouts.map(p => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '12px 16px', fontSize: 12, color: '#64748b' }}>{new Date(p.created_at).toLocaleDateString()}</td>
+                      <td style={{ padding: '12px 16px', fontSize: 15, fontWeight: 800, color: '#059669' }}>{formatNGN(p.amount)}</td>
+                      <td style={{ padding: '12px 16px', fontSize: 13 }}>{p.payout_method || '—'}</td>
+                      <td style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'monospace', color: '#64748b' }}>{p.transaction_ref || '—'}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ fontSize: 11, background: p.status === 'paid' ? '#dcfce7' : '#fef9c3', color: p.status === 'paid' ? '#166534' : '#854d0e', padding: '3px 10px', borderRadius: 20, fontWeight: 700, textTransform: 'uppercase' }}>{p.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* How It Works Sub-tab */}
+      {activeSubTab === 'howto' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {[
+            { step: '1', icon: '🔗', title: 'Share Your Unique Link', desc: 'Your link automatically tracks anyone who clicks it for 30 days. Share on WhatsApp, social media, email, or your blog.' },
+            { step: '2', icon: '🛒', title: 'Your Referral Makes a Purchase', desc: 'When someone buys any product through your link within 30 days, a commission is automatically created for you.' },
+            { step: '3', icon: '⏳', title: 'Commission is Approved', desc: 'Our team reviews and approves commissions within a few days. You can track status in the Commissions tab.' },
+            { step: '4', icon: '💸', title: 'Get Paid Monthly', desc: 'Once your balance reaches ₦5,000, you will receive a bank transfer on or before the 5th of each month.' },
+          ].map(item => (
+            <div key={item.step} style={{ display: 'flex', gap: 16, padding: '20px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 20 }}>{item.icon}</div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: 15, color: '#0b1329', marginBottom: 4 }}>Step {item.step}: {item.title}</div>
+                <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{item.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── MAIN DASHBOARD COMPONENT ───────────────────────────────────────────────
 
 export default function LMSDashboard() {
@@ -1070,6 +1449,7 @@ export default function LMSDashboard() {
     certificates: 'My Certificates',
     notifications: 'Notifications',
     history: 'Purchase History',
+    affiliate: 'Affiliate Program',
     settings: 'Account Settings'
   }
 
@@ -1178,6 +1558,7 @@ export default function LMSDashboard() {
                 { id: 'certificates', label: 'Certificates', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /> },
                 { id: 'notifications', label: 'Notifications', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /> },
                 { id: 'history', label: 'Purchase History', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /> },
+                { id: 'affiliate', label: 'Affiliate Program', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
                 { id: 'settings', label: 'Account Settings', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> }
               ].map(item => (
                 <button
@@ -1258,6 +1639,7 @@ export default function LMSDashboard() {
             {activeTab === 'certificates' && <StudentCertificates user={effectiveUser} />}
             {activeTab === 'notifications' && <NotificationsTab user={effectiveUser} />}
             {activeTab === 'history' && <PurchaseHistoryTab user={effectiveUser} profile={profile} />}
+            {activeTab === 'affiliate' && <AffiliateTab user={effectiveUser} profile={profile} />}
             {activeTab === 'settings' && <SettingsTab user={effectiveUser} />}
           </div>
         </main>

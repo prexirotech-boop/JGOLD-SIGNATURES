@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getShortDesc } from './ProductsPage'
+import UpsellWidget from '../components/UpsellWidget'
 
 const SLIDES = [
-  '/slideshow_1.png',
-  '/slideshow_2.png',
-  '/slideshow_3.png'
+  '/slideshow_1.jpg',
+  '/slideshow_2.jpg',
+  '/slideshow_3.jpg'
 ]
 
 export default function HomePage() {
@@ -63,7 +64,7 @@ export default function HomePage() {
 
         <div className="home-container hero-content animate-fade-in">
           <span className="hero-badge-glow">
-            <span className="badge-dot" /> ELITE DIGITAL ACADEMY & MENTORSHIP
+            ELITE DIGITAL ACADEMY & MENTORSHIP
           </span>
 
           <h1 className="hero-title">
@@ -71,12 +72,12 @@ export default function HomePage() {
           </h1>
 
           <p className="hero-subtitle">
-            Skip theoretical academic models. We provide practical, step-by-step blueprints and elite training programs designed for the modern digital economy.
+            Skip theoretical academic models. We provide practical, step-by-step courses and elite training programs designed for the modern digital economy.
           </p>
 
           <div className="hero-actions">
             <Link to="/products" className="btn-hero-primary">
-              Explore Our Blueprints <span className="arrow">→</span>
+              Explore Our Courses <span className="arrow">→</span>
             </Link>
             <Link to="/about" className="btn-hero-outline">
               Our Story
@@ -96,7 +97,7 @@ export default function HomePage() {
           <div className="stats-grid">
             {[
               { val: '2,500+', label: 'Graduated Students' },
-              { val: '18+', label: 'Premium Blueprints' },
+              { val: '18+', label: 'Premium Courses' },
               { val: '4.9/5', label: 'Average Course Rating' },
               { val: '100%', label: 'Practical Focus (Zero Fluff)' }
             ].map((item, i) => (
@@ -110,11 +111,11 @@ export default function HomePage() {
       </section>
 
       {/* Featured Products Grid Section - TAKEN UP ON THE PAGE */}
-      <section className="home-section bg-off-white">
+      <section className="home-section bg-light-gray">
         <div className="home-container">
           <div className="section-header animate-slide-up">
             <span className="section-tag">ACADEMY</span>
-            <h2>Premium Mentoring & Blueprints</h2>
+            <h2>Premium Mentoring & Courses</h2>
             <p>Gain instant access to our highly sought-after execution systems.</p>
           </div>
 
@@ -135,7 +136,7 @@ export default function HomePage() {
               ))
             ) : featuredProducts.length === 0 ? (
               <div className="empty-products">
-                No blueprints are currently published. Check back soon!
+                No courses are currently published. Check back soon!
               </div>
             ) : (
               featuredProducts.map(product => {
@@ -299,7 +300,7 @@ export default function HomePage() {
                 Most educational systems are designed around outdated curricula that prioritize memorization over production. At Amplified Skills, we reject theoretical learning.
               </p>
               <p className="founder-p">
-                Every single course, blueprint, and playbook we publish is built upon actual battle-tested experience. We teach you exactly what is making money today in the global digital economy.
+                Every single course and playbook we publish is built upon actual battle-tested experience. We teach you exactly what is making money today in the global digital economy.
               </p>
               
               <div className="founder-pillars-mini">
@@ -314,7 +315,7 @@ export default function HomePage() {
                   <div className="mini-check">✓</div>
                   <div>
                     <strong>USD & Global Scale</strong>
-                    <span>Our blueprints focus on teaching local builders how to acquire international clients.</span>
+                    <span>Our courses focus on teaching local builders how to acquire international clients.</span>
                   </div>
                 </div>
               </div>
@@ -324,7 +325,7 @@ export default function HomePage() {
               <div className="founder-glass-card">
                 <div className="quote-icon">“</div>
                 <blockquote>
-                  We don't teach. We guide. Every blueprint is a battle-tested roadmap that we have used ourselves to build high-scale digital operations. If it doesn't generate income, it's not on our platform.
+                  We don't teach. We guide. Every course is a battle-tested roadmap that we have used ourselves to build high-scale digital operations. If it doesn't generate income, it's not on our platform.
                 </blockquote>
                 <div className="founder-profile">
                   <img src="/favicon.png" alt="Amplified Team" className="founder-team-logo" />
@@ -345,14 +346,14 @@ export default function HomePage() {
           <div className="section-header animate-slide-up">
             <span className="section-tag">TESTIMONIALS</span>
             <h2>Real Success, Real Numbers</h2>
-            <p>Hear from active students who executed the blueprints and unlocked cash flow.</p>
+            <p>Hear from active students who completed the courses and unlocked cash flow.</p>
           </div>
 
           <div className="testimonials-grid">
             <div className="testimonial-card">
               <div className="t-rating">★★★★★</div>
               <p className="t-text">
-                "I was highly skeptical at first, but the E-book blueprint changed everything. Within 2 months, I researched a niche, designed a landing page, and generated over ₦250,000 in direct sales. The execution model is incredibly simple."
+                "I was highly skeptical at first, but the E-book course changed everything. Within 2 months, I researched a niche, designed a landing page, and generated over ₦250,000 in direct sales. The execution model is incredibly simple."
               </p>
               <div className="t-user">
                 <img src="/testimonial_2.png" alt="Amina Y." className="t-user-image" />
@@ -366,7 +367,7 @@ export default function HomePage() {
             <div className="testimonial-card">
               <div className="t-rating">★★★★★</div>
               <p className="t-text">
-                "The software & AI engineering blueprint gave me the exact tools to build a custom automation agency. Instead of coding boilerplate sites, I learned how to connect APIs and build systems. I've already signed two US-based clients."
+                "The software & AI engineering course gave me the exact tools to build a custom automation agency. Instead of coding boilerplate sites, I learned how to connect APIs and build systems. I've already signed two US-based clients."
               </p>
               <div className="t-user">
                 <img src="/testimonial_1.png" alt="Chidi O." className="t-user-image" />
@@ -400,22 +401,22 @@ export default function HomePage() {
           <div className="section-header animate-slide-up">
             <span className="section-tag">FAQ</span>
             <h2>Got Questions? We Have Answers</h2>
-            <p>Clear, direct responses to help you decide on your next blueprint.</p>
+            <p>Clear, direct responses to help you decide on your next course.</p>
           </div>
 
           <div className="faq-accordion-box">
             {[
               {
                 q: "Are these programs suitable for complete beginners?",
-                a: "Absolutely. Each blueprint begins with basic concepts and builds up. We design our training with direct, actionable playbooks so you won't get lost in complex theoretical jargon."
+                a: "Absolutely. Each course begins with basic concepts and builds up. We design our training with direct, actionable playbooks so you won't get lost in complex theoretical jargon."
               },
               {
                 q: "Do I need a laptop, or can I use my phone?",
-                a: "You can start learning on either! While writing software is much easier on a PC, several of our blueprints (like E-Book Mastery and High-Ticket Freelancing) have students earning using just their phones or PC."
+                a: "You can start learning on either! While writing software is much easier on a PC, several of our courses (like E-Book Mastery and High-Ticket Freelancing) have students earning using just their phones or PC."
               },
               {
-                q: "How long do I have access to the blueprints?",
-                a: "Once you purchase a blueprint, you have lifetime access. This includes all future course updates, playbooks, community threads, and live session recordings."
+                q: "How long do I have access to the courses?",
+                a: "Once you purchase a course, you have lifetime access. This includes all future course updates, playbooks, community threads, and live session recordings."
               },
               {
                 q: "Is there support if I get stuck?",
@@ -446,12 +447,17 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Recommended Homepage Deal Banner */}
+      <div className="home-container" style={{ marginTop: 20 }}>
+        <UpsellWidget placement="homepage" />
+      </div>
+
       {/* Final Call To Action Banner */}
       <section className="final-cta-section">
         <div className="home-container">
           <div className="final-cta-card">
             <h2>Ready to Amplify Your Skills?</h2>
-            <p>Gain instant access to our premium blueprints, dedicated mentoring, and start earning today.</p>
+            <p>Gain instant access to our premium courses, dedicated mentoring, and start earning today.</p>
             <div className="final-cta-actions">
               <Link to="/products" className="btn-hero-primary glow">
                 Explore Programs Now
@@ -513,7 +519,7 @@ export default function HomePage() {
         }
 
         .hero-slide.active {
-          opacity: 0.38;
+          opacity: 0.75;
         }
 
         .hero-overlay {
@@ -524,7 +530,7 @@ export default function HomePage() {
           height: 100%;
           background: linear-gradient(135deg, #050b14 0%, #0c152d 100%);
           z-index: 2;
-          opacity: 0.9;
+          opacity: 0.65;
         }
 
         .hero-content {

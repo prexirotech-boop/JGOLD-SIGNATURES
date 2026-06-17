@@ -1,7 +1,10 @@
 import { useEffect } from 'react'
 import { CONFIG } from '../lib/config'
+import { useAuth } from '../context/AuthContext'
+import UpsellWidget from '../components/UpsellWidget'
 
 export default function ThankYouPage() {
+  const { user } = useAuth()
   const customer = JSON.parse(localStorage.getItem('paid_customer') || '{}')
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
@@ -30,6 +33,8 @@ export default function ThankYouPage() {
 
       <section className="section-sm">
         <div className="wrap-n">
+          {/* Post-Purchase One-Time Offer Widget */}
+          <UpsellWidget placement="thankyou" userId={user?.id} />
 
           {/* Download card */}
           <div style={{ background: '#fff', borderRadius: 'var(--r-2xl)', padding: 32, textAlign: 'center', boxShadow: 'var(--sh-xl)', border: '2px solid var(--g200)', marginBottom: 20, position: 'relative', overflow: 'hidden' }}>
