@@ -953,6 +953,36 @@ function NotificationsTab({ user }) {
 
 // ─── AFFILIATE TAB ──────────────────────────────────────────────────────────
 
+function AffiliateStatCard({ stat }) {
+  const [isHovered, setIsHovered] = useState(false)
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        background: '#fff',
+        border: '1.5px solid #e2e8f0',
+        borderRadius: 14,
+        padding: '22px 18px',
+        boxShadow: isHovered
+          ? '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)'
+          : '0 1px 3px rgba(0,0,0,0.02)',
+        transform: isHovered ? 'translateY(-2px)' : 'none',
+        borderColor: isHovered ? stat.color + '50' : '#e2e8f0',
+        transition: 'all 0.2s ease',
+      }}
+    >
+      <div style={{ color: stat.color, marginBottom: 12, display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'inline-flex', padding: 8, borderRadius: 8, background: stat.color + '12' }}>
+          {stat.icon}
+        </div>
+      </div>
+      <div style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.3px' }}>{stat.value}</div>
+      <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginTop: 4 }}>{stat.label}</div>
+    </div>
+  )
+}
+
 function AffiliateTab({ user, profile }) {
   const [affiliate, setAffiliate] = useState(null)
   const [commissions, setCommissions] = useState([])
@@ -1032,10 +1062,48 @@ function AffiliateTab({ user, profile }) {
   }
 
   const TIER_CONFIG = {
-    bronze: { label: 'Bronze', color: '#c2410c', bg: '#fef3e2', emoji: '🥉' },
-    silver: { label: 'Silver', color: '#475569', bg: '#f1f5f9', emoji: '🥈' },
-    gold: { label: 'Gold', color: '#a16207', bg: '#fefce8', emoji: '🥇' },
-    platinum: { label: 'Platinum', color: '#6d28d9', bg: '#f5f3ff', emoji: '💎' }
+    bronze: { 
+      label: 'Bronze', 
+      color: '#c2410c', 
+      bg: '#fef3e2', 
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      )
+    },
+    silver: { 
+      label: 'Silver', 
+      color: '#475569', 
+      bg: '#f1f5f9', 
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      )
+    },
+    gold: { 
+      label: 'Gold', 
+      color: '#a16207', 
+      bg: '#fefce8', 
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      )
+    },
+    platinum: { 
+      label: 'Platinum', 
+      color: '#6d28d9', 
+      bg: '#f5f3ff', 
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+          <path d="M6 3h12l4 6-10 13L2 9z" />
+          <path d="M11 3 8 9l4 13 4-13-3-6" />
+          <path d="M2 9h20" />
+        </svg>
+      )
+    }
   }
   const STATUS_COLORS = {
     pending: { bg: '#fef9c3', text: '#854d0e' },
@@ -1063,7 +1131,7 @@ function AffiliateTab({ user, profile }) {
     <div style={{ fontFamily: 'var(--font)' }}>
 
       {/* Hero Banner */}
-      <div style={{
+      <div className="affiliate-hero-banner" style={{
         background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
         borderRadius: 16,
         padding: '32px 32px',
@@ -1075,8 +1143,13 @@ function AffiliateTab({ user, profile }) {
         <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, background: 'radial-gradient(circle, rgba(167,139,250,0.3) 0%, transparent 70%)', borderRadius: '50%' }} />
         <div style={{ position: 'absolute', bottom: -30, left: -30, width: 150, height: 150, background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', borderRadius: '50%' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 28 }}>💸</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', color: '#fff' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
             <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: '-0.5px' }}>Your Affiliate Dashboard</h2>
           </div>
           <p style={{ margin: '0 0 20px', color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
@@ -1085,21 +1158,31 @@ function AffiliateTab({ user, profile }) {
 
           {/* Affiliate Link Box */}
           {affiliateLink ? (
-            <div style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div className="affiliate-link-box" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, flexShrink: 0 }}>YOUR LINK</span>
               <span style={{ flex: 1, fontSize: 13, color: '#e2e8f0', fontFamily: 'monospace', wordBreak: 'break-all' }}>{affiliateLink}</span>
               <button
-                onClick={handleCopyLink}
-                style={{
-                  background: copied ? '#10b981' : '#7c3aed',
-                  color: '#fff', border: 'none', borderRadius: 8,
-                  padding: '8px 16px', fontWeight: 700, fontSize: 13,
-                  cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0,
-                  display: 'flex', alignItems: 'center', gap: 6
-                }}
-              >
-                {copied ? '✓ Copied!' : '📋 Copy Link'}
-              </button>
+                  onClick={handleCopyLink}
+                  style={{
+                    background: copied ? '#10b981' : '#7c3aed',
+                    color: '#fff', border: 'none', borderRadius: 8,
+                    padding: '8px 16px', fontWeight: 700, fontSize: 13,
+                    cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0,
+                    display: 'flex', alignItems: 'center', gap: 6
+                  }}
+                >
+                  {copied ? (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      Copy Link
+                    </>
+                  )}
+                </button>
             </div>
           ) : (
             <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 10, padding: '12px 16px', color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
@@ -1121,67 +1204,123 @@ function AffiliateTab({ user, profile }) {
       </div>
 
       {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
+      <div className="affiliate-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
         {[
-          { label: 'Total Clicks', value: affiliate?.total_clicks || 0, icon: '🖱️', color: '#2563eb' },
-          { label: 'Conversions', value: affiliate?.total_referrals || 0, icon: '🎯', color: '#059669' },
-          { label: 'Total Earned', value: formatNGN(affiliate?.total_earnings), icon: '💰', color: '#7c3aed', isAmount: true },
-          { label: 'Pending Payout', value: formatNGN(pendingEarnings), icon: '⏳', color: '#d97706', isAmount: true },
-          { label: 'Total Paid Out', value: formatNGN(affiliate?.total_paid), icon: '✅', color: '#059669', isAmount: true },
+          { 
+            label: 'Total Clicks', 
+            value: affiliate?.total_clicks || 0, 
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+            ), 
+            color: '#2563eb' 
+          },
+          { 
+            label: 'Conversions', 
+            value: affiliate?.total_referrals || 0, 
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+            ), 
+            color: '#059669' 
+          },
+          { 
+            label: 'Total Earned', 
+            value: formatNGN(affiliate?.total_earnings), 
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            ), 
+            color: '#7c3aed', 
+            isAmount: true 
+          },
+          { 
+            label: 'Pending Payout', 
+            value: formatNGN(pendingEarnings), 
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            ), 
+            color: '#d97706', 
+            isAmount: true 
+          },
+          { 
+            label: 'Total Paid Out', 
+            value: formatNGN(affiliate?.total_paid), 
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            ), 
+            color: '#059669', 
+            isAmount: true 
+          },
         ].map(stat => (
-          <div key={stat.label} style={{
-            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12,
-            padding: '20px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-          }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>{stat.icon}</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: stat.color }}>{stat.value}</div>
-            <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginTop: 4 }}>{stat.label}</div>
-          </div>
+          <AffiliateStatCard key={stat.label} stat={stat} />
         ))}
       </div>
 
       {/* Tier + Commission Rate */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
+      <div className="affiliate-tier-container" style={{ display: 'flex', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
         <div style={{
           flex: 1, minWidth: 240,
           background: tier.bg, border: `1.5px solid ${tier.color}30`,
-          borderRadius: 12, padding: '18px 20px',
-          display: 'flex', alignItems: 'center', gap: 14
+          borderRadius: 14, padding: '20px 24px',
+          display: 'flex', alignItems: 'center', gap: 16,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.01)',
         }}>
-          <span style={{ fontSize: 36 }}>{tier.emoji}</span>
+          <span style={{ display: 'inline-flex', color: tier.color, padding: 10, borderRadius: 10, background: '#ffffffcc' }}>{tier.icon}</span>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: tier.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Your Tier</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: tier.color }}>{tier.label}</div>
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>Commission rate: <strong style={{ color: tier.color }}>{affiliate?.custom_rate || affiliate?.commission_rate || 20}%</strong></div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: tier.color, textTransform: 'uppercase', letterSpacing: '0.8px' }}>Your Tier</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: tier.color, margin: '2px 0' }}>{tier.label}</div>
+            <div style={{ fontSize: 13, color: '#475569' }}>Commission rate: <strong style={{ color: tier.color }}>{affiliate?.custom_rate || affiliate?.commission_rate || 20}%</strong></div>
           </div>
         </div>
         <div style={{
           flex: 1, minWidth: 240,
-          background: '#f0fdf4', border: '1.5px solid #bbf7d0',
-          borderRadius: 12, padding: '18px 20px'
+          background: '#f8fafc', border: '1.5px solid #e2e8f0',
+          borderRadius: 14, padding: '20px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.01)',
         }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>🚀 Tier Progress</div>
-          <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6 }}>
-            <div>Bronze: 0+ sales → <strong>20%</strong></div>
-            <div>Silver: 6+ sales → <strong>25%</strong></div>
-            <div>Gold: 21+ sales → <strong>30%</strong></div>
-            <div>Platinum: 50+ sales → <strong>35%</strong></div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8 }}>Tier Progress Structure</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 12px', fontSize: 12.5, color: '#64748b' }}>
+            <div>Bronze: 0+ sales → <strong style={{ color: '#c2410c' }}>20%</strong></div>
+            <div>Silver: 6+ sales → <strong style={{ color: '#475569' }}>25%</strong></div>
+            <div>Gold: 21+ sales → <strong style={{ color: '#a16207' }}>30%</strong></div>
+            <div>Platinum: 50+ sales → <strong style={{ color: '#6d28d9' }}>35%</strong></div>
           </div>
         </div>
       </div>
 
       {/* Sub-tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #e2e8f0', marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 24, padding: 4, background: '#f1f5f9', borderRadius: 10, width: 'fit-content', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }} className="no-scrollbar">
         {subTabs.map(t => (
           <button
             key={t.id}
             onClick={() => setActiveSubTab(t.id)}
             style={{
-              background: 'none', border: 'none', padding: '10px 18px',
-              fontWeight: 700, fontSize: 13, cursor: 'pointer',
+              background: activeSubTab === t.id ? '#fff' : 'transparent',
+              border: 'none',
+              padding: '8px 16px',
+              fontWeight: activeSubTab === t.id ? 700 : 500,
+              fontSize: 13,
+              cursor: 'pointer',
               color: activeSubTab === t.id ? '#2563eb' : '#64748b',
-              borderBottom: `2px solid ${activeSubTab === t.id ? '#2563eb' : 'transparent'}`,
-              marginBottom: -2, transition: 'all 0.15s', fontFamily: 'var(--font)'
+              borderRadius: 8,
+              boxShadow: activeSubTab === t.id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              transition: 'all 0.15s',
+              fontFamily: 'var(--font)',
+              whiteSpace: 'nowrap'
             }}
           >{t.label}</button>
         ))}
@@ -1192,13 +1331,16 @@ function AffiliateTab({ user, profile }) {
         <div>
           {/* Share CTA */}
           <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 20, marginBottom: 20 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#1e40af', marginBottom: 8 }}>📣 Share Your Link To Start Earning</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: '#1e40af', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 19l7-7 3 3-10 10-10-10 3-3 7 7zm0-16v11"/></svg>
+              Share Your Link To Start Earning
+            </div>
             <p style={{ fontSize: 13, color: '#3b82f6', margin: '0 0 14px' }}>Every time someone buys through your link, you earn {affiliate?.commission_rate || 20}% of the sale.</p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               {[
-                { label: '💬 WhatsApp', bg: '#25D366', url: `https://wa.me/?text=${encodeURIComponent(`Check out Amplified Skills - the best platform to learn in-demand skills! ${affiliateLink || ''}`)}` },
-                { label: '📘 Facebook', bg: '#1877F2', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(affiliateLink || window.location.origin)}` },
-                { label: '🐦 Twitter/X', bg: '#000', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`I just discovered @AmplifiedSkills - amazing courses for career growth! ${affiliateLink || ''}`)}` },
+                { label: 'WhatsApp', bg: '#25D366', url: `https://wa.me/?text=${encodeURIComponent(`Check out Amplified Skills - the best platform to learn in-demand skills! ${affiliateLink || ''}`)}` },
+                { label: 'Facebook', bg: '#1877F2', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(affiliateLink || window.location.origin)}` },
+                { label: 'Twitter/X', bg: '#000', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`I just discovered @AmplifiedSkills - amazing courses for career growth! ${affiliateLink || ''}`)}` },
               ].map(s => (
                 <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                   <button style={{ background: s.bg, color: '#fff', border: 'none', padding: '9px 16px', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>{s.label}</button>
@@ -1232,7 +1374,11 @@ function AffiliateTab({ user, profile }) {
 
           {commissions.length === 0 && (
             <div style={{ textAlign: 'center', padding: '40px 24px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🎯</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '50%', background: '#f8fafc', color: '#64748b', marginBottom: 14 }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+                </svg>
+              </div>
               <div style={{ fontWeight: 700, fontSize: 16, color: '#0b1329', marginBottom: 8 }}>No commissions yet</div>
               <div style={{ fontSize: 13, color: '#64748b' }}>Share your link to start earning. Every sale through your link earns you {affiliate?.commission_rate || 20}% commission!</div>
             </div>
@@ -1245,13 +1391,17 @@ function AffiliateTab({ user, profile }) {
         <div>
           {commissions.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 24px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>💸</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '50%', background: '#f8fafc', color: '#64748b', marginBottom: 14 }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
               <div style={{ fontWeight: 700, fontSize: 16, color: '#0b1329', marginBottom: 8 }}>No commissions yet</div>
               <div style={{ fontSize: 13, color: '#64748b' }}>Commissions appear here when someone buys through your referral link.</div>
             </div>
           ) : (
-            <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div className="responsive-table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflowX: 'auto', overflowY: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
                     {['Order Ref', 'Date', 'Order Amount', 'Commission Rate', 'You Earned', 'Status'].map(h => (
@@ -1286,17 +1436,24 @@ function AffiliateTab({ user, profile }) {
       {activeSubTab === 'payouts' && (
         <div>
           <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 13, color: '#92400e' }}>
-            ⏱️ Payouts are processed monthly. Minimum payout threshold: ₦5,000. Contact support to update your bank details.
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', verticalAlign: 'text-bottom', marginRight: 6 }}>
+              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+            Payouts are processed monthly. Minimum payout threshold: ₦5,000. Contact support to update your bank details.
           </div>
           {payouts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 24px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🏦</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '50%', background: '#f8fafc', color: '#64748b', marginBottom: 14 }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 21h18M3 10h18M5 10v11M19 10v11M12 10v11M4 6l8-4 8 4z" />
+                </svg>
+              </div>
               <div style={{ fontWeight: 700, fontSize: 16, color: '#0b1329' }}>No payouts yet</div>
               <div style={{ fontSize: 13, color: '#64748b', marginTop: 8 }}>Payouts appear here once admin approves and processes your commissions.</div>
             </div>
           ) : (
-            <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div className="responsive-table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflowX: 'auto', overflowY: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
                     {['Date', 'Amount', 'Method', 'Reference', 'Status'].map(h => (
@@ -1327,13 +1484,51 @@ function AffiliateTab({ user, profile }) {
       {activeSubTab === 'howto' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {[
-            { step: '1', icon: '🔗', title: 'Share Your Unique Link', desc: 'Your link automatically tracks anyone who clicks it for 30 days. Share on WhatsApp, social media, email, or your blog.' },
-            { step: '2', icon: '🛒', title: 'Your Referral Makes a Purchase', desc: 'When someone buys any product through your link within 30 days, a commission is automatically created for you.' },
-            { step: '3', icon: '⏳', title: 'Commission is Approved', desc: 'Our team reviews and approves commissions within a few days. You can track status in the Commissions tab.' },
-            { step: '4', icon: '💸', title: 'Get Paid Monthly', desc: 'Once your balance reaches ₦5,000, you will receive a bank transfer on or before the 5th of each month.' },
+            { 
+              step: '1', 
+              icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#fff' }}>
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              ), 
+              title: 'Share Your Unique Link', 
+              desc: 'Your link automatically tracks anyone who clicks it for 30 days. Share on WhatsApp, social media, email, or your blog.' 
+            },
+            { 
+              step: '2', 
+              icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#fff' }}>
+                  <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+              ), 
+              title: 'Your Referral Makes a Purchase', 
+              desc: 'When someone buys any product through your link within 30 days, a commission is automatically created for you.' 
+            },
+            { 
+              step: '3', 
+              icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#fff' }}>
+                  <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                </svg>
+              ), 
+              title: 'Commission is Approved', 
+              desc: 'Our team reviews and approves commissions within a few days. You can track status in the Commissions tab.' 
+            },
+            { 
+              step: '4', 
+              icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#fff' }}>
+                  <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              ), 
+              title: 'Get Paid Monthly', 
+              desc: 'Once your balance reaches ₦5,000, you will receive a bank transfer on or before the 5th of each month.' 
+            },
           ].map(item => (
             <div key={item.step} style={{ display: 'flex', gap: 16, padding: '20px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 20 }}>{item.icon}</div>
+              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{item.icon}</div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: 15, color: '#0b1329', marginBottom: 4 }}>Step {item.step}: {item.title}</div>
                 <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{item.desc}</div>
@@ -2068,6 +2263,45 @@ export default function LMSDashboard() {
           .ud-tab-title {
             font-size: 24px;
             margin-bottom: 20px;
+          }
+        }
+        
+        /* Affiliate Dashboard Responsiveness */
+        @media (max-width: 640px) {
+          .affiliate-stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+          .affiliate-hero-banner {
+            padding: 24px 20px !important;
+          }
+          .affiliate-hero-banner h2 {
+            font-size: 19px !important;
+          }
+          .affiliate-hero-banner p {
+            font-size: 13px !important;
+            margin-bottom: 16px !important;
+          }
+          .affiliate-link-box {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            padding: 10px 12px !important;
+          }
+          .affiliate-link-box span:first-child {
+            align-self: flex-start !important;
+          }
+          .affiliate-link-box button {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          .affiliate-tier-container {
+            flex-direction: column !important;
+          }
+          .responsive-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
           }
         }
       `}} />

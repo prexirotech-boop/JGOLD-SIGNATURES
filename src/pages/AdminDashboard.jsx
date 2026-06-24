@@ -16,6 +16,8 @@ import AdminPages from './AdminPages'
 import AdminAffiliates from './AdminAffiliates'
 import AdminPayouts from './AdminPayouts'
 import AdminUpsells from './AdminUpsells'
+import AdminAnalytics from './AdminAnalytics'
+import AdminPlatformAnalytics from './AdminPlatformAnalytics'
 
 function AdminOverview() {
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0, productsCount: 0, conversionRate: 0, courseStats: [], unansweredQna: 0 })
@@ -1264,7 +1266,7 @@ export default function AdminDashboard() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
   const [expandedTabs, setExpandedTabs] = useState(() => {
-    const active = {}
+    const active = { Sales: true }
     if (location.pathname.includes('/courses') || location.pathname.includes('/qna') || location.pathname.includes('/reviews')) active.Academics = true
     if (location.pathname.includes('/users')) active['Users & Staff'] = true
     if (location.pathname.includes('/orders') || location.pathname.includes('/coupons') || location.pathname.includes('/products') || location.pathname.includes('/affiliates') || location.pathname.includes('/payouts') || location.pathname.includes('/upsells')) active.Sales = true
@@ -1490,9 +1492,21 @@ export default function AdminDashboard() {
       subItems: [
         { name: 'Products', path: '/admin/products' },
         { name: 'Orders', path: '/admin/orders' },
-        { name: 'Discount Coupons', path: '/admin/coupons' }
-        // Affiliate, Payouts, and Upsells disabled for now
+        { name: 'Discount Coupons', path: '/admin/coupons' },
+        { name: 'Affiliates', path: '/admin/affiliates' },
+        { name: 'Payouts', path: '/admin/payouts' },
+        { name: 'Upsells', path: '/admin/upsells' }
       ]
+    },
+    { 
+      name: 'Marketing & Funnels', 
+      path: '/admin/analytics', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    },
+    { 
+      name: 'Platform Analytics', 
+      path: '/admin/platform-analytics', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
     },
     { 
       name: 'Users & Staff', 
@@ -1517,9 +1531,7 @@ export default function AdminDashboard() {
     { 
       name: 'Frontend Pages', 
       path: '/admin/pages', 
-      icon: <>
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </>
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
     }
   ]
 
@@ -2037,9 +2049,11 @@ export default function AdminDashboard() {
             <Route path="/certificates" element={<AdminCertificates />} />
             <Route path="/settings" element={<AdminSettings />} />
             <Route path="/pages" element={<AdminPages />} />
-            <Route path="/affiliates" element={<div style={{ padding: 28, color: '#64748b' }}><h3>Affiliate System is temporarily disabled</h3></div>} />
-            <Route path="/payouts" element={<div style={{ padding: 28, color: '#64748b' }}><h3>Payout System is temporarily disabled</h3></div>} />
-            <Route path="/upsells" element={<div style={{ padding: 28, color: '#64748b' }}><h3>Upsells & Cross-sells System is temporarily disabled</h3></div>} />
+            <Route path="/analytics" element={<AdminAnalytics />} />
+            <Route path="/platform-analytics" element={<AdminPlatformAnalytics />} />
+            <Route path="/affiliates" element={<AdminAffiliates />} />
+            <Route path="/payouts" element={<AdminPayouts />} />
+            <Route path="/upsells" element={<AdminUpsells />} />
           </Routes>
         </main>
       </div>

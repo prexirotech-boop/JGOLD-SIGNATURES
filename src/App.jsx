@@ -37,9 +37,8 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AuthProvider } from './context/AuthContext'
+import { trackEvent } from './lib/analytics'
 import { getPages } from './lib/pagesScanner'
-import AffiliatePage from './pages/AffiliatePage'
-import { useAffiliate } from './hooks/useAffiliate'
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -52,11 +51,9 @@ function ScrollToTop() {
 function AppLayout() {
   const location = useLocation()
   
-  // Track PageView on location changes for Facebook Pixel
+  // Track PageView on location changes for Facebook Pixel & DB Analytics
   useEffect(() => {
-    if (window.fbq) {
-      window.fbq('track', 'PageView')
-    }
+    trackEvent('page_view')
   }, [location])
 
   // Affiliate referral tracking disabled for now

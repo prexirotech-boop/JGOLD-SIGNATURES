@@ -6,11 +6,67 @@ import { supabase } from '../lib/supabase'
 // ─────────────────────────────────────────────────────────────────────────────
 
 const TYPE_CONFIG = {
-  order_bump:      { label: 'Order Bump',       color: '#7c3aed', bg: '#f5f3ff', icon: '⚡' },
-  post_purchase:   { label: 'Post-Purchase',    color: '#2563eb', bg: '#eff6ff', icon: '🎯' },
-  cross_sell:      { label: 'Cross-sell',        color: '#059669', bg: '#ecfdf5', icon: '🔀' },
-  bundle_deal:     { label: 'Bundle Deal',       color: '#d97706', bg: '#fffbeb', icon: '📦' },
-  homepage_banner: { label: 'Homepage Banner',  color: '#dc2626', bg: '#fef2f2', icon: '🏠' },
+  order_bump: { 
+    label: 'Order Bump',       
+    color: '#7c3aed', 
+    bg: '#f5f3ff', 
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    ) 
+  },
+  post_purchase: { 
+    label: 'Post-Purchase',    
+    color: '#2563eb', 
+    bg: '#eff6ff', 
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="6"/>
+        <circle cx="12" cy="12" r="2"/>
+      </svg>
+    ) 
+  },
+  cross_sell: { 
+    label: 'Cross-sell',        
+    color: '#059669', 
+    bg: '#ecfdf5', 
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+        <polyline points="16 3 21 3 21 8"/>
+        <line x1="4" y1="20" x2="21" y2="3"/>
+        <polyline points="21 16 21 21 16 21"/>
+        <line x1="15" y1="15" x2="21" y2="21"/>
+        <line x1="4" y1="4" x2="9" y2="9"/>
+      </svg>
+    ) 
+  },
+  bundle_deal: { 
+    label: 'Bundle Deal',       
+    color: '#d97706', 
+    bg: '#fffbeb', 
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+        <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/>
+        <polygon points="12 22.08 12 12 3 6.92 3 16.15 12 22.08"/>
+        <polygon points="12 22.08 21 16.15 21 6.92 12 12 12 22.08"/>
+        <polygon points="12 12 21 6.92 12 1.85 3 6.92 12 12"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+    ) 
+  },
+  homepage_banner: { 
+    label: 'Homepage Banner',  
+    color: '#dc2626', 
+    bg: '#fef2f2', 
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    ) 
+  },
 }
 
 const PLACEMENT_OPTIONS = [
@@ -320,6 +376,143 @@ function PreviewModal({ offer, onClose }) {
 // CREATE / EDIT MODAL
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CUSTOM SELECT COMPONENT (Emoji-free, with SVGs and text formatting)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function CustomSelect({ value, onChange, options, placeholder = "Select an option..." }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef(null)
+  
+  useClickOutside(containerRef, () => setIsOpen(false))
+
+  const selectedOption = options.find(opt => opt.value === value)
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          padding: '10px 14px',
+          borderRadius: 8,
+          border: isOpen ? '1.5px solid #4f46e5' : '1.5px solid #e2e8f0',
+          fontSize: '13.5px',
+          color: '#1a1f36',
+          backgroundColor: '#fafbfc',
+          outline: 'none',
+          boxSizing: 'border-box',
+          transition: 'all 0.15s',
+          fontFamily: 'inherit',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          cursor: 'pointer',
+          boxShadow: isOpen ? '0 0 0 3px rgba(79, 70, 229, 0.1)' : 'none',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+          {selectedOption?.icon && (
+            <span style={{ display: 'inline-flex', flexShrink: 0, color: selectedOption.iconColor || '#6b7280' }}>
+              {selectedOption.icon}
+            </span>
+          )}
+          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', fontWeight: selectedOption ? 500 : 400 }}>
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
+        </div>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#6b7280"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s',
+            flexShrink: 0,
+            marginLeft: '8px',
+          }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 6px)',
+            left: 0,
+            right: 0,
+            background: '#ffffff',
+            borderRadius: 8,
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+            maxHeight: '260px',
+            overflowY: 'auto',
+            zIndex: 9999,
+            padding: '4px',
+          }}
+        >
+          {options.map((opt) => {
+            const isSelected = opt.value === value
+            return (
+              <div
+                key={opt.value}
+                onClick={() => {
+                  onChange(opt.value)
+                  setIsOpen(false)
+                }}
+                style={{
+                  padding: '9px 12px',
+                  borderRadius: 6,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2px',
+                  backgroundColor: isSelected ? '#eff6ff' : 'transparent',
+                  color: isSelected ? '#1e40af' : '#1a1f36',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s, color 0.15s',
+                  userSelect: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.backgroundColor = '#f1f5f9'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                  }
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: isSelected ? 600 : 500 }}>
+                  {opt.icon && (
+                    <span style={{ display: 'inline-flex', flexShrink: 0, color: opt.iconColor || (isSelected ? '#1d4ed8' : '#6b7280') }}>
+                      {opt.icon}
+                    </span>
+                  )}
+                  <span>{opt.label}</span>
+                </div>
+                {opt.subtitle && (
+                  <div style={{ fontSize: '11px', color: isSelected ? '#3b82f6' : '#64748b', marginLeft: opt.icon ? '22px' : '0' }}>
+                    {opt.subtitle}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function OfferModal({ editOffer, products, onClose, onSaved }) {
   const isEdit = !!editOffer
 
@@ -399,17 +592,6 @@ function OfferModal({ editOffer, products, onClose, onSaved }) {
     fontFamily: 'inherit',
   }
 
-  const selectStyle = {
-    ...inputStyle,
-    paddingRight: 36,
-    appearance: 'none',
-    backgroundImage: SELECT_ARROW,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 10px center',
-    backgroundSize: '14px',
-    cursor: 'pointer',
-  }
-
   const labelStyle = {
     display: 'block',
     fontWeight: 600,
@@ -430,23 +612,68 @@ function OfferModal({ editOffer, products, onClose, onSaved }) {
     borderBottom: '1px solid #f1f5f9',
   }
 
+  const offerTypeOptions = Object.entries(TYPE_CONFIG).map(([k, v]) => ({
+    value: k,
+    label: v.label,
+    icon: v.icon,
+    iconColor: v.color
+  }))
+
+  const triggerProductOptions = [
+    { value: '', label: 'Show everywhere (all products)' },
+    ...products.map(p => ({
+      value: p.id,
+      label: p.title,
+      subtitle: fmt(p.price)
+    }))
+  ]
+
+  const offeredProductOptions = [
+    { value: '', label: 'Select a product...' },
+    ...products.map(p => ({
+      value: p.id,
+      label: p.title,
+      subtitle: fmt(p.price)
+    }))
+  ]
+
+  const discountTypeOptions = [
+    { value: 'none', label: 'No Discount' },
+    { value: 'percentage', label: 'Percentage (%)' },
+    { value: 'fixed', label: 'Fixed Amount (₦)' }
+  ]
+
   return (
     <div style={{
       position: 'fixed', inset: 0,
       background: 'rgba(15,23,42,0.5)',
-      backdropFilter: 'blur(5px)',
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-      zIndex: 1000, padding: '24px 16px',
-      overflowY: 'auto',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 16, zIndex: 1000,
+      backdropFilter: 'blur(4px)',
     }}>
+      <style>{`
+        .offer-modal-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 28px;
+        }
+        @media (max-width: 800px) {
+          .offer-modal-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+        }
+      `}</style>
       <div style={{
         background: '#fff',
         borderRadius: 16,
         width: '100%',
-        maxWidth: 640,
+        maxWidth: 950,
         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
         overflow: 'hidden',
-        marginBottom: 24,
+        maxHeight: '90vh',
+        display: 'flex',
+        flexDirection: 'column',
       }}>
         <div style={{
           padding: '20px 28px',
@@ -454,10 +681,11 @@ function OfferModal({ editOffer, products, onClose, onSaved }) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexShrink: 0,
         }}>
           <div>
             <h3 style={{ color: '#fff', fontSize: 17, fontWeight: 700, margin: 0 }}>
-              {isEdit ? '✏️ Edit Offer' : '✨ Create New Offer'}
+              {isEdit ? 'Edit Offer' : 'Create New Offer'}
             </h3>
             <p style={{ color: '#a5b4fc', fontSize: 12.5, margin: '4px 0 0' }}>
               {isEdit ? `Editing: ${editOffer.name}` : 'Set up a new upsell or cross-sell offer'}
@@ -472,173 +700,190 @@ function OfferModal({ editOffer, products, onClose, onSaved }) {
           }}>×</button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ padding: '28px 28px 24px', display: 'flex', flexDirection: 'column', gap: 24 }}>
-
-          <div>
-            <div style={sectionHeaderStyle}>🏷️ Offer Identity</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <form onSubmit={handleSubmit} style={{
+          padding: '28px 28px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 24,
+          overflowY: 'auto',
+        }}>
+          
+          <div className="offer-modal-grid">
+            
+            {/* Left Column: identity, products, toggle */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               <div>
-                <label style={labelStyle}>Internal Name *</label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={e => set('name', e.target.value)}
-                  placeholder="e.g. Post-Purchase Course Bundle for SEO Masterclass"
-                  style={inputStyle}
-                  required
-                />
-                <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>Only visible in admin. Used to identify this offer.</div>
-              </div>
+                <div style={sectionHeaderStyle}>Offer Identity</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div>
+                    <label style={labelStyle}>Internal Name *</label>
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={e => set('name', e.target.value)}
+                      placeholder="e.g. Post-Purchase Course Bundle for SEO Masterclass"
+                      style={inputStyle}
+                      required
+                    />
+                    <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>Only visible in admin. Used to identify this offer.</div>
+                  </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                <div>
-                  <label style={labelStyle}>Offer Type *</label>
-                  <select value={form.offer_type} onChange={e => set('offer_type', e.target.value)} style={selectStyle}>
-                    {Object.entries(TYPE_CONFIG).map(([k, v]) => (
-                      <option key={k} value={k}>{v.icon} {v.label}</option>
-                    ))}
-                  </select>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={labelStyle}>Offer Type *</label>
+                      <CustomSelect
+                        value={form.offer_type}
+                        onChange={v => set('offer_type', v)}
+                        options={offerTypeOptions}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Display Order</label>
+                      <input
+                        type="number"
+                        value={form.display_order}
+                        onChange={e => set('display_order', e.target.value)}
+                        style={inputStyle}
+                        min={0}
+                        placeholder="0"
+                      />
+                      <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>Lower = shown first</div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label style={labelStyle}>Display Order</label>
-                  <input
-                    type="number"
-                    value={form.display_order}
-                    onChange={e => set('display_order', e.target.value)}
-                    style={inputStyle}
-                    min={0}
-                    placeholder="0"
-                  />
-                  <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>Lower = shown first</div>
+              </div>
+
+              <div>
+                <div style={sectionHeaderStyle}>Products</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div>
+                    <label style={labelStyle}>Trigger Product</label>
+                    <CustomSelect
+                      value={form.trigger_product_id}
+                      onChange={v => set('trigger_product_id', v)}
+                      options={triggerProductOptions}
+                      placeholder="Show everywhere (all products)"
+                    />
+                    <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>This offer appears when the selected product is being purchased.</div>
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Offered Product *</label>
+                    <CustomSelect
+                      value={form.offered_product_id}
+                      onChange={v => set('offered_product_id', v)}
+                      options={offeredProductOptions}
+                      placeholder="Select a product..."
+                    />
+                    <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>The product you are offering as an upsell.</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div>
-            <div style={sectionHeaderStyle}>🛍️ Products</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={labelStyle}>Trigger Product</label>
-                <select value={form.trigger_product_id} onChange={e => set('trigger_product_id', e.target.value)} style={selectStyle}>
-                  <option value="">Show everywhere (all products)</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id}>{p.title} — {fmt(p.price)}</option>
-                  ))}
-                </select>
-                <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>This offer appears when the selected product is being purchased.</div>
-              </div>
-              <div>
-                <label style={labelStyle}>Offered Product *</label>
-                <select value={form.offered_product_id} onChange={e => set('offered_product_id', e.target.value)} style={selectStyle} required>
-                  <option value="">Select a product...</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id}>{p.title} — {fmt(p.price)}</option>
-                  ))}
-                </select>
-                <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>The product you are offering as an upsell.</div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div style={sectionHeaderStyle}>✍️ Offer Copy (Customer-Facing)</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={labelStyle}>Headline *</label>
-                <input
-                  type="text"
-                  value={form.headline}
-                  onChange={e => set('headline', e.target.value)}
-                  placeholder="e.g. Wait! Add our Advanced SEO Course at 50% off"
-                  style={inputStyle}
-                  required
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Description</label>
-                <textarea
-                  value={form.description}
-                  onChange={e => set('description', e.target.value)}
-                  rows={3}
-                  placeholder="Describe the value of this offer in 1-2 sentences..."
-                  style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>CTA Button Text</label>
-                <input
-                  type="text"
-                  value={form.cta_text}
-                  onChange={e => set('cta_text', e.target.value)}
-                  placeholder="Add to Order"
-                  style={inputStyle}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div style={sectionHeaderStyle}>💰 Discount</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <div>
-                <label style={labelStyle}>Discount Type</label>
-                <select value={form.discount_type} onChange={e => set('discount_type', e.target.value)} style={selectStyle}>
-                  <option value="none">No Discount</option>
-                  <option value="percentage">Percentage (%)</option>
-                  <option value="fixed">Fixed Amount (₦)</option>
-                </select>
-              </div>
-              {form.discount_type !== 'none' && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '14px 16px',
+                background: '#f8fafc',
+                borderRadius: 10,
+                border: '1.5px solid #e2e8f0',
+                marginTop: 'auto',
+              }}>
                 <div>
-                  <label style={labelStyle}>
-                    {form.discount_type === 'percentage' ? 'Percentage Off (%)' : 'Amount Off (₦)'}
-                  </label>
-                  <input
-                    type="number"
-                    value={form.discount_value}
-                    onChange={e => set('discount_value', e.target.value)}
-                    placeholder={form.discount_type === 'percentage' ? 'e.g. 30' : 'e.g. 2000'}
-                    style={inputStyle}
-                    min={0}
-                    step={form.discount_type === 'percentage' ? 1 : 0.01}
-                  />
-                  {form.discount_type === 'fixed' && (
-                    <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>Enter in Naira. Converted to kobo automatically.</div>
+                  <div style={{ fontWeight: 600, fontSize: 13.5, color: '#1a1f36' }}>Active Offer</div>
+                  <div style={{ fontSize: 12, color: '#697386', marginTop: 2 }}>
+                    {form.is_active ? 'Offer is live and visible to users' : 'Offer is hidden from users'}
+                  </div>
+                </div>
+                <Toggle checked={form.is_active} onChange={v => set('is_active', v)} />
+              </div>
+            </div>
+            
+            {/* Right Column: copy, discount, placement */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <div>
+                <div style={sectionHeaderStyle}>Offer Copy (Customer-Facing)</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div>
+                    <label style={labelStyle}>Headline *</label>
+                    <input
+                      type="text"
+                      value={form.headline}
+                      onChange={e => set('headline', e.target.value)}
+                      placeholder="e.g. Wait! Add our Advanced SEO Course at 50% off"
+                      style={inputStyle}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Description</label>
+                    <textarea
+                      value={form.description}
+                      onChange={e => set('description', e.target.value)}
+                      rows={3}
+                      placeholder="Describe the value of this offer in 1-2 sentences..."
+                      style={{ ...inputStyle, resize: 'none', lineHeight: 1.6 }}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>CTA Button Text</label>
+                    <input
+                      type="text"
+                      value={form.cta_text}
+                      onChange={e => set('cta_text', e.target.value)}
+                      placeholder="Add to Order"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div style={sectionHeaderStyle}>Discount</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div>
+                    <label style={labelStyle}>Discount Type</label>
+                    <CustomSelect
+                      value={form.discount_type}
+                      onChange={v => set('discount_type', v)}
+                      options={discountTypeOptions}
+                    />
+                  </div>
+                  {form.discount_type !== 'none' && (
+                    <div>
+                      <label style={labelStyle}>
+                        {form.discount_type === 'percentage' ? 'Percentage Off (%)' : 'Amount Off (₦)'}
+                      </label>
+                      <input
+                        type="number"
+                        value={form.discount_value}
+                        onChange={e => set('discount_value', e.target.value)}
+                        placeholder={form.discount_type === 'percentage' ? 'e.g. 30' : 'e.g. 2000'}
+                        style={inputStyle}
+                        min={0}
+                        step={form.discount_type === 'percentage' ? 1 : 0.01}
+                      />
+                      {form.discount_type === 'fixed' && (
+                        <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 4 }}>Enter in Naira. Converted to kobo automatically.</div>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          <div>
-            <div style={sectionHeaderStyle}>📍 Placement</div>
-            <label style={labelStyle}>Placement Pages</label>
-            <PlacementCheckboxes
-              value={form.placement_pages}
-              onChange={v => set('placement_pages', v)}
-            />
-            <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 8 }}>
-              Select where this offer should be displayed to users.
-            </div>
-          </div>
-
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 16px',
-            background: '#f8fafc',
-            borderRadius: 10,
-            border: '1.5px solid #e2e8f0',
-          }}>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: 13.5, color: '#1a1f36' }}>Active Offer</div>
-              <div style={{ fontSize: 12, color: '#697386', marginTop: 2 }}>
-                {form.is_active ? 'Offer is live and visible to users' : 'Offer is hidden from users'}
+              <div>
+                <div style={sectionHeaderStyle}>Placement</div>
+                <label style={labelStyle}>Placement Pages</label>
+                <PlacementCheckboxes
+                  value={form.placement_pages}
+                  onChange={v => set('placement_pages', v)}
+                />
+                <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 8 }}>
+                  Select where this offer should be displayed to users.
+                </div>
               </div>
             </div>
-            <Toggle checked={form.is_active} onChange={v => set('is_active', v)} />
+            
           </div>
 
           {error && (
@@ -650,11 +895,16 @@ function OfferModal({ editOffer, products, onClose, onSaved }) {
               borderRadius: 8,
               fontSize: 13,
             }}>
-              ⚠️ {error}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', verticalAlign: 'text-bottom', marginRight: 6 }}>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              {error}
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ display: 'flex', gap: 12, marginTop: 12, borderTop: '1px solid #f1f5f9', paddingTop: 20 }}>
             <button
               type="submit"
               disabled={submitting}
@@ -672,7 +922,7 @@ function OfferModal({ editOffer, products, onClose, onSaved }) {
                 transition: 'all 0.2s',
               }}
             >
-              {submitting ? '⏳ Saving...' : isEdit ? '✅ Save Changes' : '🚀 Create Offer'}
+              {submitting ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Offer'}
             </button>
             <button
               type="button"
@@ -1061,12 +1311,21 @@ export default function AdminUpsells() {
 
                       {/* Performance */}
                       <td style={{ padding: '14px 18px', minWidth: 170 }}>
-                        <div style={{ fontSize: 12.5, color: '#374151' }}>
-                          <span style={{ color: '#697386' }}>👁</span>{' '}
-                          <strong>{impressions.toLocaleString()}</strong> imp
-                          <span style={{ color: '#e2e8f0', margin: '0 5px' }}>|</span>
-                          <span style={{ color: '#697386' }}>✓</span>{' '}
-                          <strong>{conversions.toLocaleString()}</strong> conv
+                        <div style={{ fontSize: 12.5, color: '#374151', display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#64748b' }}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block' }}>
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <strong>{impressions.toLocaleString()}</strong> imp
+                          </span>
+                          <span style={{ color: '#cbd5e1' }}>|</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#64748b' }}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block' }}>
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            <strong>{conversions.toLocaleString()}</strong> conv
+                          </span>
                         </div>
                         {convRate !== null && (
                           <div style={{ marginTop: 6 }}>
@@ -1080,8 +1339,12 @@ export default function AdminUpsells() {
                           </div>
                         )}
                         {offer.revenue_kobo > 0 && (
-                          <div style={{ fontSize: 11.5, color: '#059669', marginTop: 5, fontWeight: 500 }}>
-                            💸 {fmt(offer.revenue_kobo)} earned
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11.5, color: '#059669', marginTop: 5, fontWeight: 600 }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="12" y1="1" x2="12" y2="23" />
+                              <path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6" />
+                            </svg>
+                            <span>{fmt(offer.revenue_kobo)} earned</span>
                           </div>
                         )}
                       </td>
@@ -1108,9 +1371,43 @@ export default function AdminUpsells() {
                       {/* Actions */}
                       <td style={{ padding: '14px 18px' }}>
                         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                          <ActionBtn label="Edit"    icon="✏️" color="#2563eb" bg="#eff6ff" onClick={() => openEdit(offer)} />
-                          <ActionBtn label="Preview" icon="👁" color="#7c3aed" bg="#f5f3ff" onClick={() => setPreviewOffer(offer)} />
-                          <ActionBtn label={isDeleting ? '...' : 'Delete'} icon="🗑" color="#dc2626" bg="#fef2f2" onClick={() => !isDeleting && handleDelete(offer.id)} disabled={isDeleting} />
+                          <ActionBtn 
+                            label="Edit"    
+                            icon={
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z" />
+                              </svg>
+                            } 
+                            color="#2563eb" 
+                            bg="#eff6ff" 
+                            onClick={() => openEdit(offer)} 
+                          />
+                          <ActionBtn 
+                            label="Preview" 
+                            icon={
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                              </svg>
+                            } 
+                            color="#7c3aed" 
+                            bg="#f5f3ff" 
+                            onClick={() => setPreviewOffer(offer)} 
+                          />
+                          <ActionBtn 
+                            label={isDeleting ? '...' : 'Delete'} 
+                            icon={
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
+                            } 
+                            color="#dc2626" 
+                            bg="#fef2f2" 
+                            onClick={() => !isDeleting && handleDelete(offer.id)} 
+                            disabled={isDeleting} 
+                          />
                         </div>
                       </td>
                     </tr>

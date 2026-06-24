@@ -567,25 +567,11 @@ function PayoutModal({ affiliateGroup, onClose, onSuccess }) {
                 >
                   Payout Method *
                 </label>
-                <select
+                <CustomSelect
                   value={method}
-                  onChange={(e) => setMethod(e.target.value)}
-                  style={{
-                    width: '100%',
-                    border: '1.5px solid #cbd5e1',
-                    borderRadius: 9,
-                    padding: '9px 12px',
-                    fontSize: 14,
-                    color: '#1a1f36',
-                    background: '#fff',
-                    outline: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {PAYOUT_METHODS.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
+                  onChange={setMethod}
+                  options={PAYOUT_METHODS.map((m) => ({ value: m, label: m }))}
+                />
               </div>
 
               <div>
@@ -669,7 +655,12 @@ function PayoutModal({ affiliateGroup, onClose, onSuccess }) {
                 fontWeight: 500,
               }}
             >
-              ⚠️ {error}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', verticalAlign: 'text-bottom', marginRight: 6 }}>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              {error}
             </div>
           )}
         </div>
@@ -768,6 +759,127 @@ function PayoutModal({ affiliateGroup, onClose, onSuccess }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// CUSTOM SELECT COMPONENT & HOOK
+// ─────────────────────────────────────────────────────────────────────────────
+
+function useClickOutside(ref, handler) {
+  useEffect(() => {
+    const listener = (e) => { if (ref.current && !ref.current.contains(e.target)) handler() }
+    document.addEventListener('mousedown', listener)
+    return () => document.removeEventListener('mousedown', listener)
+  }, [ref, handler])
+}
+
+function CustomSelect({ value, onChange, options, minWidth = '100%' }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef(null)
+  
+  useClickOutside(containerRef, () => setIsOpen(false))
+
+  const selectedOption = options.find(opt => opt.value === value)
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: minWidth }}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          padding: '9px 12px',
+          borderRadius: 9,
+          border: isOpen ? '1.5px solid #6366f1' : '1.5px solid #cbd5e1',
+          fontSize: '14px',
+          color: '#1a1f36',
+          backgroundColor: '#fff',
+          outline: 'none',
+          boxSizing: 'border-box',
+          transition: 'all 0.15s',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          cursor: 'pointer',
+          boxShadow: isOpen ? '0 0 0 3px rgba(99, 102, 241, 0.1)' : 'none',
+        }}
+      >
+        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', fontWeight: 500 }}>
+          {selectedOption ? selectedOption.label : 'Select...'}
+        </span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#64748b"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s',
+            flexShrink: 0,
+            marginLeft: '8px',
+          }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            background: '#ffffff',
+            borderRadius: 8,
+            border: '1px solid #cbd5e1',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+            maxHeight: '220px',
+            overflowY: 'auto',
+            zIndex: 9999,
+            padding: '4px',
+          }}
+        >
+          {options.map((opt) => {
+            const isSelected = opt.value === value
+            return (
+              <div
+                key={opt.value}
+                onClick={() => {
+                  onChange(opt.value)
+                  setIsOpen(false)
+                }}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  backgroundColor: isSelected ? '#eff6ff' : 'transparent',
+                  color: isSelected ? '#1e40af' : '#1a1f36',
+                  fontSize: '13.5px',
+                  fontWeight: isSelected ? 600 : 500,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s, color 0.15s',
+                  textAlign: 'left',
+                  userSelect: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) e.currentTarget.style.backgroundColor = '#f1f5f9'
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'
+                }}
+              >
+                {opt.label}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // STAT CARD
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -790,11 +902,9 @@ function StatCard({ label, value, sub, icon, gradient }) {
       <div
         style={{
           position: 'absolute',
-          top: -10,
-          right: -10,
-          fontSize: 64,
+          top: 8,
+          right: 8,
           opacity: 0.08,
-          lineHeight: 1,
           pointerEvents: 'none',
           userSelect: 'none',
         }}
@@ -858,7 +968,11 @@ function PendingTab({ groups, loading, onCreatePayout }) {
           border: '1.5px dashed #e2e8f0',
         }}
       >
-        <div style={{ fontSize: 48, marginBottom: 14 }}>🎉</div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '50%', background: '#f0fdf4', color: '#16a34a', marginBottom: 16 }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
         <div style={{ fontWeight: 700, fontSize: 18, color: '#1a1f36', marginBottom: 8 }}>
           All Caught Up!
         </div>
@@ -1001,7 +1115,11 @@ function PendingTab({ groups, loading, onCreatePayout }) {
                 e.currentTarget.style.boxShadow = '0 4px 14px rgba(99,102,241,0.3)'
               }}
             >
-              💸 Create Payout
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', verticalAlign: 'text-bottom', marginRight: 6 }}>
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6" />
+              </svg>
+              Create Payout
             </button>
           </div>
         )
@@ -1095,7 +1213,12 @@ function HistoryTab({ payouts, loading, filter, onFilterChange }) {
             border: '1.5px dashed #e2e8f0',
           }}
         >
-          <div style={{ fontSize: 44, marginBottom: 12 }}>📭</div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 60, height: 60, borderRadius: '50%', background: '#f8fafc', color: '#64748b', marginBottom: 14 }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+          </div>
           <div style={{ fontWeight: 700, fontSize: 17, color: '#1a1f36', marginBottom: 6 }}>
             No Payouts Found
           </div>
@@ -1111,122 +1234,124 @@ function HistoryTab({ payouts, loading, filter, onFilterChange }) {
             background: '#fff',
             borderRadius: 16,
             border: '1.5px solid #e8edf5',
-            overflow: 'hidden',
+            overflowX: 'auto',
             boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
           }}
         >
-          {/* Table header */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1.3fr 1.1fr 1.6fr 1fr 1.1fr',
-              padding: '12px 20px',
-              background: '#f8fafc',
-              borderBottom: '1px solid #e2e8f0',
-              fontSize: 11.5,
-              fontWeight: 700,
-              color: '#94a3b8',
-              textTransform: 'uppercase',
-              letterSpacing: 0.8,
-              gap: 12,
-            }}
-          >
-            <span>Affiliate</span>
-            <span>Amount</span>
-            <span>Method</span>
-            <span>Reference</span>
-            <span>Status</span>
-            <span>Date</span>
-          </div>
+          <div style={{ minWidth: 850 }}>
+            {/* Table header */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1.3fr 1.1fr 1.6fr 1fr 1.1fr',
+                padding: '12px 20px',
+                background: '#f8fafc',
+                borderBottom: '1px solid #e2e8f0',
+                fontSize: 11.5,
+                fontWeight: 700,
+                color: '#94a3b8',
+                textTransform: 'uppercase',
+                letterSpacing: 0.8,
+                gap: 12,
+              }}
+            >
+              <span>Affiliate</span>
+              <span>Amount</span>
+              <span>Method</span>
+              <span>Reference</span>
+              <span>Status</span>
+              <span>Date</span>
+            </div>
 
-          {/* Table rows */}
-          {filtered.map((p, i) => {
-            const aff = p.affiliates
-            const profile = aff?.profiles
-            const name = profile?.full_name || 'Unknown'
-            return (
-              <div
-                key={p.id}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '2fr 1.3fr 1.1fr 1.6fr 1fr 1.1fr',
-                  padding: '14px 20px',
-                  borderBottom: i < filtered.length - 1 ? '1px solid #f1f5f9' : 'none',
-                  alignItems: 'center',
-                  gap: 12,
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
-                {/* Affiliate */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                  <Avatar url={profile?.avatar_url} name={name} size={34} />
-                  <div style={{ minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        fontSize: 13.5,
-                        color: '#1a1f36',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {name}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 11.5,
-                        color: '#94a3b8',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {aff?.affiliate_code}
+            {/* Table rows */}
+            {filtered.map((p, i) => {
+              const aff = p.affiliates
+              const profile = aff?.profiles
+              const name = profile?.full_name || 'Unknown'
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '2fr 1.3fr 1.1fr 1.6fr 1fr 1.1fr',
+                    padding: '14px 20px',
+                    borderBottom: i < filtered.length - 1 ? '1px solid #f1f5f9' : 'none',
+                    alignItems: 'center',
+                    gap: 12,
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  {/* Affiliate */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                    <Avatar url={profile?.avatar_url} name={name} size={34} />
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          fontSize: 13.5,
+                          color: '#1a1f36',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {name}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 11.5,
+                          color: '#94a3b8',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {aff?.affiliate_code}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Amount */}
-                <div style={{ fontWeight: 700, fontSize: 14, color: '#15803d' }}>
-                  {fmt(p.amount)}
-                </div>
+                  {/* Amount */}
+                  <div style={{ fontWeight: 700, fontSize: 14, color: '#15803d' }}>
+                    {fmt(p.amount)}
+                  </div>
 
-                {/* Method */}
-                <div style={{ fontSize: 13, color: '#475569', fontWeight: 500 }}>
-                  {p.payout_method || '—'}
-                </div>
+                  {/* Method */}
+                  <div style={{ fontSize: 13, color: '#475569', fontWeight: 500 }}>
+                    {p.payout_method || '—'}
+                  </div>
 
-                {/* Reference */}
-                <div
-                  style={{
-                    fontSize: 12.5,
-                    color: '#6366f1',
-                    fontWeight: 600,
-                    fontFamily: 'monospace',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                  title={p.transaction_ref || ''}
-                >
-                  {p.transaction_ref || '—'}
-                </div>
+                  {/* Reference */}
+                  <div
+                    style={{
+                      fontSize: 12.5,
+                      color: '#6366f1',
+                      fontWeight: 600,
+                      fontFamily: 'monospace',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title={p.transaction_ref || ''}
+                  >
+                    {p.transaction_ref || '—'}
+                  </div>
 
-                {/* Status */}
-                <div>
-                  <Badge status={p.status} map={PAYOUT_STATUS} />
-                </div>
+                  {/* Status */}
+                  <div>
+                    <Badge status={p.status} map={PAYOUT_STATUS} />
+                  </div>
 
-                {/* Date */}
-                <div style={{ fontSize: 12.5, color: '#64748b' }}>
-                  {fmtDate(p.paid_at || p.created_at)}
+                  {/* Date */}
+                  <div style={{ fontSize: 12.5, color: '#64748b' }}>
+                    {fmtDate(p.paid_at || p.created_at)}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -1335,6 +1460,7 @@ export default function AdminPayouts() {
 
   return (
     <div
+      className="payouts-page-container"
       style={{
         padding: '28px 32px',
         maxWidth: 1100,
@@ -1342,6 +1468,21 @@ export default function AdminPayouts() {
         fontFamily: 'var(--font, Inter, sans-serif)',
       }}
     >
+      <style>{`
+        @media (max-width: 900px) {
+          .payouts-stats-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .payouts-stats-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .payouts-page-container {
+            padding: 16px 12px !important;
+          }
+        }
+      `}</style>
       {/* Page header */}
       <div style={{ marginBottom: 28 }}>
         <h1
@@ -1362,6 +1503,7 @@ export default function AdminPayouts() {
 
       {/* Summary stat cards */}
       <div
+        className="payouts-stats-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
@@ -1373,7 +1515,13 @@ export default function AdminPayouts() {
           label="Total Pending Amount"
           value={fmt(totalPending)}
           sub={`${commissions.length} commission${commissions.length !== 1 ? 's' : ''} awaiting payout`}
-          icon="💰"
+          icon={
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: 'rotate(-10deg)' }}>
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="16" />
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+          }
           gradient="linear-gradient(135deg,#f59e0b,#d97706)"
         />
         <StatCard
@@ -1384,14 +1532,26 @@ export default function AdminPayouts() {
               ? 'All affiliates paid up'
               : `affiliate${affiliatesWithPending !== 1 ? 's' : ''} need payment`
           }
-          icon="👥"
+          icon={
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          }
           gradient="linear-gradient(135deg,#6366f1,#4f46e5)"
         />
         <StatCard
           label="Total Paid to Date"
           value={fmt(totalPaidToDate)}
           sub={`${paidPayouts.length} completed payout${paidPayouts.length !== 1 ? 's' : ''}`}
-          icon="✅"
+          icon={
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          }
           gradient="linear-gradient(135deg,#10b981,#059669)"
         />
       </div>
@@ -1410,13 +1570,26 @@ export default function AdminPayouts() {
             key: 'pending',
             label: 'Pending Commissions',
             count: affiliateGroups.length,
-            icon: '⏳',
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            ),
           },
           {
             key: 'history',
             label: 'Payout History',
             count: payouts.length,
-            icon: '📋',
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            ),
           },
         ].map((tab) => (
           <button

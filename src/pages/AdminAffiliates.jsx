@@ -77,6 +77,127 @@ const avatarColor = (str) => {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// CUSTOM SELECT DROPDOWN COMPONENT & HOOK
+// ─────────────────────────────────────────────────────────────────────────────
+
+function useClickOutside(ref, handler) {
+  useEffect(() => {
+    const listener = (e) => { if (ref.current && !ref.current.contains(e.target)) handler() }
+    document.addEventListener('mousedown', listener)
+    return () => document.removeEventListener('mousedown', listener)
+  }, [ref, handler])
+}
+
+function CustomSelect({ value, onChange, options, minWidth = 140 }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef(null)
+  
+  useClickOutside(containerRef, () => setIsOpen(false))
+
+  const selectedOption = options.find(opt => opt.value === value)
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', minWidth, display: 'inline-block' }}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          padding: '9px 14px',
+          borderRadius: 9,
+          border: isOpen ? '1.5px solid #6366f1' : '1.5px solid #cbd5e1',
+          fontSize: '13.5px',
+          color: '#334155',
+          backgroundColor: '#fff',
+          outline: 'none',
+          boxSizing: 'border-box',
+          transition: 'all 0.15s',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          cursor: 'pointer',
+          boxShadow: isOpen ? '0 0 0 3px rgba(99, 102, 241, 0.1)' : 'none',
+        }}
+      >
+        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', fontWeight: 500 }}>
+          {selectedOption ? selectedOption.label : 'Select...'}
+        </span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#64748b"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s',
+            flexShrink: 0,
+            marginLeft: '8px',
+          }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            background: '#ffffff',
+            borderRadius: 8,
+            border: '1px solid #cbd5e1',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+            maxHeight: '220px',
+            overflowY: 'auto',
+            zIndex: 9999,
+            padding: '4px',
+          }}
+        >
+          {options.map((opt) => {
+            const isSelected = opt.value === value
+            return (
+              <div
+                key={opt.value}
+                onClick={() => {
+                  onChange(opt.value)
+                  setIsOpen(false)
+                }}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  backgroundColor: isSelected ? '#eff6ff' : 'transparent',
+                  color: isSelected ? '#1e40af' : '#334155',
+                  fontSize: '13px',
+                  fontWeight: isSelected ? 600 : 500,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s, color 0.15s',
+                  textAlign: 'left',
+                  userSelect: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) e.currentTarget.style.backgroundColor = '#f1f5f9'
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'
+                }}
+              >
+                {opt.label}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SMALL REUSABLE COMPONENTS
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1017,37 +1138,31 @@ export default function AdminAffiliates() {
           </div>
 
           {/* Status */}
-          <select
+          <CustomSelect
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            style={{
-              padding: '9px 12px', border: '1.5px solid #e2e8f0', borderRadius: 9,
-              fontSize: 13.5, color: '#334155', outline: 'none', cursor: 'pointer',
-              backgroundColor: '#fafafa', minWidth: 140,
-            }}
-          >
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="suspended">Suspended</option>
-          </select>
+            onChange={setFilterStatus}
+            options={[
+              { value: 'all', label: 'All Statuses' },
+              { value: 'active', label: 'Active' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'suspended', label: 'Suspended' }
+            ]}
+            minWidth={150}
+          />
 
           {/* Tier */}
-          <select
+          <CustomSelect
             value={filterTier}
-            onChange={(e) => setFilterTier(e.target.value)}
-            style={{
-              padding: '9px 12px', border: '1.5px solid #e2e8f0', borderRadius: 9,
-              fontSize: 13.5, color: '#334155', outline: 'none', cursor: 'pointer',
-              backgroundColor: '#fafafa', minWidth: 130,
-            }}
-          >
-            <option value="all">All Tiers</option>
-            <option value="bronze">Bronze</option>
-            <option value="silver">Silver</option>
-            <option value="gold">Gold</option>
-            <option value="platinum">Platinum</option>
-          </select>
+            onChange={setFilterTier}
+            options={[
+              { value: 'all', label: 'All Tiers' },
+              { value: 'bronze', label: 'Bronze' },
+              { value: 'silver', label: 'Silver' },
+              { value: 'gold', label: 'Gold' },
+              { value: 'platinum', label: 'Platinum' }
+            ]}
+            minWidth={130}
+          />
 
           {hasFilters && (
             <button

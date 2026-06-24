@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { CONFIG } from '../lib/config'
 import { supabase, createPendingOrder, completeOrder } from '../lib/supabase'
+import { trackEvent } from '../lib/analytics'
 import OrderBump from '../components/OrderBump'
 import { useAffiliate } from '../hooks/useAffiliate'
 
@@ -77,6 +78,7 @@ export default function PaymentPage() {
   // Product data
   const [product, setProduct] = useState(null)
   const [loadingProduct, setLoadingProduct] = useState(true)
+  const initiatedCheckoutRef = useRef(false)
 
   // Form fields — persisted to localStorage so they survive page refreshes
   const [form, setForm] = useState(() => ({
@@ -227,6 +229,19 @@ export default function PaymentPage() {
     }
     load()
   }, [productIdParam])
+
+  // Track InitiateCheckout once product is loaded
+  useEffect(() => {
+    if (product && !initiatedCheckoutRef.current) {
+      initiatedCheckoutRef.current = true
+      trackEvent('initiate_checkout', {
+        content_name: productTitle,
+        value: finalTotal,
+        currency: 'NGN',
+        product_id: product.id
+      })
+    }
+  }, [product, productTitle, finalTotal])
 
   // Pre-populate if student is logged in
   useEffect(() => {
@@ -381,7 +396,16 @@ export default function PaymentPage() {
       })
     }
 
-    if (window.fbq) window.fbq('track', 'Lead', { content_name: productTitle, value: finalTotal, currency: 'NGN' })
+    // Track payment attempt event in DB and Meta
+    trackEvent('payment_attempt', {
+      content_name: productTitle,
+      value: finalTotal,
+      currency: 'NGN',
+      product_id: product?.id,
+      email,
+      name,
+      phone
+    })
 
     setLoading(false)
     paidRef.current = false
@@ -427,7 +451,17 @@ export default function PaymentPage() {
 
   const handleSuccess = async ({ reference, userId, name, email, phone }) => {
     setLoading(true)
-    if (window.fbq) window.fbq('track', 'Purchase', { value: finalTotal, currency: 'NGN', content_name: productTitle })
+    // Track purchase event in DB and Meta
+    trackEvent('purchase', {
+      value: finalTotal,
+      currency: 'NGN',
+      content_name: productTitle,
+      product_id: product?.id,
+      email,
+      name,
+      phone,
+      reference
+    })
 
     localStorage.setItem('paid_customer', JSON.stringify({
       name, email, phone, ref: reference,

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { trackEvent } from '../lib/analytics'
 
 // Student purchase notification data
 const PURCHASE_NOTIFICATIONS = [
@@ -144,6 +145,7 @@ export default function WebinarPage() {
   }
 
   const handleCTA = () => {
+    trackEvent('click_webinar_cta', { content_name: 'Freelance Web Design Blueprint Masterclass' })
     navigate('/checkout?product=freelance-web-design-blueprint')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }

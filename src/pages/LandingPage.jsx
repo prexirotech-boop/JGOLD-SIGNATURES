@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { trackEvent } from '../lib/analytics'
 
 // 15 Social proof notification popups (No emojis, clean text)
 const SOCIAL_PROOF_NOTIFICATIONS = [
@@ -150,21 +151,31 @@ export default function LandingPage() {
     setErrorMsg('')
 
     try {
+      const cleanEmail = email.trim().toLowerCase()
+      const cleanName = name.trim()
+      const cleanPhone = phone.trim()
+
       const { error } = await supabase
         .from('freelance_training_list')
         .insert({
-          email: email.trim().toLowerCase(),
-          name: name.trim(),
-          phone: phone.trim(),
+          email: cleanEmail,
+          name: cleanName,
+          phone: cleanPhone,
           source: 'freelance_blueprint_lp'
         })
 
       if (error) throw error
 
       setSubmitted(true)
-      if (window.fbq) {
-        window.fbq('track', 'Lead', { content_name: 'Freelance Web Design Free Training' })
-      }
+      
+      // Track signup event in DB analytics and Meta Pixel
+      trackEvent('webinar_signup', {
+        content_name: 'Freelance Web Design Free Training',
+        email: cleanEmail,
+        name: cleanName,
+        phone: cleanPhone
+      })
+
       setTimeout(() => {
         navigate('/webinar')
       }, 1000)
