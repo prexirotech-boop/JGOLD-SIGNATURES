@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { trackEvent } from '../lib/analytics'
+import { supabase } from '../lib/supabase'
 
 // Student purchase notification data
 const PURCHASE_NOTIFICATIONS = [
@@ -87,6 +88,35 @@ export default function WebinarPage() {
   const [currentSale, setCurrentSale] = useState(null)
   const [showSale, setShowSale] = useState(false)
   const [evergreenDate, setEvergreenDate] = useState('')
+  const [product, setProduct] = useState(null)
+
+  // Load product from database to fetch price and old_price dynamically
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('slug', 'freelance-web-design-blueprint')
+          .maybeSingle()
+        if (data) {
+          setProduct(data)
+        }
+      } catch (err) {
+        console.error('[WebinarPage] load product error:', err)
+      }
+    }
+    loadProduct()
+  }, [])
+
+  const regularPrice = product?.old_price || 60000
+  const specialPrice = product?.price || 35000
+  const savings = Math.max(0, regularPrice - specialPrice)
+  const discountPercentage = regularPrice > 0 ? Math.round((savings / regularPrice) * 100) : 0
+
+  const formattedRegularPrice = `₦${regularPrice.toLocaleString()}`
+  const formattedSpecialPrice = `₦${specialPrice.toLocaleString()}`
+  const formattedSavings = `₦${savings.toLocaleString()}`
 
   // Load Wistia scripts for sbeep923r7
   useEffect(() => {
@@ -185,6 +215,20 @@ export default function WebinarPage() {
 
         {/* Direct Checkout Call to Action & FOMO Section */}
         <div className="wb-cta-section text-center">
+          {/* Note about website brief and materials below */}
+          <div className="wb-materials-note">
+            <span className="wb-materials-note-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%', display: 'block' }}>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+            </span>
+            <div>
+              Website briefs and training materials are available below. Please scroll down to access.
+            </div>
+          </div>
+
           <button onClick={handleCTA} className="wb-cta-btn" style={{ marginBottom: '32px' }}>
             Claim Your Spot Now!
             <span className="btn-subtext">Click here to secure lifetime access</span>
@@ -195,21 +239,21 @@ export default function WebinarPage() {
             <div className="fomo-price-comparison">
               <div className="price-box old">
                 <span className="price-label">REGULAR PRICE</span>
-                <span className="price-val">₦60,000</span>
+                <span className="price-val">{formattedRegularPrice}</span>
               </div>
               <div className="price-box current">
                 <span className="price-label">SPECIAL OFFER</span>
-                <span className="price-val">₦35,000</span>
-                <span className="price-status-tag active-tag">42% OFF</span>
+                <span className="price-val">{formattedSpecialPrice}</span>
+                <span className="price-status-tag active-tag">{discountPercentage}% OFF</span>
               </div>
               <div className="price-box savings">
                 <span className="price-label">YOU SAVE</span>
-                <span className="price-val" style={{ color: '#10b981' }}>₦25,000</span>
+                <span className="price-val" style={{ color: '#10b981' }}>{formattedSavings}</span>
               </div>
             </div>
 
             <div className="fomo-spots-alert">
-              ⚡ <strong>WARNING:</strong> Only <strong>4 spots remaining</strong> at this price. Price increases to ₦60,000 automatically once these spots are gone.
+              ⚡ <strong>WARNING:</strong> Only <strong>4 spots remaining</strong> at this price. Price increases to {formattedRegularPrice} automatically once these spots are gone.
             </div>
 
             <div className="fomo-progress-wrapper">
@@ -219,7 +263,7 @@ export default function WebinarPage() {
                 </div>
               </div>
               <p className="progress-bar-caption">
-                Lock discount now. Remaining spots closing fast. Price rises to <strong>₦60,000</strong> on {evergreenDate}.
+                Lock discount now. Remaining spots closing fast. Price rises to <strong>{formattedRegularPrice}</strong> on {evergreenDate}.
               </p>
             </div>
           </div>
@@ -532,6 +576,33 @@ export default function WebinarPage() {
         .wb-cta-section {
           max-width: 800px;
           margin: 0 auto 60px;
+        }
+
+        /* MATERIALS NOTE */
+        .wb-materials-note {
+          background: rgba(245, 158, 11, 0.05);
+          border: 1px solid rgba(245, 158, 11, 0.2);
+          border-radius: 12px;
+          padding: 16px 20px;
+          max-width: 650px;
+          margin: 0 auto 28px;
+          font-size: 14px;
+          line-height: 1.6;
+          color: rgba(255, 255, 255, 0.85);
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          text-align: left;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .wb-materials-note-icon {
+          width: 24px;
+          height: 24px;
+          flex-shrink: 0;
+          color: var(--gold);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         /* FOMO CONVERSION PANEL */
@@ -909,6 +980,15 @@ export default function WebinarPage() {
         }
 
         @media (max-width: 640px) {
+          .wb-materials-note {
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-bottom: 20px;
+          }
+          .wb-materials-note-icon {
+            width: 20px;
+            height: 20px;
+          }
           .wb-fomo-panel {
             padding: 16px 12px;
             margin-bottom: 24px;
@@ -935,7 +1015,7 @@ export default function WebinarPage() {
             grid-area: old;
             padding: 10px 4px !important;
           }
-          .price-box.future {
+          .price-box.savings {
             grid-area: future;
             padding: 10px 4px !important;
           }
