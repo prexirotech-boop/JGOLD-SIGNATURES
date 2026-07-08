@@ -89,6 +89,7 @@ export default function WebinarPage() {
   const [showSale, setShowSale] = useState(false)
   const [evergreenDate, setEvergreenDate] = useState('')
   const [product, setProduct] = useState(null)
+  const [showCTASection, setShowCTASection] = useState(false)
 
   // Load product from database to fetch price and old_price dynamically
   useEffect(() => {
@@ -140,7 +141,14 @@ export default function WebinarPage() {
     setEvergreenDate(date.toLocaleDateString('en-US', options))
   }, [])
 
+  // Reveal CTA section after 15 minutes (900,000ms)
+  useEffect(() => {
+    const ctaTimer = setTimeout(() => {
+      setShowCTASection(true)
+    }, 15 * 60 * 1000)
 
+    return () => clearTimeout(ctaTimer)
+  }, [])
 
   // Activate sales notifications after 10 minutes (600,000ms)
   useEffect(() => {
@@ -214,120 +222,108 @@ export default function WebinarPage() {
         </div>
 
         {/* Direct Checkout Call to Action & FOMO Section */}
-        <div className="wb-cta-section text-center">
-          {/* Note about website brief and materials below */}
-          <div className="wb-materials-note">
-            <span className="wb-materials-note-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%', display: 'block' }}>
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-            </span>
-            <div>
-              Website briefs and training materials are available below. Please scroll down to access.
-            </div>
-          </div>
-
-          <button onClick={handleCTA} className="wb-cta-btn" style={{ marginBottom: '32px' }}>
-            Claim Your Spot Now!
-            <span className="btn-subtext">Click here to secure lifetime access</span>
-          </button>
-          
-          <div className="wb-fomo-panel">
-            <div className="fomo-header">FAST ACTION TAKERS DISCOUNT</div>
-            <div className="fomo-price-comparison">
-              <div className="price-box old">
-                <span className="price-label">REGULAR PRICE</span>
-                <span className="price-val">{formattedRegularPrice}</span>
-              </div>
-              <div className="price-box current">
-                <span className="price-label">SPECIAL OFFER</span>
-                <span className="price-val">{formattedSpecialPrice}</span>
-                <span className="price-status-tag active-tag">{discountPercentage}% OFF</span>
-              </div>
-              <div className="price-box savings">
-                <span className="price-label">YOU SAVE</span>
-                <span className="price-val" style={{ color: '#10b981' }}>{formattedSavings}</span>
-              </div>
-            </div>
-
-            <div className="fomo-spots-alert">
-              ⚡ <strong>WARNING:</strong> Only <strong>4 spots remaining</strong> at this price. Price increases to {formattedRegularPrice} automatically once these spots are gone.
-            </div>
-
-            <div className="fomo-progress-wrapper">
-              <div className="progress-bar-container">
-                <div className="progress-bar-fill" style={{ width: '73%' }}>
-                  <span className="progress-bar-percentage">11 of 15 spots taken (73%)</span>
+        {showCTASection && (
+          <div className="wb-cta-section text-center">
+            <button onClick={handleCTA} className="wb-cta-btn" style={{ marginBottom: '32px' }}>
+              Claim Your Spot Now!
+              <span className="btn-subtext">Click here to secure lifetime access</span>
+            </button>
+            
+            <div className="wb-fomo-panel">
+              <div className="fomo-header">FAST ACTION TAKERS DISCOUNT</div>
+              <div className="fomo-price-comparison">
+                <div className="price-box old">
+                  <span className="price-label">REGULAR PRICE</span>
+                  <span className="price-val">{formattedRegularPrice}</span>
+                </div>
+                <div className="price-box current">
+                  <span className="price-label">SPECIAL OFFER</span>
+                  <span className="price-val">{formattedSpecialPrice}</span>
+                  <span className="price-status-tag active-tag">{discountPercentage}% OFF</span>
+                </div>
+                <div className="price-box savings">
+                  <span className="price-label">YOU SAVE</span>
+                  <span className="price-val" style={{ color: '#10b981' }}>{formattedSavings}</span>
                 </div>
               </div>
-              <p className="progress-bar-caption">
-                Lock discount now. Remaining spots closing fast. Price rises to <strong>{formattedRegularPrice}</strong> on {evergreenDate}.
-              </p>
-            </div>
-          </div>
-          
-          <div className="wb-cta-benefits">
-            <h4 className="highlight-title">Here is what you get in the Freelance Web Design Blueprint Course:</h4>
-            <div className="benefits-grid">
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>In-depth training on building professional, world-class websites for any type of business</p>
+
+              <div className="fomo-spots-alert">
+                ⚡ <strong>WARNING:</strong> Only <strong>4 spots remaining</strong> at this price. Price increases to {formattedRegularPrice} automatically once these spots are gone.
               </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>How to attract high-paying clients daily — on social media, WhatsApp, LinkedIn, and referrals — without spending money on ads</p>
-              </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>How to close clients on the phone, on WhatsApp, or in person — with confidence and without feeling salesy</p>
-              </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>How to price your services correctly so you never undercharge again — and what to charge for websites in Nigeria vs. international clients</p>
-              </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>How to get paid upfront, manage client expectations, and deliver projects like a complete professional</p>
-              </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>How to set up recurring revenue — charging clients a monthly fee to maintain and manage their websites every year</p>
-              </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>Real projects you will build inside the course to strengthen your portfolio from day one</p>
-              </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>How to register your freelance business, set up your payment accounts (including Dollar accounts), and get paid from any country in the world</p>
-              </div>
-              <div className="benefit-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p>Lifetime access to all course materials — including all future updates at no extra cost</p>
+
+              <div className="fomo-progress-wrapper">
+                <div className="progress-bar-container">
+                  <div className="progress-bar-fill" style={{ width: '73%' }}>
+                    <span className="progress-bar-percentage">11 of 15 spots taken (73%)</span>
+                  </div>
+                </div>
+                <p className="progress-bar-caption">
+                  Lock discount now. Remaining spots closing fast. Price rises to <strong>{formattedRegularPrice}</strong> on {evergreenDate}.
+                </p>
               </div>
             </div>
+            
+            <div className="wb-cta-benefits">
+              <h4 className="highlight-title">Here is what you get in the Freelance Web Design Blueprint Course:</h4>
+              <div className="benefits-grid">
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>In-depth training on building professional, world-class websites for any type of business</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>How to attract high-paying clients daily — on social media, WhatsApp, LinkedIn, and referrals — without spending money on ads</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>How to close clients on the phone, on WhatsApp, or in person — with confidence and without feeling salesy</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>How to price your services correctly so you never undercharge again — and what to charge for websites in Nigeria vs. international clients</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>How to get paid upfront, manage client expectations, and deliver projects like a complete professional</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>How to set up recurring revenue — charging clients a monthly fee to maintain and manage their websites every year</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>Real projects you will build inside the course to strengthen your portfolio from day one</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>How to register your freelance business, set up your payment accounts (including Dollar accounts), and get paid from any country in the world</p>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" style={{ flexShrink: 0, marginTop: 4 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <p>Lifetime access to all course materials — including all future updates at no extra cost</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Project Briefs - Click to Copy Section */}
         <div className="wb-briefs-section">
@@ -365,6 +361,9 @@ export default function WebinarPage() {
               </svg>
               <span>Open Google AI Studio</span>
             </a>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginTop: '12px', fontWeight: '500' }}>
+              ℹ️ Clicking the button will open Google AI Studio in a new tab, so you won't close this training.
+            </p>
           </div>
 
           <div className="wb-briefs-grid">

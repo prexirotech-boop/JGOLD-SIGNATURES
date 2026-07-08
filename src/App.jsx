@@ -33,7 +33,7 @@ import BlogPage from './pages/BlogPage'
 import FAQPage from './pages/FAQPage'
 import WhatsAppWidget from './components/WhatsAppWidget'
 
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AuthProvider } from './context/AuthContext'
@@ -50,11 +50,24 @@ function ScrollToTop() {
 
 function AppLayout() {
   const location = useLocation()
+  const [webinarWhatsAppActive, setWebinarWhatsAppActive] = useState(false)
   
   // Track PageView on location changes for Facebook Pixel & DB Analytics
   useEffect(() => {
     trackEvent('page_view')
   }, [location])
+
+  // Timer to enable WhatsApp widget on webinar page after 15 minutes
+  useEffect(() => {
+    if (location.pathname.startsWith('/webinar')) {
+      const timer = setTimeout(() => {
+        setWebinarWhatsAppActive(true)
+      }, 15 * 60 * 1000) // 15 minutes
+      return () => clearTimeout(timer)
+    } else {
+      setWebinarWhatsAppActive(false)
+    }
+  }, [location.pathname])
 
   // Affiliate referral tracking disabled for now
   
@@ -73,11 +86,12 @@ function AppLayout() {
     location.pathname === '/reset-password' ||
     location.pathname === '/setup-account'
 
-  // WhatsApp widget: only show in webinar page, course learning center, and user dashboard
+  // WhatsApp widget: show in checkout page, course learning center, user dashboard, and webinar page (after 15 mins)
   const showWhatsApp = 
-    location.pathname.startsWith('/webinar') || 
+    location.pathname.startsWith('/checkout') || 
     location.pathname.startsWith('/course/') || 
-    location.pathname.startsWith('/dashboard')
+    location.pathname.startsWith('/dashboard') ||
+    (location.pathname.startsWith('/webinar') && webinarWhatsAppActive)
 
   const isDashboard = 
     location.pathname.startsWith('/admin') || 
