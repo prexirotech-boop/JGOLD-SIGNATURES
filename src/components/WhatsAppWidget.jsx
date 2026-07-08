@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const WA_NUMBER = '2347041418304'
 
 export default function WhatsAppWidget() {
+  const location = useLocation()
+  const isCheckout = location.pathname.startsWith('/checkout')
   const [visible, setVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [message, setMessage] = useState('')
@@ -19,7 +22,9 @@ export default function WhatsAppWidget() {
   const handleSendMessage = (e) => {
     e.preventDefault()
     const cleanMsg = message.trim()
-    const defaultMsg = "Hi! I have a question about Amplified Skills."
+    const defaultMsg = isCheckout 
+      ? "Hi! I need help with my payment on the checkout page." 
+      : "Hi! I have a question about Amplified Skills."
     const finalMsg = cleanMsg ? encodeURIComponent(cleanMsg) : encodeURIComponent(defaultMsg)
     const url = `https://wa.me/${WA_NUMBER}?text=${finalMsg}`
     window.open(url, '_blank')
@@ -152,10 +157,13 @@ export default function WhatsAppWidget() {
               boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
             }}>
               <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--n800)', lineHeight: 1.5 }}>
-                Hi there! 👋 Welcome to Amplified Skills.
+                {isCheckout ? "Hi there! 👋 Need help with your payment?" : "Hi there! 👋 Welcome to Amplified Skills."}
               </p>
               <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: 'var(--n800)', lineHeight: 1.5 }}>
-                How can we help you build your digital skills or resolve course payments today?
+                {isCheckout 
+                  ? "Let us know if you're experiencing any issues with your checkout or payment, and we'll help you complete your purchase right away."
+                  : "How can we help you build your digital skills or resolve course payments today?"
+                }
               </p>
               <span style={{ display: 'block', textAlign: 'right', fontSize: '0.7rem', color: 'var(--n400)', marginTop: 6 }}>
                 Just now
