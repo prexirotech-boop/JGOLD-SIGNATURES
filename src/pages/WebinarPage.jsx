@@ -460,6 +460,8 @@ export default function WebinarPage() {
           display: block;
           width: 100%;
           height: 100%;
+          border-radius: 0 0 10px 10px !important;
+          overflow: hidden !important;
         }
         wistia-player[media-id='7w73000sy2']:not(:defined) {
           background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/7w73000sy2/swatch');
