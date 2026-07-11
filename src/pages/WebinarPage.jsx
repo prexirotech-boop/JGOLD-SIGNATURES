@@ -151,11 +151,11 @@ export default function WebinarPage() {
     return () => clearTimeout(ctaTimer)
   }, [])
 
-  // Reveal Briefs section after 14 minutes and 20 seconds (860,000ms)
+  // Reveal Briefs section after 2 minutes (120,000ms)
   useEffect(() => {
     const briefsTimer = setTimeout(() => {
       setShowBriefsSection(true)
-    }, (14 * 60 + 20) * 1000)
+    }, 2 * 60 * 1000)
 
     return () => clearTimeout(briefsTimer)
   }, [])
