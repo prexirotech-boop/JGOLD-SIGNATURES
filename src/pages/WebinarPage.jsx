@@ -90,6 +90,7 @@ export default function WebinarPage() {
   const [evergreenDate, setEvergreenDate] = useState('')
   const [product, setProduct] = useState(null)
   const [showCTASection, setShowCTASection] = useState(false)
+  const [showBriefsSection, setShowBriefsSection] = useState(false)
 
   // Load product from database to fetch price and old_price dynamically
   useEffect(() => {
@@ -119,7 +120,7 @@ export default function WebinarPage() {
   const formattedSpecialPrice = `₦${specialPrice.toLocaleString()}`
   const formattedSavings = `₦${savings.toLocaleString()}`
 
-  // Load Wistia scripts for sbeep923r7
+  // Load Wistia scripts for 7w73000sy2
   useEffect(() => {
     const script1 = document.createElement('script')
     script1.src = 'https://fast.wistia.com/player.js'
@@ -127,7 +128,7 @@ export default function WebinarPage() {
     document.body.appendChild(script1)
 
     const script2 = document.createElement('script')
-    script2.src = 'https://fast.wistia.com/embed/sbeep923r7.js'
+    script2.src = 'https://fast.wistia.com/embed/7w73000sy2.js'
     script2.async = true
     script2.type = 'module'
     document.body.appendChild(script2)
@@ -148,6 +149,15 @@ export default function WebinarPage() {
     }, 50 * 60 * 1000)
 
     return () => clearTimeout(ctaTimer)
+  }, [])
+
+  // Reveal Briefs section after 14 minutes and 20 seconds (860,000ms)
+  useEffect(() => {
+    const briefsTimer = setTimeout(() => {
+      setShowBriefsSection(true)
+    }, (14 * 60 + 20) * 1000)
+
+    return () => clearTimeout(briefsTimer)
   }, [])
 
   // Activate sales notifications after 50 minutes (3,000,000ms)
@@ -213,8 +223,8 @@ export default function WebinarPage() {
         <div className="wb-video-card">
           <div className="wb-video-wrapper" style={{ borderRadius: '10px', overflow: 'hidden', background: '#000', maxWidth: '810px', margin: '0 auto' }}>
             <wistia-player 
-              media-id="sbeep923r7" 
-              aspect="0.5625" 
+              media-id="7w73000sy2" 
+              aspect="1.7777777777777777" 
               style={{ width: '100%', height: '100%', display: 'block' }}
             ></wistia-player>
           </div>
@@ -326,66 +336,68 @@ export default function WebinarPage() {
         )}
 
         {/* Project Briefs - Click to Copy Section */}
-        <div className="wb-briefs-section">
-          <h2 className="section-title text-center">Copy Your Practice Website Briefs Here</h2>
-          <p className="section-subtitle text-center">
-            As explained in the training video, here are the website project briefs. Click on either card below to instantly copy the brief requirements to your clipboard so you can practice building them!
-          </p>
-
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <a 
-              href="https://aistudio.google.com/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="ai-studio-btn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '14px 28px',
-                background: '#2563eb',
-                color: '#ffffff',
-                textDecoration: 'none',
-                borderRadius: '12px',
-                fontWeight: '800',
-                fontSize: '14.5px',
-                boxShadow: '0 8px 20px rgba(37, 99, 235, 0.35)',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                letterSpacing: '0.3px'
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}>
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5z" />
-                <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" />
-              </svg>
-              <span>Open Google AI Studio</span>
-            </a>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginTop: '12px', fontWeight: '500' }}>
-              ℹ️ Clicking the button will open Google AI Studio in a new tab, so you won't close this training.
+        {showBriefsSection && (
+          <div className="wb-briefs-section">
+            <h2 className="section-title text-center">Copy Your Practice Website Briefs Here</h2>
+            <p className="section-subtitle text-center">
+              As explained in the training video, here are the website project briefs. Click on either card below to instantly copy the brief requirements to your clipboard so you can practice building them!
             </p>
-          </div>
 
-          <div className="wb-briefs-grid">
-            {PROJECT_BRIEFS.map((brief, idx) => (
-              <div 
-                key={idx} 
-                className="wb-brief-card" 
-                onClick={() => handleCopyText(brief.text, idx)}
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <a 
+                href="https://aistudio.google.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="ai-studio-btn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '14px 28px',
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  borderRadius: '12px',
+                  fontWeight: '800',
+                  fontSize: '14.5px',
+                  boxShadow: '0 8px 20px rgba(37, 99, 235, 0.35)',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  letterSpacing: '0.3px'
+                }}
               >
-                <div className="brief-card-header">
-                  <h4>{brief.title}</h4>
-                  <span className="copy-indicator">
-                    {copiedIndex === idx ? 'COPIED!' : 'CLICK TO COPY'}
-                  </span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}>
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                  <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5z" />
+                  <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" />
+                </svg>
+                <span>Open Google AI Studio</span>
+              </a>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginTop: '12px', fontWeight: '500' }}>
+                ℹ️ Clicking the button will open Google AI Studio in a new tab, so you won't close this training.
+              </p>
+            </div>
+
+            <div className="wb-briefs-grid">
+              {PROJECT_BRIEFS.map((brief, idx) => (
+                <div 
+                  key={idx} 
+                  className="wb-brief-card" 
+                  onClick={() => handleCopyText(brief.text, idx)}
+                >
+                  <div className="brief-card-header">
+                    <h4>{brief.title}</h4>
+                    <span className="copy-indicator">
+                      {copiedIndex === idx ? 'COPIED!' : 'CLICK TO COPY'}
+                    </span>
+                  </div>
+                  <p className="brief-desc">{brief.description}</p>
+                  <pre className="brief-pre">{brief.text}</pre>
+                  {copiedIndex === idx && <div className="copied-overlay">Copied to Clipboard!</div>}
                 </div>
-                <p className="brief-desc">{brief.description}</p>
-                <pre className="brief-pre">{brief.text}</pre>
-                {copiedIndex === idx && <div className="copied-overlay">Copied to Clipboard!</div>}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div> {/* Close wb-container */}
 
       {/* SECTION 11 — FOOTER */}
@@ -449,11 +461,11 @@ export default function WebinarPage() {
           width: 100%;
           height: 100%;
         }
-        wistia-player[media-id='sbeep923r7']:not(:defined) {
-          background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/sbeep923r7/swatch');
+        wistia-player[media-id='7w73000sy2']:not(:defined) {
+          background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/7w73000sy2/swatch');
           display: block;
           filter: blur(5px);
-          padding-top: 177.78%;
+          padding-top: 56.25%;
         }
 
         .wb-container {
