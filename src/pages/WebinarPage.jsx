@@ -141,20 +141,20 @@ export default function WebinarPage() {
     setEvergreenDate(date.toLocaleDateString('en-US', options))
   }, [])
 
-  // Reveal CTA section after 15 minutes (900,000ms)
+  // Reveal CTA section after 50 minutes (3,000,000ms)
   useEffect(() => {
     const ctaTimer = setTimeout(() => {
       setShowCTASection(true)
-    }, 15 * 60 * 1000)
+    }, 50 * 60 * 1000)
 
     return () => clearTimeout(ctaTimer)
   }, [])
 
-  // Activate sales notifications after 10 minutes (600,000ms)
+  // Activate sales notifications after 50 minutes (3,000,000ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setSalesActive(true)
-    }, 10 * 60 * 1000)
+    }, 50 * 60 * 1000)
 
     return () => clearTimeout(timer)
   }, [])
