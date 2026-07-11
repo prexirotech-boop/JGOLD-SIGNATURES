@@ -221,7 +221,7 @@ export default function WebinarPage() {
 
         {/* Video Player Card */}
         <div className="wb-video-card">
-          <div className="wb-video-wrapper" style={{ borderRadius: '10px', overflow: 'hidden', background: '#000' }}>
+          <div className="wb-video-wrapper" style={{ borderRadius: '0 0 10px 10px', overflow: 'hidden', background: '#000' }}>
             <wistia-player 
               media-id="7w73000sy2" 
               aspect="1.7777777777777777" 
@@ -512,13 +512,13 @@ export default function WebinarPage() {
           margin: 0 auto 48px;
           background: rgba(15, 23, 42, 0.45);
           border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
+          border-radius: 0 0 16px 16px;
           padding: 6px 6px 12px;
           box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         .wb-video-wrapper {
           position: relative;
-          border-radius: 10px;
+          border-radius: 0 0 10px 10px;
           overflow: hidden;
           background: #000;
           aspect-ratio: 16/9;
