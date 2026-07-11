@@ -210,9 +210,13 @@ export default function WebinarPage() {
         
         {/* Rebuilt Header Hook */}
         <div className="wb-header text-center">
+          <span className="wb-badge">FREE TRAINING PLAYBACK</span>
           <h1 className="wb-title">
-            Weird AI business model making ordinary people 6-7 figures monthly revealed below.
+            The AI Freelancer Business Revealed
           </h1>
+          <p className="wb-subtitle">
+            Watch the training below to learn how you can build premium websites in under 10 minutes using free tools and no coding.
+          </p>
         </div>
 
         {/* Video Player Card */}
@@ -509,7 +513,7 @@ export default function WebinarPage() {
           background: rgba(15, 23, 42, 0.45);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 16px;
-          padding: 16px;
+          padding: 6px 6px 12px;
           box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         .wb-video-wrapper {
