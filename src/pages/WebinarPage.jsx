@@ -215,13 +215,13 @@ export default function WebinarPage() {
             The AI Freelancer Business Revealed
           </h1>
           <p className="wb-subtitle">
-            Watch the training below to learn how you can build premium websites in under 10 minutes using free tools and no coding.
+            Free training reveals secret weird business model you can start that's making ordinary people 6 - 7 figures monthly building simple premium websites in under 20 minutes using free tools and zero coding.
           </p>
         </div>
 
         {/* Video Player Card */}
         <div className="wb-video-card">
-          <div className="wb-video-wrapper" style={{ borderRadius: '10px', overflow: 'hidden', background: '#000', maxWidth: '810px', margin: '0 auto' }}>
+          <div className="wb-video-wrapper" style={{ borderRadius: '10px', overflow: 'hidden', background: '#000' }}>
             <wistia-player 
               media-id="7w73000sy2" 
               aspect="1.7777777777777777" 
