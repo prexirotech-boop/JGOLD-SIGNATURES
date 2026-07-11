@@ -215,7 +215,7 @@ export default function WebinarPage() {
             The AI Freelancer Business Revealed
           </h1>
           <p className="wb-subtitle">
-            Free training reveals secret weird business model you can start that's making ordinary people 6 - 7 figures monthly building simple premium websites in under 20 minutes using free tools and zero coding.
+            Free training reveals weird business model you can start that's making ordinary people 6 - 7 figures monthly building simple premium websites in under 20 minutes using free tools and zero coding.
           </p>
         </div>
 
