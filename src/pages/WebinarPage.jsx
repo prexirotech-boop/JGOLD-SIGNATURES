@@ -210,12 +210,11 @@ export default function WebinarPage() {
         
         {/* Rebuilt Header Hook */}
         <div className="wb-header text-center">
-          <span className="wb-badge">FREE TRAINING PLAYBACK</span>
           <h1 className="wb-title">
             The AI Freelancer Business Revealed
           </h1>
           <p className="wb-subtitle">
-            Free training reveals weird business model you can start that's making ordinary people 6 - 7 figures monthly building simple premium websites in under 20 minutes using free tools and zero coding.
+            Free training reveals weird business model you can start that's making ordinary people ₦100K - ₦3.5M+ monthly building simple premium websites in under 20 minutes using free tools and zero coding.
           </p>
         </div>
 
