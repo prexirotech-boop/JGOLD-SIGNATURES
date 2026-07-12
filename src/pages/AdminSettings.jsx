@@ -23,6 +23,12 @@ export default function AdminSettings() {
   const [brandName, setBrandName] = useState('Amplified Skills')
   const [supportEmail, setSupportEmail] = useState('support@amplifiedskills.com')
 
+  // Feature Toggles
+  const [enableAcademics, setEnableAcademics] = useState(false)
+  const [enableAffiliates, setEnableAffiliates] = useState(true)
+  const [enablePayouts, setEnablePayouts] = useState(true)
+  const [enableUpsells, setEnableUpsells] = useState(true)
+
   // Payment Configuration fields
   const [paystackPublicKey, setPaystackPublicKey] = useState('')
   const [paystackSecretKey, setPaystackSecretKey] = useState('')
@@ -51,6 +57,10 @@ export default function AdminSettings() {
           if (siteConfig?.value) {
             setBrandName(siteConfig.value.platform_name || 'Amplified Skills')
             setSupportEmail(siteConfig.value.support_email || 'support@amplifiedskills.com')
+            setEnableAcademics(siteConfig.value.enable_academics ?? false)
+            setEnableAffiliates(siteConfig.value.enable_affiliates ?? true)
+            setEnablePayouts(siteConfig.value.enable_payouts ?? true)
+            setEnableUpsells(siteConfig.value.enable_upsells ?? true)
           }
           const payConfig = data.find(s => s.id === 'payment_config')
           if (payConfig?.value) {
@@ -157,7 +167,11 @@ export default function AdminSettings() {
           value: {
             platform_name: brandName.trim(),
             support_email: supportEmail.trim(),
-            refund_days: 30
+            refund_days: 30,
+            enable_academics: enableAcademics,
+            enable_affiliates: enableAffiliates,
+            enable_payouts: enablePayouts,
+            enable_upsells: enableUpsells
           },
           updated_at: new Date().toISOString()
         })
@@ -183,6 +197,10 @@ export default function AdminSettings() {
       // Save in localStorage for immediate sync in frontend header
       localStorage.setItem('brandName', brandName.trim())
       localStorage.setItem('supportEmail', supportEmail.trim())
+      localStorage.setItem('enable_academics', enableAcademics)
+      localStorage.setItem('enable_affiliates', enableAffiliates)
+      localStorage.setItem('enable_payouts', enablePayouts)
+      localStorage.setItem('enable_upsells', enableUpsells)
 
       setMessage('Platform settings & API credentials updated successfully!')
       setTimeout(() => setMessage(''), 3000)
@@ -396,7 +414,7 @@ export default function AdminSettings() {
               <div style={{ borderTop: '1px solid #e2e8f0', margin: '12px 0 6px 0', paddingTop: 12 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Broadcast Mail Keys</span>
               </div>
-              <div>
+              <div style={{ marginBottom: 14 }}>
                 <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Resend API Key</label>
                 <input 
                   type="password" 
@@ -405,6 +423,52 @@ export default function AdminSettings() {
                   placeholder="re_..."
                   style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
                 />
+              </div>
+
+              <div style={{ borderTop: '1px solid #e2e8f0', margin: '12px 0 6px 0', paddingTop: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Feature Toggles</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr', gap: 16, margin: '6px 0 12px 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <input 
+                    type="checkbox" 
+                    id="enableAcademics" 
+                    checked={enableAcademics} 
+                    onChange={e => setEnableAcademics(e.target.checked)} 
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                  <label htmlFor="enableAcademics" style={{ fontSize: 13, fontWeight: 500, color: '#3c4257', cursor: 'pointer', userSelect: 'none' }}>Enable Academics (Courses & LMS)</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <input 
+                    type="checkbox" 
+                    id="enableAffiliates" 
+                    checked={enableAffiliates} 
+                    onChange={e => setEnableAffiliates(e.target.checked)} 
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                  <label htmlFor="enableAffiliates" style={{ fontSize: 13, fontWeight: 500, color: '#3c4257', cursor: 'pointer', userSelect: 'none' }}>Enable Affiliate Program</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <input 
+                    type="checkbox" 
+                    id="enablePayouts" 
+                    checked={enablePayouts} 
+                    onChange={e => setEnablePayouts(e.target.checked)} 
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                  <label htmlFor="enablePayouts" style={{ fontSize: 13, fontWeight: 500, color: '#3c4257', cursor: 'pointer', userSelect: 'none' }}>Enable Payouts Manager</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <input 
+                    type="checkbox" 
+                    id="enableUpsells" 
+                    checked={enableUpsells} 
+                    onChange={e => setEnableUpsells(e.target.checked)} 
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                  <label htmlFor="enableUpsells" style={{ fontSize: 13, fontWeight: 500, color: '#3c4257', cursor: 'pointer', userSelect: 'none' }}>Enable Upsell Offers</label>
+                </div>
               </div>
 
               <button type="submit" style={{ alignSelf: 'flex-start', background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13.5, marginTop: 8, transition: 'all 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>

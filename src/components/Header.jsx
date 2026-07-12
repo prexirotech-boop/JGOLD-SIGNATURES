@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import UserMenu from './UserMenu'
 import { supabase } from '../lib/supabase'
+import { CONFIG } from '../lib/config'
 
 export default function Header() {
   const navigate = useNavigate()
@@ -20,13 +21,13 @@ export default function Header() {
   // Initialize and synchronize cart items from localStorage
   useEffect(() => {
     try {
-      const items = JSON.parse(localStorage.getItem('amplified_cart')) || []
+      const items = JSON.parse(localStorage.getItem('ecom_cart')) || []
       setCartItems(items)
     } catch (e) {}
 
     const syncCart = () => {
       try {
-        const items = JSON.parse(localStorage.getItem('amplified_cart')) || []
+        const items = JSON.parse(localStorage.getItem('ecom_cart')) || []
         setCartItems(items)
       } catch (e) {}
     }
@@ -40,7 +41,7 @@ export default function Header() {
 
   const handleRemoveFromCart = (itemId) => {
     const updated = cartItems.filter(item => item.id !== itemId)
-    localStorage.setItem('amplified_cart', JSON.stringify(updated))
+    localStorage.setItem('ecom_cart', JSON.stringify(updated))
     setCartItems(updated)
     window.dispatchEvent(new Event('cart_updated'))
   }
@@ -92,10 +93,13 @@ export default function Header() {
       return
     }
     const query = searchQuery.toLowerCase()
-    const matches = products.filter(p => 
-      p.title.toLowerCase().includes(query) || 
-      (p.type && p.type.toLowerCase().includes(query))
-    )
+    const matches = products.filter(p => {
+      const matchesQuery = p.title.toLowerCase().includes(query) || 
+                           (p.type && p.type.toLowerCase().includes(query))
+      const isDigital = ['course', 'ebook', 'blueprint', 'bundle'].includes(p.type)
+      if (!CONFIG.ENABLE_DIGITAL_PRODUCTS && isDigital) return false
+      return matchesQuery
+    })
     setFilteredProducts(matches)
   }, [searchQuery, products])
 
@@ -120,7 +124,7 @@ export default function Header() {
     <>
       <header className="global-header">
         <Link to={user ? "/dashboard" : "/"} className="brand-link" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-          <img src="/logo.png" alt="Amplified Skills" style={{ height: 52, width: 'auto', maxWidth: 220, objectFit: 'contain', objectPosition: 'left center', display: 'block', flexShrink: 0 }} />
+          <img src="/logo.png" alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} style={{ height: 52, width: 'auto', maxWidth: 220, objectFit: 'contain', objectPosition: 'left center', display: 'block', flexShrink: 0 }} />
         </Link>
 
         <div className="header-search-wrapper" ref={dropdownRef} style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
@@ -131,7 +135,7 @@ export default function Header() {
             </svg>
             <input 
               type="text" 
-              placeholder="Search for courses or resources..." 
+              placeholder={CONFIG.ENABLE_DIGITAL_PRODUCTS ? "Search for courses or resources..." : "Search for premium products..."} 
               value={searchQuery}
               onChange={e => {
                 setSearchQuery(e.target.value)
@@ -175,7 +179,9 @@ export default function Header() {
                     <div className="search-item-info">
                       <div className="search-item-title">{product.title}</div>
                       <div className="search-item-meta">
-                        <span className="search-item-badge">{product.type === 'course' ? 'Course' : 'E-Book'}</span>
+                        <span className="search-item-badge">
+                          {product.type === 'course' ? 'Course' : product.type === 'ebook' ? 'E-Book' : 'Physical'}
+                        </span>
                         <span className="search-item-price">
                           {product.price ? `₦${Number(product.price).toLocaleString()}` : 'Free'}
                         </span>
@@ -185,7 +191,7 @@ export default function Header() {
                 ))
               ) : (
                 <div className="search-dropdown-empty">
-                  No courses or resources found for "{searchQuery}"
+                  No products found for "{searchQuery}"
                 </div>
               )}
             </div>
@@ -195,9 +201,11 @@ export default function Header() {
         <nav className="desktop-nav">
           {[
             { label: 'Home', path: '/' },
-            { label: 'Products', path: '/products' },
             { label: 'About Us', path: '/about' },
-            { label: 'FAQs', path: '/faq' },
+            { label: 'Products', path: '/products' },
+            { label: 'Quality', path: '/quality' },
+            { label: 'Export', path: '/export' },
+            { label: 'Gallery', path: '/gallery' },
             { label: 'Blog', path: '/blog' },
             { label: 'Contact', path: '/contact' }
           ].map(item => (
@@ -212,6 +220,29 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
+          <Link 
+            to="/contact?quote=true" 
+            style={{
+              background: 'var(--brand-primary)',
+              color: '#fff',
+              padding: '9px 18px',
+              borderRadius: '4px',
+              fontWeight: 700,
+              fontSize: '13px',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'background-color 0.2s',
+              whiteSpace: 'nowrap',
+              marginRight: '8px'
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}
+          >
+            Get a Quote <span style={{ fontSize: '14px', fontWeight: 'bold' }}>→</span>
+          </Link>
+
           {/* Cart Toggle Button */}
           <button 
             onClick={() => setShowCartDrawer(true)} 
@@ -226,7 +257,8 @@ export default function Header() {
               alignItems: 'center',
               justifyContent: 'center',
               padding: '8px',
-              transition: 'color 0.2s'
+              transition: 'color 0.2s',
+              marginRight: '8px'
             }}
             title="View Cart"
           >
@@ -277,11 +309,13 @@ export default function Header() {
         {/* Mobile Dropdown Menu — Solid White with Alternating Items */}
         <div id="mobile-nav" style={{ display: 'none', flexDirection: 'column', background: '#ffffff', borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '8px 0 16px', position: 'absolute', top: '100%', left: 0, width: '100%', zIndex: 999, boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}>
         {/* Nav Links */}
-        {[
+         {[
           { label: 'Home', path: '/', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
-          { label: 'Products', path: '/products', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> },
           { label: 'About Us', path: '/about', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg> },
-          { label: 'FAQs', path: '/faq', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> },
+          { label: 'Products', path: '/products', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> },
+          { label: 'Quality', path: '/quality', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+          { label: 'Export', path: '/export', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> },
+          { label: 'Gallery', path: '/gallery', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> },
           { label: 'Blog', path: '/blog', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg> },
           { label: 'Contact', path: '/contact', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> }
         ].map((item, idx) => {
@@ -291,7 +325,7 @@ export default function Header() {
               key={item.label}
               to={item.path}
               style={{
-                color: isActive ? '#2563eb' : '#374151',
+                color: isActive ? 'var(--brand-primary)' : '#374151',
                 textDecoration: 'none',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: '13.5px',
@@ -299,15 +333,15 @@ export default function Header() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '11px',
-                background: isActive ? 'rgba(37,99,235,0.06)' : '#ffffff',
-                borderLeft: isActive ? '3px solid #2563eb' : '3px solid transparent',
+                background: isActive ? 'rgba(18,60,36,0.06)' : '#ffffff',
+                borderLeft: isActive ? '3px solid var(--brand-primary)' : '3px solid transparent',
                 borderBottom: '1px solid rgba(0,0,0,0.02)',
                 transition: 'all 0.15s ease',
                 letterSpacing: '0.01em'
               }}
               onClick={() => document.getElementById('mobile-nav').style.display = 'none'}
             >
-              <span style={{ color: isActive ? '#2563eb' : '#9ca3af', display: 'flex', flexShrink: 0 }}>{item.icon}</span>
+              <span style={{ color: isActive ? 'var(--brand-primary)' : '#9ca3af', display: 'flex', flexShrink: 0 }}>{item.icon}</span>
               {item.label}
             </Link>
           )

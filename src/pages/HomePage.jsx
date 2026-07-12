@@ -1,1491 +1,413 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { getShortDesc } from './ProductsPage'
-import UpsellWidget from '../components/UpsellWidget'
-
-const SLIDES = [
-  '/slideshow_1.jpg',
-  '/slideshow_2.jpg',
-  '/slideshow_3.jpg'
-]
 
 export default function HomePage() {
-  const [featuredProducts, setFeaturedProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [activeSlide, setActiveSlide] = useState(0)
-  const [activeFaq, setActiveFaq] = useState(null)
-
-  // Slideshow interval
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % SLIDES.length)
-    }, 6000)
-    return () => clearInterval(interval)
-  }, [])
-
-  // Load featured products from Supabase
-  useEffect(() => {
-    async function loadProducts() {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: true })
-        .limit(4) // Load up to 4 items for a full layout
-      
-      if (!error && data) {
-        setFeaturedProducts(data)
-      }
-      setLoading(false)
-    }
-    loadProducts()
-  }, [])
-
-  const toggleFaq = (index) => {
-    setActiveFaq(activeFaq === index ? null : index)
-  }
-
   return (
-    <div className="home-layout">
+    <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
       
-      {/* Hero Section with Dynamic Fading Slideshow */}
-      <section className="home-hero">
-        <div className="hero-slideshow-container">
-          {SLIDES.map((slide, idx) => (
-            <div 
-              key={slide} 
-              className={`hero-slide ${idx === activeSlide ? 'active' : ''}`}
-              style={{ backgroundImage: `url(${slide})` }}
-            />
-          ))}
-          <div className="hero-overlay" />
-        </div>
+      {/* ─── HERO SECTION ─── */}
+      <section style={{ padding: '64px 24px 80px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '48px', alignItems: 'center' }} className="hero-grid">
+          
+          {/* Left Column: Headings & Subtexts */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <h1 style={{ 
+              fontSize: '44px', 
+              fontWeight: 800, 
+              color: '#0d2e1a', 
+              lineHeight: '1.18', 
+              margin: 0,
+              fontFamily: 'var(--font-heading)',
+              letterSpacing: '-1px'
+            }} className="hero-title">
+              Connecting Nigeria's<br />
+              <span style={{ color: 'var(--brand-primary)', display: 'block', margin: '4px 0' }}>Finest Agricultural Products</span>
+              <span style={{ fontStyle: 'italic', fontWeight: '500', color: '#5cb57c', fontSize: '32px', display: 'block', marginTop: '6px' }}>to the Global Marketplace</span>
+            </h1>
+            
+            <p style={{ fontSize: '15px', color: '#475569', lineHeight: '1.7', margin: 0, maxWidth: '480px' }}>
+              We source, process and export premium quality agricultural products from Nigeria to the world with integrity, quality and excellence.
+            </p>
 
-        <div className="home-container hero-content animate-fade-in">
-          <span className="hero-badge-glow">
-            ELITE DIGITAL ACADEMY & MENTORSHIP
-          </span>
-
-          <h1 className="hero-title">
-            Build High-Income Skills. Earn Daily. <span className="gradient-text">Build Real Wealth.</span>
-          </h1>
-
-          <p className="hero-subtitle">
-            Skip theoretical academic models. We provide practical, step-by-step courses and elite training programs designed for the modern digital economy.
-          </p>
-
-          <div className="hero-actions">
-            <Link to="/products" className="btn-hero-primary">
-              Explore Our Courses <span className="arrow">→</span>
-            </Link>
-            <Link to="/about" className="btn-hero-outline">
-              Our Story
-            </Link>
-          </div>
-
-          <div className="hero-trust-indicator">
-            <div className="stars">★★★★★</div>
-            <p>Rated <strong>4.9/5</strong> by 2,500+ successful graduates globally</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Brand Stat Section */}
-      <section className="stats-strip">
-        <div className="home-container">
-          <div className="stats-grid">
-            {[
-              { val: '2,500+', label: 'Graduated Students' },
-              { val: '18+', label: 'Premium Courses' },
-              { val: '4.9/5', label: 'Average Course Rating' },
-              { val: '100%', label: 'Practical Focus (Zero Fluff)' }
-            ].map((item, i) => (
-              <div key={i} className="stat-card">
-                <div className="stat-value">{item.val}</div>
-                <div className="stat-label">{item.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products Grid Section - TAKEN UP ON THE PAGE */}
-      <section className="home-section bg-light-gray">
-        <div className="home-container">
-          <div className="section-header animate-slide-up">
-            <span className="section-tag">ACADEMY</span>
-            <h2>Premium Mentoring & Courses</h2>
-            <p>Gain instant access to our highly sought-after execution systems.</p>
-          </div>
-
-          <div className="home-grid">
-            {loading ? (
-              // Skeleton loading states
-              [1, 2, 3].map((n) => (
-                <div key={n} className="skeleton-card">
-                  <div className="skeleton-image" />
-                  <div className="skeleton-body">
-                    <div className="skeleton-line title" />
-                    <div className="skeleton-line text" />
-                    <div className="skeleton-line text" />
-                    <div className="skeleton-line tags" />
-                  </div>
-                  <div className="skeleton-footer" />
-                </div>
-              ))
-            ) : featuredProducts.length === 0 ? (
-              <div className="empty-products">
-                No courses are currently published. Check back soon!
-              </div>
-            ) : (
-              featuredProducts.map(product => {
-                const isCourse = product.type === 'course'
-                const features = product.features || []
-                const discountPct = product.old_price && product.price
-                  ? Math.round((1 - product.price / product.old_price) * 100)
-                  : null
-
-                return (
-                  <Link 
-                    to={`/product/${product.slug || product.id}`} 
-                    key={product.id} 
-                    className="premium-product-card"
-                  >
-                    {/* Card Cover Image */}
-                    <div className="product-image-area">
-                      {product.cover_image ? (
-                        <img 
-                          src={product.cover_image} 
-                          alt={product.title.replace(/\s+slug$/i, '')} 
-                          className="hover-zoom" 
-                        />
-                      ) : (
-                        <div className="default-type-icon">
-                          {isCourse ? '🎓' : '📗'}
-                        </div>
-                      )}
-                      
-                      {/* Badge Overlays */}
-                      <div className="card-overlays">
-                        {isCourse && <span className="type-badge course">COURSE</span>}
-                        {!isCourse && <span className="type-badge ebook">E-BOOK</span>}
-                        {discountPct && <span className="type-badge discount">{discountPct}% OFF</span>}
-                      </div>
-                    </div>
-
-                    <div className="product-details-area">
-                      <h3>{product.title.replace(/\s+slug$/i, '')}</h3>
-                      <p className="description-preview">
-                        {product.short_description || getShortDesc(product)}
-                      </p>
-                      
-                      {features.length > 0 && (
-                        <div className="features-tags-strip">
-                          {features.slice(0, 3).map((feat, idx) => (
-                            <span key={idx} className="feat-tag">{feat}</span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="product-footer-area">
-                      <div className="price-box">
-                        {product.old_price && <span className="old-price">₦{product.old_price.toLocaleString()}</span>}
-                        <span className="price-tag">₦{product.price.toLocaleString()}</span>
-                      </div>
-                      <span className="premium-card-btn">
-                        {isCourse ? 'Enroll Now' : 'Get E-Book'} →
-                      </span>
-                    </div>
-                  </Link>
-                )
-              })
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us / Curricular Pillars - MOVED BELOW PRODUCTS */}
-      <section className="home-section bg-surface">
-        <div className="home-container">
-          <div className="section-header animate-slide-up">
-            <span className="section-tag">CURRICULUM</span>
-            <h2>Our Core Skill Pillars</h2>
-            <p>Four specialized domains built for maximum leverage and daily income.</p>
-          </div>
-
-          <div className="pillars-grid">
-            {/* Pillar 1 */}
-            <div className="pillar-card">
-              <div className="pillar-icon-box orange">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pillar-svg">
-                  <rect x="4" y="4" width="16" height="16" rx="2" />
-                  <rect x="9" y="9" width="6" height="6" />
-                  <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" />
-                </svg>
-              </div>
-              <h3>Software & AI Engineering</h3>
-              <p>Master modern web stacks and build custom AI-powered integrations to automate business pipelines.</p>
-              <ul className="pillar-list">
-                <li>✓ Fullstack Web Apps (React, Vite, Node)</li>
-                <li>✓ Serverless Backend & Database Architectures</li>
-                <li>✓ Autonomous AI Agents & API Integrations</li>
-              </ul>
-            </div>
-
-            {/* Pillar 2 */}
-            <div className="pillar-card">
-              <div className="pillar-icon-box green">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pillar-svg">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </svg>
-              </div>
-              <h3>High-Ticket Freelancing</h3>
-              <p>Learn how to package your services and sign high-paying global clients who pay in stable currencies.</p>
-              <ul className="pillar-list">
-                <li>✓ Global Client Acquisition & Lead Generation</li>
-                <li>✓ Premium Freelance Profile Funnels</li>
-                <li>✓ Strategic Cold Pitching & Closing scripts</li>
-              </ul>
-            </div>
-
-            {/* Pillar 3 */}
-            <div className="pillar-card">
-              <div className="pillar-icon-box blue">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pillar-svg">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                </svg>
-              </div>
-              <h3>E-Book Mastery</h3>
-              <p>Self-publish guides and digital assets that address critical market needs and run on complete autopilot.</p>
-              <ul className="pillar-list">
-                <li>✓ Researching Lucrative Niche Demands</li>
-                <li>✓ High-Conversion Landing Pages</li>
-                <li>✓ Social Media Lead Magnets</li>
-              </ul>
-            </div>
-
-            {/* Pillar 4 */}
-            <div className="pillar-card">
-              <div className="pillar-icon-box gold">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pillar-svg">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z" />
-                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" />
-                </svg>
-              </div>
-              <h3>Digital Marketing</h3>
-              <p>Drive highly-targeted traffic that converts and scale advertising campaigns with maximum ROI.</p>
-              <ul className="pillar-list">
-                <li>✓ Direct Response Copywriting</li>
-                <li>✓ Paid Advertising Campaigns (Meta, Google)</li>
-                <li>✓ Funnel Optimization & Analytics tracking</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Founder's Spotlight Section */}
-      <section className="home-section bg-gradient-dark text-light">
-        <div className="home-container">
-          <div className="founder-wrapper">
-            <div className="founder-text-column">
-              <span className="section-tag border-light">OUR MISSION</span>
-              <h2>We Build Builders, Not Theorists</h2>
-              <p className="founder-p">
-                Most educational systems are designed around outdated curricula that prioritize memorization over production. At Amplified Skills, we reject theoretical learning.
-              </p>
-              <p className="founder-p">
-                Every single course and playbook we publish is built upon actual battle-tested experience. We teach you exactly what is making money today in the global digital economy.
-              </p>
-              
-              <div className="founder-pillars-mini">
-                <div className="mini-item">
-                  <div className="mini-check">✓</div>
-                  <div>
-                    <strong>Direct Mentorship</strong>
-                    <span>Get answers directly from executors who actively run digital operations.</span>
-                  </div>
-                </div>
-                <div className="mini-item">
-                  <div className="mini-check">✓</div>
-                  <div>
-                    <strong>USD & Global Scale</strong>
-                    <span>Our courses focus on teaching local builders how to acquire international clients.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="founder-card-column">
-              <div className="founder-glass-card">
-                <div className="quote-icon">“</div>
-                <blockquote>
-                  We don't teach. We guide. Every course is a battle-tested roadmap that we have used ourselves to build high-scale digital operations. If it doesn't generate income, it's not on our platform.
-                </blockquote>
-                <div className="founder-profile">
-                  <img src="/favicon.png" alt="Amplified Team" className="founder-team-logo" />
-                  <div className="founder-meta">
-                    <cite className="founder-name">The Amplified Team</cite>
-                    <span className="founder-title">Elite Mentoring & Playbooks</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Student Testimonials / Outcomes */}
-      <section className="home-section bg-light-gray">
-        <div className="home-container">
-          <div className="section-header animate-slide-up">
-            <span className="section-tag">TESTIMONIALS</span>
-            <h2>Real Success, Real Numbers</h2>
-            <p>Hear from active students who completed the courses and unlocked cash flow.</p>
-          </div>
-
-          <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <div className="t-rating">★★★★★</div>
-              <p className="t-text">
-                "I was highly skeptical at first, but the E-book course changed everything. Within 2 months, I researched a niche, designed a landing page, and generated over ₦250,000 in direct sales. The execution model is incredibly simple."
-              </p>
-              <div className="t-user">
-                <img src="/testimonial_2.png" alt="Amina Y." className="t-user-image" />
-                <div>
-                  <strong>Amina Y.</strong>
-                  <span>E-Book Mastery Student</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="testimonial-card">
-              <div className="t-rating">★★★★★</div>
-              <p className="t-text">
-                "The software & AI engineering course gave me the exact tools to build a custom automation agency. Instead of coding boilerplate sites, I learned how to connect APIs and build systems. I've already signed two US-based clients."
-              </p>
-              <div className="t-user">
-                <img src="/testimonial_1.png" alt="Chidi O." className="t-user-image" />
-                <div>
-                  <strong>Chidi O.</strong>
-                  <span>Software & AI Engineering Student</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="testimonial-card">
-              <div className="t-rating">★★★★★</div>
-              <p className="t-text">
-                "High-Ticket Freelancing showed me how to pitch my services in USD. Using their profile templates and client acquisition templates, I closed my first contract on Upwork for $800 in less than 21 days."
-              </p>
-              <div className="t-user">
-                <img src="/testimonial_3.png" alt="Precious E." className="t-user-image" />
-                <div>
-                  <strong>Precious E.</strong>
-                  <span>High-Ticket Freelancing Student</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Accordion FAQs summary */}
-      <section className="home-section bg-surface">
-        <div className="home-container">
-          <div className="section-header animate-slide-up">
-            <span className="section-tag">FAQ</span>
-            <h2>Got Questions? We Have Answers</h2>
-            <p>Clear, direct responses to help you decide on your next course.</p>
-          </div>
-
-          <div className="faq-accordion-box">
-            {[
-              {
-                q: "Are these programs suitable for complete beginners?",
-                a: "Absolutely. Each course begins with basic concepts and builds up. We design our training with direct, actionable playbooks so you won't get lost in complex theoretical jargon."
-              },
-              {
-                q: "Do I need a laptop, or can I use my phone?",
-                a: "You can start learning on either! While writing software is much easier on a PC, several of our courses (like E-Book Mastery and High-Ticket Freelancing) have students earning using just their phones or PC."
-              },
-              {
-                q: "How long do I have access to the courses?",
-                a: "Once you purchase a course, you have lifetime access. This includes all future course updates, playbooks, community threads, and live session recordings."
-              },
-              {
-                q: "Is there support if I get stuck?",
-                a: "Yes. Every student gains access to our community forums where you can ask questions, share your milestone screenshots, and get support from mentors and other students."
-              }
-            ].map((faq, idx) => {
-              const isOpen = activeFaq === idx
-              return (
-                <div key={idx} className={`faq-accordion-item ${isOpen ? 'open' : ''}`}>
-                  <button className="faq-accordion-header" onClick={() => toggleFaq(idx)}>
-                    <span>{faq.q}</span>
-                    <span className="faq-toggle-icon">{isOpen ? '−' : '+'}</span>
-                  </button>
-                  <div className="faq-accordion-content" style={{ maxHeight: isOpen ? '200px' : '0' }}>
-                    <p>{faq.a}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="faq-cta-footer">
-            <p>Have more questions?</p>
-            <Link to="/faq" className="btn-outline font-sm">
-              View Full FAQ Page
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Recommended Homepage Deal Banner */}
-      <div className="home-container" style={{ marginTop: 20 }}>
-        <UpsellWidget placement="homepage" />
-      </div>
-
-      {/* Final Call To Action Banner */}
-      <section className="final-cta-section">
-        <div className="home-container">
-          <div className="final-cta-card">
-            <h2>Ready to Amplify Your Skills?</h2>
-            <p>Gain instant access to our premium courses, dedicated mentoring, and start earning today.</p>
-            <div className="final-cta-actions">
-              <Link to="/products" className="btn-hero-primary glow">
-                Explore Programs Now
+            <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }} className="hero-actions">
+              <Link to="/products" style={{
+                background: 'var(--brand-primary)',
+                color: '#fff',
+                padding: '13px 26px',
+                borderRadius: '4px',
+                fontWeight: 700,
+                fontSize: '13.5px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'background-color 0.2s'
+              }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
+                 onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}>
+                Explore Our Products <span>→</span>
+              </Link>
+              <Link to="/contact" style={{
+                background: 'transparent',
+                color: '#0d2e1a',
+                border: '1px solid #0d2e1a',
+                padding: '13px 26px',
+                borderRadius: '4px',
+                fontWeight: 700,
+                fontSize: '13.5px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s'
+              }} onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9' }}
+                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                Contact Us <span>→</span>
               </Link>
             </div>
           </div>
+
+          {/* Right Column: Mockup-Exact collage image */}
+          <div style={{ position: 'relative' }} className="hero-image-col">
+            <div style={{
+              borderRadius: '8px',
+              overflow: 'hidden',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.06)'
+            }}>
+              <img 
+                src="/mifas_hero_image.png" 
+                alt="Nigerian agricultural products" 
+                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* Embedded Premium Stylesheet */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .home-layout {
-          min-height: 100vh;
-          font-family: var(--font);
-          background: #ffffff;
-          overflow-x: hidden;
-        }
-
-        .home-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 24px;
-        }
-
-        /* ─── BACKGROUND SLIDESHOW ─── */
-        .home-hero {
-          position: relative;
-          min-height: 85vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 120px 0;
-          text-align: center;
-          overflow: hidden;
-          color: white;
-        }
-
-        .hero-slideshow-container {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-        }
-
-        .hero-slide {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-size: cover;
-          background-position: center;
-          opacity: 0;
-          transition: opacity 1.5s ease-in-out;
-          transform: scale(1.05);
-          animation: zoomSlow 30s infinite alternate;
-        }
-
-        .hero-slide.active {
-          opacity: 0.45;
-        }
-
-        .hero-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(135deg, #050b14 0%, #0c152d 100%);
-          z-index: 2;
-          opacity: 0.80;
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 3;
-          max-width: 820px;
-        }
-
-        /* Animations */
-        @keyframes zoomSlow {
-          0% { transform: scale(1.02); }
-          100% { transform: scale(1.09); }
-        }
-
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in {
-          animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .animate-slide-up {
-          opacity: 1;
-        }
-
-        /* Hero Text & Badges */
-        .hero-badge-glow {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(37, 99, 235, 0.15);
-          border: 1px solid rgba(37, 99, 235, 0.35);
-          color: #93c5fd;
-          padding: 8px 16px;
-          border-radius: 50px;
-          font-size: 12.5px;
-          font-weight: 700;
-          letter-spacing: 1px;
-          margin-bottom: 28px;
-          box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
-        }
-
-        .badge-dot {
-          width: 8px;
-          height: 8px;
-          background: #3b82f6;
-          border-radius: 50%;
-          box-shadow: 0 0 8px #3b82f6;
-          display: inline-block;
-          animation: pulseGlow 2s infinite;
-        }
-
-        @keyframes pulseGlow {
-          0% { transform: scale(0.9); opacity: 0.7; }
-          50% { transform: scale(1.2); opacity: 1; }
-          100% { transform: scale(0.9); opacity: 0.7; }
-        }
-
-        .hero-title {
-          font-family: var(--font-heading) !important;
-          font-size: clamp(2.6rem, 6.5vw, 4.4rem) !important;
-          font-weight: 900 !important;
-          line-height: 1.15;
-          letter-spacing: -2px;
-          margin-bottom: 24px;
-        }
-
-        .gradient-text {
-          background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-          font-size: 19px;
-          color: #94a3b8;
-          line-height: 1.6;
-          max-width: 680px;
-          margin: 0 auto 40px;
-        }
-
-        .hero-actions {
-          display: flex;
-          gap: 16px;
-          justify-content: center;
-          margin-bottom: 40px;
-        }
-
-        /* Hero Action Buttons */
-        .btn-hero-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: #2563eb;
-          color: #ffffff;
-          font-weight: 700;
-          font-size: 16px;
-          padding: 16px 32px;
-          border-radius: 50px;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-hero-primary:hover {
-          background: #1d4ed8;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(37, 99, 235, 0.45);
-        }
-
-        .btn-hero-primary:hover .arrow {
-          transform: translateX(4px);
-        }
-
-        .btn-hero-primary .arrow {
-          transition: transform 0.2s ease;
-        }
-
-        .btn-hero-outline {
-          display: inline-flex;
-          align-items: center;
-          background: rgba(255, 255, 255, 0.05);
-          color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          font-weight: 600;
-          font-size: 16px;
-          padding: 16px 32px;
-          border-radius: 50px;
-          transition: all 0.3s ease;
-        }
-
-        .btn-hero-outline:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        .hero-trust-indicator {
-          font-size: 14px;
-          color: #94a3b8;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          padding-top: 24px;
-          display: inline-block;
-        }
-
-        .hero-trust-indicator .stars {
-          color: #f59e0b;
-          font-size: 18px;
-          margin-bottom: 6px;
-          letter-spacing: 2px;
-        }
-
-        /* ─── STATS STRIP ─── */
-        .stats-strip {
-          background: #0b1329;
-          border-top: 1px solid #1e293b;
-          border-bottom: 1px solid #1e293b;
-          padding: 48px 0;
-          color: white;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 24px;
-          text-align: center;
-        }
-
-        .stats-grid .stat-card {
-          padding: 24px 20px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 12px;
-          transition: transform 0.3s ease, background 0.3s ease;
-        }
-
-        .stats-grid .stat-card:hover {
-          background: rgba(255, 255, 255, 0.06);
-          transform: translateY(-4px);
-        }
-
-        .stat-value {
-          font-family: var(--font-heading) !important;
-          font-size: clamp(2rem, 4.5vw, 2.7rem);
-          font-weight: 800;
-          background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin-bottom: 6px;
-        }
-
-        .stat-label {
-          color: #94a3b8;
-          font-size: 13px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        /* ─── SECTIONS COMMON ─── */
-        .home-section {
-          padding: 96px 0;
-        }
-
-        .bg-gradient-light {
-          background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-        }
-
-        .bg-off-white {
-          background: #f9fafb;
-        }
-
-        .bg-light-gray {
-          background: #f8fafc;
-        }
-
-        .bg-surface {
-          background: #ffffff;
-        }
-
-        .section-header {
-          text-align: center;
-          max-width: 680px;
-          margin: 0 auto 64px;
-        }
-
-        .section-tag {
-          display: inline-block;
-          background: #eff6ff;
-          color: #2563eb;
-          font-size: 11px;
-          font-weight: 800;
-          padding: 5px 12px;
-          border-radius: 4px;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          margin-bottom: 16px;
-        }
-
-        .section-header h2 {
-          font-family: var(--font-heading) !important;
-          font-size: 38px !important;
-          font-weight: 800 !important;
-          color: #0f172a;
-          margin: 0 0 16px;
-          letter-spacing: -1.2px;
-        }
-
-        .section-header p {
-          font-size: 17.5px;
-          color: #64748b;
-          line-height: 1.6;
-        }
-
-        /* ─── PILLARS GRID ─── */
-        .pillars-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 24px;
-        }
-
-        .pillar-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 32px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .pillar-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-          border-color: #cbd5e1;
-        }
-
-        .pillar-icon-box {
-          width: 52px;
-          height: 52px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 24px;
-        }
-
-        .pillar-icon-box.orange { background: #fff7ed; color: #ea580c; }
-        .pillar-icon-box.green { background: #f0fdf4; color: #16a34a; }
-        .pillar-icon-box.blue { background: #eff6ff; color: #2563eb; }
-        .pillar-icon-box.gold { background: #fffbeb; color: #d97706; }
-
-        .pillar-svg {
-          width: 26px;
-          height: 26px;
-        }
-
-        .pillar-card h3 {
-          font-size: 20px !important;
-          font-weight: 800 !important;
-          color: #0f172a;
-          margin: 0 0 12px;
-        }
-
-        .pillar-card p {
-          color: #64748b;
-          font-size: 14px;
-          line-height: 1.6;
-          margin-bottom: 20px;
-        }
-
-        .pillar-list {
-          border-top: 1px solid #f1f5f9;
-          padding-top: 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        .pillar-list li {
-          font-size: 13.5px;
-          color: #475569;
-          font-weight: 500;
-        }
-
-        /* ─── PRODUCT BLUEPRINT GRID ─── */
-        .home-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 32px;
-        }
-
-        .premium-product-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.015);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .premium-product-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08);
-          border-color: #2563eb;
-        }
-
-        .premium-product-card:hover h3 {
-          color: #2563eb;
-        }
-
-        .product-image-area {
-          position: relative;
-          height: 200px;
-          background: linear-gradient(135deg, #1e3a8a, #0b1329);
-          overflow: hidden;
-        }
-
-        .product-image-area img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.4s ease;
-        }
-
-        .premium-product-card:hover .hover-zoom {
-          transform: scale(1.06);
-        }
-
-        .default-type-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100%;
-          font-size: 64px;
-        }
-
-        .card-overlays {
-          position: absolute;
-          top: 16px;
-          left: 16px;
-          display: flex;
-          gap: 8px;
-        }
-
-        .type-badge {
-          font-size: 10px;
-          font-weight: 800;
-          padding: 4px 10px;
-          border-radius: 4px;
-          letter-spacing: 0.5px;
-          color: white;
-        }
-
-        .type-badge.course { background: #2563eb; }
-        .type-badge.ebook { background: #16a34a; }
-        .type-badge.discount { background: #dc2626; }
-
-        .product-details-area {
-          padding: 28px;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .product-details-area h3 {
-          font-size: 21px !important;
-          font-weight: 800 !important;
-          color: #0f172a;
-          margin: 0 0 12px;
-          line-height: 1.35;
-          transition: color 0.2s ease;
-        }
-
-        .description-preview {
-          font-size: 14.5px;
-          color: #64748b;
-          line-height: 1.6;
-          margin-bottom: 20px;
-          flex: 1;
-        }
-
-        .features-tags-strip {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .feat-tag {
-          background: #f1f5f9;
-          color: #475569;
-          font-size: 12px;
-          font-weight: 600;
-          padding: 5px 12px;
-          border-radius: 50px;
-        }
-
-        .product-footer-area {
-          padding: 20px 28px;
-          border-top: 1px solid #f1f5f9;
-          background: #f8fafc;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .price-box {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .old-price {
-          font-size: 13px;
-          color: #94a3b8;
-          text-decoration: line-through;
-          line-height: 1;
-          margin-bottom: 2px;
-        }
-
-        .price-tag {
-          font-size: 22px;
-          font-weight: 900;
-          color: #0f172a;
-          line-height: 1;
-        }
-
-        .premium-card-btn {
-          background: rgba(37, 99, 235, 0.08);
-          color: #2563eb;
-          padding: 8px 18px;
-          border-radius: 50px;
-          font-size: 13px;
-          font-weight: 700;
-          transition: all 0.28s ease;
-          display: inline-block;
-        }
-
-        .premium-product-card:hover .premium-card-btn {
-          background: #2563eb;
-          color: #ffffff;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-        }
-
-        /* Skeleton Loading Cards */
-        .skeleton-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          height: 480px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .skeleton-image {
-          height: 220px;
-          background: #f1f5f9;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .skeleton-body {
-          padding: 28px;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .skeleton-line {
-          background: #f1f5f9;
-          border-radius: 4px;
-        }
-
-        .skeleton-line.title {
-          width: 70%;
-          height: 24px;
-          margin-bottom: 8px;
-        }
-
-        .skeleton-line.text {
-          width: 100%;
-          height: 16px;
-        }
-
-        .skeleton-line.tags {
-          width: 50%;
-          height: 14px;
-          margin-top: auto;
-        }
-
-        .skeleton-footer {
-          height: 70px;
-          background: #f8fafc;
-          border-top: 1px solid #f1f5f9;
-        }
-
-        .skeleton-image::after,
-        .skeleton-line::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-          transform: translateX(-100%);
-          animation: loadingShimmer 1.5s infinite;
-        }
-
-        @keyframes loadingShimmer {
-          100% { transform: translateX(100%); }
-        }
-
-        .empty-products {
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: 64px;
-          color: #64748b;
-          font-size: 16px;
-        }
-
-        /* ─── FOUNDER SPOTLIGHT ─── */
-        .bg-gradient-dark {
-          background: linear-gradient(135deg, #0b1329 0%, #050b14 100%);
-          border-top: 1px solid #1e293b;
-        }
-
-        .text-light {
-          color: white;
-        }
-
-        .founder-wrapper {
-          display: grid;
-          grid-template-columns: 1.1fr 0.9fr;
-          gap: 64px;
-          align-items: center;
-        }
-
-        .founder-text-column .section-tag.border-light {
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: #93c5fd;
-        }
-
-        .founder-text-column h2 {
-          font-family: var(--font-heading) !important;
-          font-size: 38px !important;
-          font-weight: 800 !important;
-          color: #ffffff;
-          margin-bottom: 24px;
-          letter-spacing: -1px;
-        }
-
-        .founder-p {
-          font-size: 16.5px;
-          color: #94a3b8;
-          line-height: 1.7;
-          margin-bottom: 20px;
-        }
-
-        .founder-pillars-mini {
-          margin-top: 32px;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        .mini-item {
-          display: flex;
-          gap: 16px;
-        }
-
-        .mini-check {
-          flex-shrink: 0;
-          width: 24px;
-          height: 24px;
-          background: rgba(37, 99, 235, 0.2);
-          border: 1px solid rgba(37, 99, 235, 0.4);
-          color: #3b82f6;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-          font-weight: bold;
-        }
-
-        .mini-item strong {
-          display: block;
-          font-size: 15px;
-          color: #ffffff;
-          margin-bottom: 4px;
-        }
-
-        .mini-item span {
-          font-size: 13.5px;
-          color: #94a3b8;
-          line-height: 1.5;
-        }
-
-        .founder-glass-card {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 24px;
-          padding: 48px;
-          box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
-          position: relative;
-        }
-
-        .quote-icon {
-          font-size: 96px;
-          color: rgba(37, 99, 235, 0.15);
-          font-family: serif;
-          position: absolute;
-          top: 10px;
-          left: 24px;
-          line-height: 1;
-        }
-
-        .founder-glass-card blockquote {
-          font-size: 18.5px;
-          color: #e2e8f0;
-          font-style: italic;
-          line-height: 1.6;
-          position: relative;
-          z-index: 2;
-          margin-bottom: 32px;
-        }
-
-        .founder-profile {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .founder-team-logo {
-          width: 48px;
-          height: 48px;
-          object-fit: contain;
-          background: #0f172a;
-          border-radius: 50%;
-          border: 1.5px solid rgba(255, 255, 255, 0.2);
-          padding: 6px;
-        }
-
-        .founder-meta {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .founder-name {
-          font-weight: 700;
-          color: white;
-          font-style: normal;
-          font-size: 15px;
-        }
-
-        .founder-title {
-          font-size: 13px;
-          color: #64748b;
-        }
-
-        /* ─── TESTIMONIALS ─── */
-        .testimonials-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 32px;
-        }
-
-        .testimonial-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 32px;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-
-        .t-rating {
-          color: #f59e0b;
-          font-size: 16px;
-          margin-bottom: 16px;
-        }
-
-        .t-text {
-          font-size: 14.5px;
-          color: #475569;
-          line-height: 1.6;
-          margin-bottom: 24px;
-          font-style: italic;
-        }
-
-        .t-user {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          border-top: 1px solid #f1f5f9;
-          padding-top: 16px;
-        }
-
-        .t-user-image {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          object-fit: cover;
-          border: 2px solid #2563eb;
-        }
-
-        .t-user strong {
-          display: block;
-          font-size: 14px;
-          color: #0f172a;
-        }
-
-        .t-user span {
-          font-size: 12.5px;
-          color: #64748b;
-        }
-
-        /* ─── INTERACTIVE ACCORDION FAQS ─── */
-        .faq-accordion-box {
-          max-width: 780px;
-          margin: 0 auto;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .faq-accordion-item {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          overflow: hidden;
-          transition: all 0.2s ease;
-        }
-
-        .faq-accordion-item.open {
-          border-color: #cbd5e1;
-          background: #ffffff;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-        }
-
-        .faq-accordion-header {
-          width: 100%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 24px;
-          text-align: left;
-          font-size: 16px;
-          font-weight: 700;
-          color: #0f172a;
-          background: none;
-          border: none;
-          cursor: pointer;
-        }
-
-        .faq-toggle-icon {
-          font-size: 20px;
-          color: #64748b;
-          font-weight: normal;
-        }
-
-        .faq-accordion-content {
-          overflow: hidden;
-          transition: max-height 0.3s ease-out;
-        }
-
-        .faq-accordion-content p {
-          padding: 0 24px 20px;
-          font-size: 14.5px;
-          color: #475569;
-          line-height: 1.6;
-        }
-
-        .faq-cta-footer {
-          text-align: center;
-          margin-top: 48px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .faq-cta-footer p {
-          font-size: 15px;
-          color: #64748b;
-        }
-
-        .font-sm {
-          font-size: 13.5px;
-          padding: 10px 20px;
-        }
-
-        /* ─── FINAL CTA BANNER ─── */
-        .final-cta-section {
-          padding: 0 0 96px 0;
-        }
-
-        .final-cta-card {
-          background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
-          border-radius: 24px;
-          padding: 64px 32px;
-          text-align: center;
-          color: white;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-        }
-
-        .final-cta-card h2 {
-          font-family: var(--font-heading) !important;
-          font-size: 36px !important;
-          font-weight: 850 !important;
-          color: #ffffff;
-          margin-bottom: 16px;
-          letter-spacing: -1px;
-        }
-
-        .final-cta-card p {
-          font-size: 17px;
-          color: #94a3b8;
-          max-width: 580px;
-          margin: 0 auto 32px;
-          line-height: 1.6;
-        }
-
-        .final-cta-actions {
-          display: flex;
-          justify-content: center;
-        }
-
-        .btn-hero-primary.glow {
-          box-shadow: 0 0 30px rgba(37, 99, 235, 0.5);
-        }
-
-        .btn-hero-primary.glow:hover {
-          box-shadow: 0 0 40px rgba(37, 99, 235, 0.7);
-        }
-
-        /* ─── RESPONSIVENESS ─── */
-        @media (max-width: 992px) {
-          .founder-wrapper {
-            grid-template-columns: 1fr;
-            gap: 48px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .home-hero {
-            padding: 80px 0;
-            min-height: auto;
-          }
-
-          .hero-title {
-            font-size: 32px !important;
-            line-height: 1.25 !important;
-            letter-spacing: -1px !important;
-          }
-
-          .hero-title br {
-            display: none;
-          }
-
-          .hero-subtitle {
-            font-size: 16px !important;
-            line-height: 1.5 !important;
-            margin-bottom: 32px;
-          }
-
-          .hero-actions {
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
-          }
-
-          .btn-hero-primary, .btn-hero-outline {
-            width: auto !important;
-            min-width: 240px;
+      {/* ─── FEATURES HIGHLIGHTS STRIP (Green Background) ─── */}
+      <section style={{ background: '#0d2e1a', color: '#ffffff', padding: '32px 24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }} className="features-grid">
+          {[
+            {
+              title: 'GLOBAL REACH',
+              desc: 'We export to over 20+ countries worldwide.',
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h2a2.5 2.5 0 002.5-2.5V10a2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            },
+            {
+              title: 'PREMIUM QUALITY',
+              desc: 'We maintain the highest quality from farm to final delivery.',
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            },
+            {
+              title: 'EXPORT READY',
+              desc: 'We meet international standards and export requirements.',
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-4V17l8 4m0-12v10" />
+            },
+            {
+              title: 'TRUSTED PARTNER',
+              desc: 'Reliable, transparent and customer-focused service.',
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            },
+            {
+              title: 'SUSTAINABLE SOURCING',
+              desc: 'Supporting local farmers and promoting sustainable agriculture.',
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            }
+          ].map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '8px 12px' }}>
+              <div style={{ color: '#a3e2bb', display: 'flex' }}>
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">{item.icon}</svg>
+              </div>
+              <strong style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.5px' }}>{item.title}</strong>
+              <p style={{ fontSize: '11px', color: '#d1f4df', lineHeight: '1.4', margin: 0 }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── ABOUT US SECTION ─── */}
+      <section style={{ padding: '64px 24px', background: '#fcfdfd' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 2.5fr 1fr', gap: '32px', alignItems: 'center' }} className="about-wrapper">
+          
+          {/* Left Crop Image (Circle) */}
+          <div style={{ display: 'flex', justifyContent: 'center' }} className="about-left-col">
+            <div style={{ width: '130px', height: '130px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #d1f4df', boxShadow: '0 6px 16px rgba(0,0,0,0.04)' }}>
+              <img src="/about_left.png" alt="Kolanuts basket" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          </div>
+
+          {/* Center Text Column */}
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
+            <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '1.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              ABOUT US
+            </span>
+            <div style={{ width: '40px', height: '2.5px', background: 'var(--brand-primary)', borderRadius: '2px', marginTop: '-4px' }} />
+            
+            <p style={{ fontSize: '14px', color: '#334155', lineHeight: '1.7', margin: 0, fontWeight: 550 }}>
+              <strong>MIFAS FARMS LTD</strong> is a Nigerian agribusiness and export company specializing in the sourcing, processing, packaging and export of premium agricultural commodities.
+            </p>
+            <p style={{ fontSize: '14px', color: '#475569', lineHeight: '1.7', margin: 0 }}>
+              We work directly with trusted farmers and producer groups to ensure consistent quality, traceability and sustainable sourcing. Our mission is to connect Nigeria's finest agricultural products to global markets through excellence and reliability.
+            </p>
+          </div>
+
+          {/* Right Crop Image (Circle) */}
+          <div style={{ display: 'flex', justifyContent: 'center' }} className="about-right-col">
+            <div style={{ width: '130px', height: '130px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #d1f4df', boxShadow: '0 6px 16px rgba(0,0,0,0.04)' }}>
+              <img src="/about_right.png" alt="Shea butter nuts" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ─── PREMIUM PRODUCTS CATALOG ─── */}
+      <section style={{ padding: '64px 24px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }} className="section-header-flex">
+          <div>
+            <span style={{ fontSize: '11.5px', fontWeight: '800', color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '1.5px', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7" strokeWidth="3" strokeLinecap="round"/></svg>
+              OUR PRODUCTS
+            </span>
+            <h2 style={{ fontSize: '28px', color: '#0d2e1a', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }}>
+              Premium Agricultural Products
+            </h2>
+          </div>
+          <Link to="/products" style={{
+            background: 'var(--brand-primary)',
+            color: '#ffffff',
+            padding: '9px 18px',
+            borderRadius: '4px',
+            fontWeight: 700,
+            fontSize: '12.5px',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'background-color 0.2s'
+          }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
+             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}>
+            View All Products <span>→</span>
+          </Link>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }} className="products-grid">
+          {[
+            {
+              title: 'Bitter Kola',
+              sub: 'Export-grade Garcinia kola in bulk and retail packaging.',
+              img: '/prod_bitter_kola.png',
+              path: '/products?category=bitter-kola'
+            },
+            {
+              title: 'Kolanuts',
+              sub: 'Cola nitida & Cola acuminata. Fresh and export quality.',
+              img: '/prod_kolanuts.png',
+              path: '/products?category=kolanuts'
+            },
+            {
+              title: 'Palm Oil',
+              sub: 'Premium quality crude palm oil available in various packaging.',
+              img: '/prod_palm_oil.png',
+              path: '/products?category=palm-oil'
+            },
+            {
+              title: 'Shea Butter',
+              sub: 'Premium unrefined shea butter for food and cosmetic use.',
+              img: '/prod_shea_butter.png',
+              path: '/products?category=shea-butter'
+            },
+            {
+              title: 'Other Products',
+              sub: 'Hibiscus Flower, Aidan Fruit, Alligator Pepper, Uziza Seeds and more.',
+              img: '/prod_other.png',
+              path: '/products'
+            }
+          ].map((prod, idx) => (
+            <div key={idx} style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '6px',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+              transition: 'all 0.2s ease'
+            }} className="product-card-hover">
+              
+              <div style={{ height: '110px', overflow: 'hidden', background: '#f8fafc' }}>
+                <img 
+                  src={prod.img} 
+                  alt={prod.title} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+
+              <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px' }}>
+                    {prod.title}
+                  </h3>
+                  <p style={{ fontSize: '11.5px', color: '#64748b', lineHeight: '1.45', margin: 0 }}>
+                    {prod.sub}
+                  </p>
+                </div>
+                <Link to={prod.path} style={{
+                  color: 'var(--brand-primary)',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }} className="card-link-hover">
+                  Learn More <span>→</span>
+                </Link>
+              </div>
+
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── STATS & CALL TO ACTION SECTION (Green Background) ─── */}
+      <section style={{ background: '#0d2e1a', color: '#ffffff', padding: '48px 24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '48px', alignItems: 'center' }} className="cta-wrapper">
+          
+          {/* Left Stats Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }} className="stats-grid">
+            {[
+              { val: '100%', label: 'NATURAL Products', icon: <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
+              { val: '20+', label: 'COUNTRIES We Export To', icon: <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
+              { val: '500+', label: 'SATISFIED Customers', icon: <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /> },
+              { val: 'EXPORT READY', label: 'Packaging & Documentation', icon: <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-4V17l8 4m0-12v10" /> },
+              { val: 'QUALITY ASSURED', label: 'International Standards', icon: <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /> }
+            ].map((stat, idx) => (
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ color: '#a3e2bb', display: 'flex' }}>
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">{stat.icon}</svg>
+                </div>
+                <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px' }}>{stat.val}</div>
+                <div style={{ fontSize: '10px', color: '#d1f4df', lineHeight: '1.3', fontWeight: 600 }}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Right CTA Card with Whatsapp Contact Details */}
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '8px',
+            padding: '24px',
+            color: '#1e293b',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.12)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px'
+          }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: '#e2fdf5',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#14b8a6',
+                flexShrink: 0
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              </div>
+              <strong style={{ fontSize: '16px', color: '#0d2e1a', fontWeight: 800 }}>Let's Work Together</strong>
+            </div>
+            
+            <p style={{ fontSize: '12.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+              Partner with us for reliable supply of premium Nigerian agricultural products. We handle all logistics, phytosanitary checks, and customs clearing documentation.
+            </p>
+
+            <Link to="/contact" style={{
+              background: 'var(--brand-primary)',
+              color: '#ffffff',
+              padding: '11px 20px',
+              borderRadius: '4px',
+              fontWeight: 700,
+              fontSize: '13px',
+              textDecoration: 'none',
+              textAlign: 'center',
+              transition: 'background-color 0.2s',
+              display: 'block'
+            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
+               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}>
+              Get in Touch <span>→</span>
+            </Link>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ─── HOVER STYLES & INTERACTION ─── */}
+      <style>{`
+        .product-card-hover:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 16px rgba(0,0,0,0.04) !important;
+          border-color: var(--brand-primary) !important;
+        }
+        .card-link-hover:hover {
+          text-decoration: underline !important;
+        }
+        @media (max-width: 1024px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
             text-align: center;
+          }
+          .hero-title {
+            font-size: 36px !important;
+          }
+          .hero-actions {
             justify-content: center;
           }
-
+          .hero-image-col {
+            max-width: 440px;
+            margin: 0 auto;
+          }
+          .features-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+          .products-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+          .cta-wrapper {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
           .stats-grid {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-          }
-
-          .stats-grid .stat-card {
-            border-right: none;
-            padding: 20px 16px;
-          }
-
-          .home-section {
-            padding: 64px 0;
-          }
-
-          .section-header h2 {
-            font-size: 30px !important;
-          }
-
-          .founder-text-column h2 {
-            font-size: 30px !important;
-          }
-
-          .founder-glass-card {
-            padding: 32px;
-          }
-
-          .final-cta-card h2 {
-            font-size: 28px !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 16px !important;
           }
         }
-      `}} />
+        @media (max-width: 768px) {
+          .features-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .about-wrapper {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .about-left-col, .about-right-col {
+            display: none !important;
+          }
+          .products-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .stats-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+      `}</style>
+
     </div>
   )
 }

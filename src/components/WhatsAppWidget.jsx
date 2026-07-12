@@ -22,9 +22,10 @@ export default function WhatsAppWidget() {
   const handleSendMessage = (e) => {
     e.preventDefault()
     const cleanMsg = message.trim()
+    const brandName = localStorage.getItem('brandName') || 'MIFAS FARMS'
     const defaultMsg = isCheckout 
       ? "Hi! I need help with my payment on the checkout page." 
-      : "Hi! I have a question about Amplified Skills."
+      : `Hi! I have a question about ${brandName}.`
     const finalMsg = cleanMsg ? encodeURIComponent(cleanMsg) : encodeURIComponent(defaultMsg)
     const url = `https://wa.me/${WA_NUMBER}?text=${finalMsg}`
     window.open(url, '_blank')
@@ -69,7 +70,7 @@ export default function WhatsAppWidget() {
               <div style={{ position: 'relative', width: 44, height: 44 }}>
                 <img 
                   src="/favicon.png" 
-                  alt="Amplified Skills" 
+                  alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} 
                   style={{
                     width: '100%',
                     height: '100%',
@@ -95,7 +96,7 @@ export default function WhatsAppWidget() {
                   justifyContent: 'center',
                   fontWeight: 800,
                   fontSize: '1.2rem'
-                }}>AS</div>
+                }}>{(localStorage.getItem('brandName') || 'MIFAS FARMS').split(' ').map(w => w[0]).join('').substring(0, 2)}</div>
                 <span style={{
                   position: 'absolute',
                   bottom: 0,
@@ -108,7 +109,7 @@ export default function WhatsAppWidget() {
                 }} />
               </div>
               <div>
-                <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#fff' }}>Amplified Support</h4>
+                <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#fff' }}>{localStorage.getItem('brandName') || 'MIFAS FARMS'} Support</h4>
                 <p style={{ margin: '2px 0 0', fontSize: '0.74rem', color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', gap: 4 }}>
                   Online (Replies instantly)
                 </p>
@@ -157,12 +158,12 @@ export default function WhatsAppWidget() {
               boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
             }}>
               <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--n800)', lineHeight: 1.5 }}>
-                {isCheckout ? "Hi there! 👋 Need help with your payment?" : "Hi there! 👋 Welcome to Amplified Skills."}
+                {isCheckout ? "Hi there! Need help with your payment?" : `Hi there! Welcome to ${localStorage.getItem('brandName') || 'MIFAS FARMS'}.`}
               </p>
               <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: 'var(--n800)', lineHeight: 1.5 }}>
                 {isCheckout 
                   ? "Let us know if you're experiencing any issues with your checkout or payment, and we'll help you complete your purchase right away."
-                  : "How can we help you build your digital skills or resolve course payments today?"
+                  : "How can we help you or resolve orders/payments today?"
                 }
               </p>
               <span style={{ display: 'block', textAlign: 'right', fontSize: '0.7rem', color: 'var(--n400)', marginTop: 6 }}>
@@ -214,7 +215,7 @@ export default function WhatsAppWidget() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(37,99,235,0.3)',
+                boxShadow: '0 2px 8px rgba(36,106,66,0.3)',
                 transition: 'transform 0.2s',
                 flexShrink: 0
               }}
@@ -246,7 +247,7 @@ export default function WhatsAppWidget() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(37,99,235,0.45), 0 2px 8px rgba(0,0,0,0.18)',
+          boxShadow: '0 4px 20px rgba(36,106,66,0.45), 0 2px 8px rgba(0,0,0,0.18)',
           zIndex: 9998,
           border: 'none',
           cursor: 'pointer',
@@ -283,7 +284,7 @@ export default function WhatsAppWidget() {
             position: 'absolute',
             inset: -4,
             borderRadius: '50%',
-            border: '2px solid rgba(37,99,235,0.5)',
+            border: '2px solid rgba(36,106,66,0.5)',
             animation: 'waPulse 1.6s ease-out infinite',
             pointerEvents: 'none'
           }} />

@@ -772,7 +772,7 @@ function HomepageBanner({ offer, navigate }) {
               gap: 10,
             }}
           >
-            Get This Deal Now 🚀
+            Get This Deal Now
           </button>
         </div>
 
@@ -948,7 +948,7 @@ export default function UpsellWidget({
   /* ── Product / Dashboard: Cross-Sell Grid ── */
   if (placement === 'product' || placement === 'dashboard') {
     const heading =
-      placement === 'dashboard' ? '✨ Recommended For You' : '🎯 You Might Also Like'
+      placement === 'dashboard' ? 'Recommended For You' : 'You Might Also Like'
 
     return (
       <div style={{ marginTop: 40 }}>

@@ -19,7 +19,7 @@ import AdminUpsells from './AdminUpsells'
 import AdminAnalytics from './AdminAnalytics'
 import AdminPlatformAnalytics from './AdminPlatformAnalytics'
 
-function AdminOverview() {
+function AdminOverview({ featureFlags = { enable_academics: true } }) {
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0, productsCount: 0, conversionRate: 0, courseStats: [], unansweredQna: 0 })
   const [chartData, setChartData] = useState({ revenuePoints: [], orderPoints: [] })
   const [recentPayments, setRecentPayments] = useState([])
@@ -241,7 +241,7 @@ function AdminOverview() {
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <button 
             onClick={() => navigate('/admin/products')}
-            style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: 4, fontWeight: 500, cursor: 'pointer', fontSize: 13, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+            style={{ background: 'var(--g600)', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: 4, fontWeight: 500, cursor: 'pointer', fontSize: 13, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
           >
             + Create Product
           </button>
@@ -261,15 +261,15 @@ function AdminOverview() {
       </div>
 
       {/* Unanswered Q&A Widget */}
-      {stats.unansweredQna > 0 && (
+      {stats.unansweredQna > 0 && featureFlags.enable_academics && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fffbeb', border: '1px solid #fde68a', padding: '12px 18px', borderRadius: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 28, height: 28, background: 'rgba(245,158,11,0.15)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <span style={{ fontSize: 13.5, fontWeight: 500, color: '#92400e' }}>You have <strong>{stats.unansweredQna}</strong> unanswered student questions in your classes.</span>
+            <span style={{ fontSize: 13.5, fontWeight: 500, color: '#92400e' }}>You have <strong>{stats.unansweredQna}</strong> unanswered customer questions in your classes.</span>
           </div>
-          <Link to="/admin/qna" style={{ fontSize: 12.5, color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>Answer Now &rarr;</Link>
+          <Link to="/admin/qna" style={{ fontSize: 12.5, color: 'var(--g600)', fontWeight: 600, textDecoration: 'none' }}>Answer Now &rarr;</Link>
         </div>
       )}
 
@@ -277,7 +277,7 @@ function AdminOverview() {
       <div style={{ display: 'grid', gridTemplateColumns: isSmall ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
         
         {/* Net Revenue */}
-        <div style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)', padding: '22px 20px', borderRadius: 12, boxShadow: '0 4px 20px rgba(37,99,235,0.35)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: 'linear-gradient(135deg, var(--g800) 0%, var(--g700) 100%)', padding: '22px 20px', borderRadius: 12, boxShadow: '0 4px 20px rgba(36, 106, 66,0.35)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, background: 'rgba(255,255,255,0.06)', borderRadius: '50%' }} />
           <div style={{ position: 'absolute', bottom: -30, right: 10, width: 100, height: 100, background: 'rgba(255,255,255,0.04)', borderRadius: '50%' }} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -295,32 +295,32 @@ function AdminOverview() {
 
         {/* Sales Count */}
         <div style={{ background: '#fff', padding: '22px 20px', borderRadius: 12, border: '1px solid #e8edf3', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, background: 'rgba(37,99,235,0.05)', borderRadius: '0 12px 0 100%' }} />
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, background: 'rgba(36, 106, 66,0.05)', borderRadius: '0 12px 0 100%' }} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3 style={{ color: '#697386', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>Sales Count</h3>
-            <div style={{ width: 32, height: 32, background: 'rgba(37,99,235,0.08)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <div style={{ width: 32, height: 32, background: 'rgba(36, 106, 66,0.08)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             </div>
           </div>
           <div style={{ fontSize: 26, fontWeight: 800, color: '#1a1f36', letterSpacing: '-0.5px' }}>{stats.orders}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 11 }}>
-            <span style={{ fontWeight: 700, color: '#2563eb' }}>{stats.conversionRate}%</span>
+            <span style={{ fontWeight: 700, color: 'var(--g600)' }}>{stats.conversionRate}%</span>
             <span style={{ color: '#697386' }}>conversion rate</span>
           </div>
         </div>
 
         {/* Total Learners */}
         <div style={{ background: '#fff', padding: '22px 20px', borderRadius: 12, border: '1px solid #e8edf3', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, background: 'rgba(37,99,235,0.05)', borderRadius: '0 12px 0 100%' }} />
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, background: 'rgba(36, 106, 66,0.05)', borderRadius: '0 12px 0 100%' }} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3 style={{ color: '#697386', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>Total Learners</h3>
-            <div style={{ width: 32, height: 32, background: 'rgba(37,99,235,0.08)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div style={{ width: 32, height: 32, background: 'rgba(36, 106, 66,0.08)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
           </div>
           <div style={{ fontSize: 26, fontWeight: 800, color: '#1a1f36', letterSpacing: '-0.5px' }}>{stats.users}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 11 }}>
-            <span style={{ fontWeight: 700, color: '#2563eb' }}>Active</span>
+            <span style={{ fontWeight: 700, color: 'var(--g600)' }}>Active</span>
             <span style={{ color: '#697386' }}>registered profiles</span>
           </div>
         </div>
@@ -354,7 +354,7 @@ function AdminOverview() {
               <span style={{ fontSize: 11.5, color: '#94a3b8', fontWeight: 500 }}>Last 7 days · Live transactions</span>
             </div>
             <div style={{ display: 'flex', align: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, background: 'linear-gradient(135deg, rgba(37,99,235,0.1), rgba(37,99,235,0.05))', color: '#2563eb', padding: '4px 10px', borderRadius: 20, fontWeight: 600, border: '1px solid rgba(37,99,235,0.15)' }}>● Live</span>
+              <span style={{ fontSize: 11, background: 'linear-gradient(135deg, rgba(36, 106, 66,0.1), rgba(36, 106, 66,0.05))', color: 'var(--g600)', padding: '4px 10px', borderRadius: 20, fontWeight: 600, border: '1px solid rgba(36, 106, 66,0.15)' }}>● Live</span>
             </div>
           </div>
 
@@ -369,13 +369,13 @@ function AdminOverview() {
             <svg onClick={() => setHoveredRevenue(null)} viewBox="0 0 500 160" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
               <defs>
                 <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#2563eb" stopOpacity="0.25" />
-                  <stop offset="55%" stopColor="#2563eb" stopOpacity="0.06" />
-                  <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
+                  <stop offset="0%" stopColor="var(--g600)" stopOpacity="0.25" />
+                  <stop offset="55%" stopColor="var(--g600)" stopOpacity="0.06" />
+                  <stop offset="100%" stopColor="var(--g600)" stopOpacity="0" />
                 </linearGradient>
                 <linearGradient id="revLineGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#3b82f6" />
-                  <stop offset="100%" stopColor="#1d4ed8" />
+                  <stop offset="0%" stopColor="var(--g500)" />
+                  <stop offset="100%" stopColor="var(--g700)" />
                 </linearGradient>
                 <filter id="revGlow">
                   <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -406,11 +406,11 @@ function AdminOverview() {
                     const isHovered = hoveredRevenue && hoveredRevenue.idx === idx
                     return (
                       <g key={idx}>
-                        {isHovered && <circle cx={x} cy={y} r="10" fill="rgba(37,99,235,0.1)" />}
+                        {isHovered && <circle cx={x} cy={y} r="10" fill="rgba(36, 106, 66,0.1)" />}
                         <circle
                           cx={x} cy={y}
                           r={isHovered ? "5.5" : "3.5"}
-                          fill={isHovered ? "#1d4ed8" : "#2563eb"}
+                          fill={isHovered ? "var(--g700)" : "var(--g600)"}
                           stroke="#fff" strokeWidth="2"
                           style={{ transition: 'r 0.15s ease, fill 0.15s ease', pointerEvents: 'none' }}
                         />
@@ -458,7 +458,7 @@ function AdminOverview() {
                 top: `${hoveredRevenue.topPct}%`,
                 transform: `translate(${hoveredRevenue.idx === 0 ? '0%' : (hoveredRevenue.idx === 6 ? '-100%' : '-50%')}, -120%)`,
                 background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                border: '1px solid rgba(37,99,235,0.3)',
+                border: '1px solid rgba(36, 106, 66,0.3)',
                 color: '#fff',
                 padding: '8px 12px',
                 borderRadius: 8,
@@ -469,7 +469,7 @@ function AdminOverview() {
                 whiteSpace: 'nowrap',
                 backdropFilter: 'blur(8px)'
               }}>
-                <div style={{ fontWeight: 700, color: '#3b82f6', fontSize: 13 }}>{hoveredRevenue.value}</div>
+                <div style={{ fontWeight: 700, color: 'var(--g500)', fontSize: 13 }}>{hoveredRevenue.value}</div>
                 <div style={{ fontSize: 10, color: '#64748b', marginTop: 2 }}>{hoveredRevenue.date}</div>
               </div>
             )}
@@ -603,12 +603,12 @@ function AdminOverview() {
         <div style={{ background: '#fff', border: '1px solid #e8edf3', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
           <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #fafbff 0%, #f8fafc 100%)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 28, height: 28, background: 'rgba(37,99,235,0.08)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <div style={{ width: 28, height: 28, background: 'rgba(36, 106, 66,0.08)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
               </div>
               <h4 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Recent Payments</h4>
             </div>
-            <Link to="/admin/orders" style={{ fontSize: 12.5, color: '#2563eb', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Link to="/admin/orders" style={{ fontSize: 12.5, color: 'var(--g600)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
               View all <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </Link>
           </div>
@@ -662,8 +662,8 @@ function AdminOverview() {
           {/* Top Courses Progress Chart */}
           <div style={{ background: '#fff', border: '1px solid #e8edf3', borderRadius: 12, padding: '18px 20px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 28, height: 28, background: 'rgba(37,99,235,0.08)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              <div style={{ width: 28, height: 28, background: 'rgba(36, 106, 66,0.08)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
               </div>
               <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: '#0f172a' }}>Course Enrollments</h4>
             </div>
@@ -673,7 +673,7 @@ function AdminOverview() {
               ) : (
                 (() => {
                   const maxEnroll = Math.max(...stats.courseStats.map(c => c.enrollmentsCount), 1)
-                  const colors = ['#2563eb', '#3b82f6', '#10b981', '#f59e0b']
+                  const colors = ['var(--g600)', 'var(--g500)', '#10b981', '#f59e0b']
                   return stats.courseStats.slice(0, 4).map((c, idx) => {
                     const percentWidth = Math.round((c.enrollmentsCount / maxEnroll) * 100)
                     return (
@@ -709,7 +709,7 @@ function AdminOverview() {
                       {(u.full_name || u.email || 'S')[0].toUpperCase()}
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.full_name || 'Student'}</div>
+                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.full_name || 'Customer'}</div>
                       <div style={{ fontSize: 10.5, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.email}</div>
                     </div>
                   </div>
@@ -726,7 +726,7 @@ function AdminOverview() {
   )
 }
 
-function AdminProducts() {
+function AdminProducts({ featureFlags }) {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -746,15 +746,24 @@ function AdminProducts() {
   const [productForm, setProductForm] = useState({
     title: '',
     slug: '',
-    type: 'course',
+    type: featureFlags?.enable_academics ? 'course' : 'physical',
     description: '',
     price: '',
     compare_price: '',
     cover_image: '',
+    images: [],
+    variations: { attributes: [], variants: [] },
     features: '',
     is_published: false,
-    is_free: false
+    is_free: false,
+    stock_quantity: '',
+    weight: ''
   })
+
+  const [uploading, setUploading] = useState(false)
+  const [isVariable, setIsVariable] = useState(false)
+  const [newAttrName, setNewAttrName] = useState('')
+  const [newAttrOptions, setNewAttrOptions] = useState('')
 
   const loadProducts = async () => {
     setLoading(true)
@@ -778,23 +787,30 @@ function AdminProducts() {
 
   const handleOpenAdd = () => {
     setEditingProduct(null)
+    setIsVariable(false)
     setProductForm({
       title: '',
       slug: '',
-      type: 'course',
+      type: featureFlags.enable_academics ? 'course' : 'physical',
       description: '',
       price: '',
       compare_price: '',
       cover_image: '',
+      images: [],
+      variations: { attributes: [], variants: [] },
       features: '',
       is_published: false,
-      is_free: false
+      is_free: false,
+      stock_quantity: '',
+      weight: ''
     })
     setShowModal(true)
   }
 
   const handleOpenEdit = (p) => {
     setEditingProduct(p)
+    const hasVariants = !!(p.variations?.variants && p.variations.variants.length > 0)
+    setIsVariable(hasVariants)
     setProductForm({
       title: p.title || '',
       slug: p.slug || '',
@@ -803,9 +819,13 @@ function AdminProducts() {
       price: p.price || '',
       compare_price: p.old_price || '',
       cover_image: p.cover_image || '',
+      images: Array.isArray(p.images) ? p.images : [],
+      variations: p.variations || { attributes: [], variants: [] },
       features: Array.isArray(p.features) ? p.features.join('\n') : '',
       is_published: p.is_published || false,
-      is_free: p.is_free || false
+      is_free: p.is_free || false,
+      stock_quantity: p.stock_quantity !== null && p.stock_quantity !== undefined ? p.stock_quantity : '',
+      weight: p.weight !== null && p.weight !== undefined ? p.weight : ''
     })
     setShowModal(true)
   }
@@ -819,6 +839,144 @@ function AdminProducts() {
     } catch (err) {
       alert(err.message)
     }
+  }
+
+  // File Upload Handlers (uploads to course-assets)
+  const handleMediaFilesUpload = async (e) => {
+    const files = Array.from(e.target.files)
+    if (files.length === 0) return
+    setUploading(true)
+    try {
+      const uploadedUrls = []
+      for (const file of files) {
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Math.random().toString(36).substring(2, 10)}.${fileExt}`
+        const filePath = `products/${fileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('course-assets')
+          .upload(filePath, file)
+
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('course-assets')
+          .getPublicUrl(filePath)
+
+        uploadedUrls.push(publicUrl)
+      }
+
+      const updatedImages = [...(productForm.images || []), ...uploadedUrls]
+      const cover = productForm.cover_image || uploadedUrls[0] || ''
+      setProductForm({
+        ...productForm,
+        images: updatedImages,
+        cover_image: cover
+      })
+    } catch (err) {
+      alert(`Upload error: ${err.message}`)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleDeleteImage = (indexToRemove) => {
+    const urlToRemove = productForm.images[indexToRemove]
+    const updatedImages = productForm.images.filter((_, idx) => idx !== indexToRemove)
+    let cover = productForm.cover_image
+    if (cover === urlToRemove) {
+      cover = updatedImages[0] || ''
+    }
+    setProductForm({
+      ...productForm,
+      images: updatedImages,
+      cover_image: cover
+    })
+  }
+
+  // WooCommerce-Style Variations Handlers
+  const handleAddAttribute = () => {
+    if (!newAttrName.trim() || !newAttrOptions.trim()) return
+    const options = newAttrOptions.split(',').map(o => o.trim()).filter(Boolean)
+    const attributes = [...(productForm.variations?.attributes || []), { name: newAttrName.trim(), options }]
+    setProductForm({
+      ...productForm,
+      variations: {
+        ...(productForm.variations || { attributes: [], variants: [] }),
+        attributes
+      }
+    })
+    setNewAttrName('')
+    setNewAttrOptions('')
+  }
+
+  const handleRemoveAttribute = (idxToRemove) => {
+    const attributes = (productForm.variations?.attributes || []).filter((_, idx) => idx !== idxToRemove)
+    setProductForm({
+      ...productForm,
+      variations: {
+        ...(productForm.variations || { attributes: [], variants: [] }),
+        attributes,
+        variants: []
+      }
+    })
+  }
+
+  const handleGenerateVariants = () => {
+    const attributes = productForm.variations?.attributes || []
+    if (attributes.length === 0) return
+
+    const generateCombinations = (index, current) => {
+      if (index === attributes.length) {
+        return [current]
+      }
+      const attr = attributes[index]
+      let results = []
+      attr.options.forEach(opt => {
+        results = results.concat(generateCombinations(index + 1, { ...current, [attr.name]: opt }))
+      })
+      return results
+    }
+
+    const combinations = generateCombinations(0, {})
+    const variants = combinations.map(combo => {
+      const existing = (productForm.variations?.variants || []).find(v => {
+        return Object.entries(combo).every(([k, val]) => v.attributes && v.attributes[k] === val)
+      })
+
+      return {
+        id: existing?.id || `var_${Math.random().toString(36).substring(2, 7)}`,
+        attributes: combo,
+        price: existing?.price || productForm.price || '',
+        compare_price: existing?.compare_price || productForm.compare_price || '',
+        stock: existing?.stock !== undefined ? existing.stock : (productForm.stock_quantity || ''),
+        image: existing?.image || '',
+        weight: existing?.weight || productForm.weight || ''
+      }
+    })
+
+    setProductForm({
+      ...productForm,
+      variations: {
+        ...(productForm.variations || { attributes: [], variants: [] }),
+        variants
+      }
+    })
+  }
+
+  const handleUpdateVariantField = (idx, field, val) => {
+    const variants = [...(productForm.variations?.variants || [])]
+    variants[idx] = {
+      ...variants[idx],
+      [field]: val
+    }
+    setProductForm({
+      ...productForm,
+      variations: {
+        ...(productForm.variations || { attributes: [], variants: [] }),
+        variants
+      }
+    })
   }
 
   const handleSaveProduct = async (e) => {
@@ -835,9 +993,13 @@ function AdminProducts() {
       price: isFree ? 0 : (parseInt(productForm.price) || 0),
       old_price: isFree ? null : (productForm.compare_price ? parseInt(productForm.compare_price) : null),
       cover_image: productForm.cover_image.trim() || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800',
+      images: productForm.images || [],
+      variations: isVariable ? (productForm.variations || { attributes: [], variants: [] }) : { attributes: [], variants: [] },
       features: productForm.features.split('\n').map(f => f.trim()).filter(Boolean),
       is_published: productForm.is_published,
-      is_free: isFree
+      is_free: isFree,
+      stock_quantity: productForm.type === 'physical' && productForm.stock_quantity !== '' ? parseInt(productForm.stock_quantity, 10) : null,
+      weight: productForm.type === 'physical' && productForm.weight !== '' ? parseFloat(productForm.weight) : null
     }
 
     try {
@@ -889,7 +1051,7 @@ function AdminProducts() {
         </div>
         <button 
           onClick={handleOpenAdd}
-          style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: 4, fontWeight: 500, cursor: 'pointer', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.08)' }}
+          style={{ background: 'var(--g600)', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: 4, fontWeight: 500, cursor: 'pointer', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.08)' }}
         >
           + Add Product
         </button>
@@ -902,17 +1064,17 @@ function AdminProducts() {
           display: 'flex',
           alignItems: 'center',
           background: searchQuery ? '#fff' : '#f7f8fa',
-          border: `1.5px solid ${searchQuery ? '#2563eb' : '#e2e8f0'}`,
+          border: `1.5px solid ${searchQuery ? 'var(--g600)' : '#e2e8f0'}`,
           borderRadius: 10,
           padding: '0 10px',
           flex: 1,
           minWidth: 220,
           maxWidth: 360,
           transition: 'all 0.2s ease',
-          boxShadow: searchQuery ? '0 0 0 3px rgba(37,99,235,0.08)' : 'none',
+          boxShadow: searchQuery ? '0 0 0 3px rgba(36, 106, 66,0.08)' : 'none',
           gap: 8
         }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={searchQuery ? '#2563eb' : '#94a3b8'} strokeWidth="2" style={{ flexShrink: 0, transition: 'stroke 0.2s' }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={searchQuery ? 'var(--g600)' : '#94a3b8'} strokeWidth="2" style={{ flexShrink: 0, transition: 'stroke 0.2s' }}>
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input 
@@ -939,15 +1101,15 @@ function AdminProducts() {
         
         {/* Type filter pills */}
         <div style={{ display: 'flex', gap: 6 }}>
-          {['all', 'course', 'ebook'].map(type => (
+          {['all', 'course', 'ebook', 'physical'].map(type => (
             <button
               key={type}
               onClick={() => setTypeFilter(type)}
               style={{
                 padding: '7px 14px',
                 borderRadius: 8,
-                border: `1.5px solid ${typeFilter === type ? '#2563eb' : '#e2e8f0'}`,
-                background: typeFilter === type ? '#2563eb' : '#fff',
+                border: `1.5px solid ${typeFilter === type ? 'var(--g600)' : '#e2e8f0'}`,
+                background: typeFilter === type ? 'var(--g600)' : '#fff',
                 color: typeFilter === type ? '#fff' : '#64748b',
                 fontSize: 12.5,
                 fontWeight: 600,
@@ -957,7 +1119,7 @@ function AdminProducts() {
                 fontFamily: 'var(--font)'
               }}
             >
-              {type === 'all' ? 'All Types' : type === 'course' ? 'Courses' : 'eBooks'}
+              {type === 'all' ? 'All Types' : type === 'course' ? 'Courses' : type === 'ebook' ? 'eBooks' : 'Physical'}
             </button>
           ))}
         </div>
@@ -970,7 +1132,7 @@ function AdminProducts() {
             </span>
             <button
               onClick={() => { setSearchQuery(''); setTypeFilter('all') }}
-              style={{ fontSize: 11.5, color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}
+              style={{ fontSize: 11.5, color: 'var(--g600)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}
             >
               Clear all
             </button>
@@ -1003,10 +1165,10 @@ function AdminProducts() {
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid #f7f8f9', paddingTop: 10 }}>
-                  {p.type === 'course' && (
+                  {p.type === 'course' && featureFlags.enable_academics && (
                     <button 
                       onClick={() => navigate(`/admin/courses/${p.id}`)}
-                      style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
+                      style={{ background: 'none', border: 'none', color: 'var(--g600)', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
                     >
                       Curriculum
                     </button>
@@ -1063,10 +1225,10 @@ function AdminProducts() {
                       </td>
                       <td style={{ padding: '12px 20px' }}>
                         <div style={{ display: 'flex', gap: 14 }}>
-                          {p.type === 'course' && (
+                          {p.type === 'course' && featureFlags.enable_academics && (
                             <button 
                               onClick={() => navigate(`/admin/courses/${p.id}`)}
-                              style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
+                              style={{ background: 'none', border: 'none', color: 'var(--g600)', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
                             >
                               Curriculum
                             </button>
@@ -1096,156 +1258,479 @@ function AdminProducts() {
 
       {/* Product Modal */}
       {showModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 }}>
-          <div style={{ background: '#fff', padding: isMobile ? '28px 20px' : '32px 28px', borderRadius: 12, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <h3 style={{ fontSize: 17, fontWeight: 600, marginBottom: 20, color: '#1a1f36' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 1000, display: 'flex', flexDirection: 'column' }}>
+          <style>{`
+            .no-scrollbar::-webkit-scrollbar {
+              display: none !important;
+            }
+            .no-scrollbar {
+              -ms-overflow-style: none !important;
+              scrollbar-width: none !important;
+            }
+          `}</style>
+
+          {/* Modal Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: 'var(--brand-primary, #123c24)' }}>
               {editingProduct ? 'Edit Product Details' : 'Register New Product'}
             </h3>
-            <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Product Name *</label>
-                <input 
-                  type="text" 
-                  value={productForm.title} 
-                  onChange={e => {
-                    const title = e.target.value
-                    setProductForm({ 
-                      ...productForm, 
-                      title, 
-                      slug: editingProduct ? productForm.slug : generateSlug(title) 
-                    })
-                  }} 
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
-                  required 
-                />
-              </div>
+            <button 
+              type="button" 
+              onClick={() => setShowModal(false)}
+              style={{ background: 'none', border: 'none', fontSize: 28, cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              ×
+            </button>
+          </div>
 
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Slug / URL Segment *</label>
-                <input 
-                  type="text" 
-                  value={productForm.slug} 
-                  onChange={e => setProductForm({ ...productForm, slug: generateSlug(e.target.value) })} 
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
-                  required 
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
+          {/* Modal Content */}
+          <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '24px 16px' : '32px', maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
+            <form onSubmit={handleSaveProduct} style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.2fr', gap: isMobile ? '24px' : '40px' }}>
+              
+              {/* Left Column: Core Fields */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                 <div>
-                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Type *</label>
-                  <select 
-                    value={productForm.type} 
-                    onChange={e => setProductForm({ ...productForm, type: e.target.value })} 
-                    style={{ 
-                      width: '100%', 
-                      padding: '8px 36px 8px 12px', 
-                      borderRadius: 4, 
-                      border: '1px solid #cbd5e1', 
-                      fontSize: 13,
-                      backgroundColor: '#fff',
-                      appearance: 'none',
-                      backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'right 10px center',
-                      backgroundSize: '14px'
+                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Product Name *</label>
+                  <input 
+                    type="text" 
+                    value={productForm.title} 
+                    onChange={e => {
+                      const title = e.target.value
+                      setProductForm({ 
+                        ...productForm, 
+                        title, 
+                        slug: editingProduct ? productForm.slug : generateSlug(title) 
+                      })
+                    }} 
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
+                    required 
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Slug / URL Segment *</label>
+                  <input 
+                    type="text" 
+                    value={productForm.slug} 
+                    onChange={e => setProductForm({ ...productForm, slug: generateSlug(e.target.value) })} 
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
+                    required 
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Type *</label>
+                    <select 
+                      value={productForm.type} 
+                      onChange={e => setProductForm({ ...productForm, type: e.target.value })} 
+                      style={{ 
+                        width: '100%', 
+                        padding: '8px 36px 8px 12px', 
+                        borderRadius: 4, 
+                        border: '1px solid #cbd5e1', 
+                        fontSize: 13,
+                        backgroundColor: '#fff',
+                        appearance: 'none',
+                        backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 10px center',
+                        backgroundSize: '14px'
+                      }}
+                    >
+                      {featureFlags.enable_academics && <option value="course">Course</option>}
+                      {featureFlags.enable_academics && <option value="ebook">eBook</option>}
+                      <option value="physical">Physical Product</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Price (NGN) *</label>
+                    <input 
+                      type="number" 
+                      value={productForm.is_free ? '0' : productForm.price} 
+                      onChange={e => setProductForm({ ...productForm, price: e.target.value })} 
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, backgroundColor: productForm.is_free ? '#f1f5f9' : '#fff' }} 
+                      required={!productForm.is_free} 
+                      disabled={productForm.is_free}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Description</label>
+                  <textarea 
+                    value={productForm.description} 
+                    onChange={e => setProductForm({ ...productForm, description: e.target.value })} 
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, minHeight: 120 }} 
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Features (one per line)</label>
+                  <textarea 
+                    value={productForm.features} 
+                    onChange={e => setProductForm({ ...productForm, features: e.target.value })} 
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, minHeight: 80 }} 
+                    placeholder="20+ Premium Videos&#10;Downloadable resources"
+                  />
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <input 
+                      type="checkbox" 
+                      id="is_free" 
+                      checked={productForm.is_free} 
+                      onChange={e => setProductForm({ ...productForm, is_free: e.target.checked })} 
+                      style={{ width: 14, height: 14 }} 
+                    />
+                    <label htmlFor="is_free" style={{ fontWeight: 500, fontSize: 13, color: '#3c4257' }}>Free Product</label>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <input 
+                      type="checkbox" 
+                      id="is_published" 
+                      checked={productForm.is_published} 
+                      onChange={e => setProductForm({ ...productForm, is_published: e.target.checked })} 
+                      style={{ width: 14, height: 14 }} 
+                    />
+                    <label htmlFor="is_published" style={{ fontWeight: 500, fontSize: 13, color: '#3c4257' }}>Publish Product</label>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                  <button type="submit" disabled={submitting} style={{ flex: 1, background: 'var(--brand-primary, #123c24)', color: '#fff', border: 'none', padding: '12px', borderRadius: 4, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer' }}>
+                    {submitting ? 'Saving...' : 'Save Product'}
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowModal(false)} 
+                    style={{ flex: 1, background: '#f7f8f9', color: '#4f566b', border: '1px solid #cbd5e1', padding: '12px', borderRadius: 4, fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Column: Gallery, Uploader, Variations */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {/* Media Gallery Uploader */}
+                <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: 14, background: '#f8fafc' }}>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#3c4257' }}>Product Gallery Images</label>
+                  
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*" 
+                    onChange={handleMediaFilesUpload} 
+                    id="media-files-uploader" 
+                    style={{ display: 'none' }} 
+                  />
+                  
+                  <label 
+                    htmlFor="media-files-uploader"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '2px dashed #cbd5e1',
+                      borderRadius: 6,
+                      padding: '16px',
+                      cursor: uploading ? 'not-allowed' : 'pointer',
+                      background: '#ffffff',
+                      transition: 'all 0.15s ease'
                     }}
                   >
-                    <option value="course">Course</option>
-                    <option value="ebook">eBook</option>
-                  </select>
+                    <span style={{ fontSize: 13, color: 'var(--brand-primary, #123c24)', fontWeight: 700 }}>
+                      {uploading ? '⌛ Uploading images...' : '📁 Click to Upload from PC'}
+                    </span>
+                    <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Supports JPG, PNG images</span>
+                  </label>
+
+                  {/* Uploaded Thumbnails list */}
+                  {productForm.images && productForm.images.length > 0 && (
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 12 }}>
+                      {productForm.images.map((url, i) => (
+                        <div key={i} style={{
+                          width: 60,
+                          height: 60,
+                          borderRadius: 4,
+                          overflow: 'hidden',
+                          position: 'relative',
+                          border: productForm.cover_image === url ? '2.5px solid #10b981' : '1px solid #cbd5e1',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+                        }}>
+                          <img src={url} alt="Uploaded thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button
+                            type="button"
+                            onClick={() => handleSetFeaturedImage(url)}
+                            style={{
+                              position: 'absolute',
+                              top: 2,
+                              left: 2,
+                              background: productForm.cover_image === url ? '#10b981' : '#ffffff',
+                              color: productForm.cover_image === url ? '#ffffff' : '#64748b',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: 16,
+                              height: 16,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: 9
+                            }}
+                            title="Set as Featured Cover"
+                          >
+                            ★
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(i)}
+                            style={{
+                              position: 'absolute',
+                              bottom: 2,
+                              right: 2,
+                              background: '#ef4444',
+                              color: '#ffffff',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: 16,
+                              height: 16,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: 10,
+                              fontWeight: 'bold'
+                            }}
+                            title="Delete Image"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Fallback Cover URL Link Input */}
+                  <div style={{ marginTop: 12 }}>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 11, marginBottom: 4, color: '#64748b' }}>Featured Cover Image URL (Manual Override)</label>
+                    <input 
+                      type="url" 
+                      value={productForm.cover_image} 
+                      onChange={e => setProductForm({ ...productForm, cover_image: e.target.value })} 
+                      style={{ width: '100%', padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }} 
+                      placeholder="https://..."
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Price (NGN) *</label>
-                  <input 
-                    type="number" 
-                    value={productForm.is_free ? '0' : productForm.price} 
-                    onChange={e => setProductForm({ ...productForm, price: e.target.value })} 
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, backgroundColor: productForm.is_free ? '#f1f5f9' : '#fff' }} 
-                    required={!productForm.is_free} 
-                    disabled={productForm.is_free}
-                  />
-                </div>
+
+                {/* Simple Product Fields (Hidden if variable) */}
+                {!isVariable && (
+                  <>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                      <div>
+                        <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Compare Price (NGN)</label>
+                        <input 
+                          type="number" 
+                          value={productForm.is_free ? '' : productForm.compare_price} 
+                          onChange={e => setProductForm({ ...productForm, compare_price: e.target.value })} 
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, backgroundColor: productForm.is_free ? '#f1f5f9' : '#fff' }} 
+                          disabled={productForm.is_free}
+                        />
+                      </div>
+                      {productForm.type === 'physical' && (
+                        <div>
+                          <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Weight (kg)</label>
+                          <input 
+                            type="number" 
+                            step="0.01" 
+                            value={productForm.weight || ''} 
+                            onChange={e => setProductForm({ ...productForm, weight: e.target.value ? parseFloat(e.target.value) : '' })} 
+                            placeholder="e.g. 0.5" 
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {productForm.type === 'physical' && (
+                      <div>
+                        <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Stock Quantity</label>
+                        <input 
+                          type="number" 
+                          value={productForm.stock_quantity || ''} 
+                          onChange={e => setProductForm({ ...productForm, stock_quantity: e.target.value ? parseInt(e.target.value, 10) : '' })} 
+                          placeholder="e.g. 100 (leave blank for unlimited)" 
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Variable Product Toggle checkbox */}
+                {productForm.type === 'physical' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderTop: '1px solid #e2e8f0', paddingTop: 14 }}>
+                    <input 
+                      type="checkbox" 
+                      id="toggle-variable" 
+                      checked={isVariable} 
+                      onChange={e => setIsVariable(e.target.checked)} 
+                      style={{ width: 15, height: 15 }}
+                    />
+                    <label htmlFor="toggle-variable" style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand-primary, #123c24)' }}>
+                      This is a Variable Product (Configure WooCommerce attributes & pricing)
+                    </label>
+                  </div>
+                )}
+
+                {/* Variable Products Panel (WooCommerce-Style) */}
+                {productForm.type === 'physical' && isVariable && (
+                  <div style={{ border: '1px solid #bfdbfe', borderRadius: 8, padding: 14, background: '#eff6ff', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    
+                    {/* Attributes setup Section */}
+                    <div>
+                      <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1e40af', margin: '0 0 10px' }}>1. Configure Product Attributes</h4>
+                      
+                      {/* List existing attributes */}
+                      {productForm.variations?.attributes?.map((attr, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: '#ffffff', borderRadius: 4, border: '1px solid #dbeafe', marginBottom: 6 }}>
+                          <span style={{ fontSize: 12.5, fontWeight: 700 }}>
+                            <strong>{attr.name}:</strong> {attr.options.join(', ')}
+                          </span>
+                          <button 
+                            type="button" 
+                            onClick={() => handleRemoveAttribute(idx)}
+                            style={{ border: 'none', background: 'none', color: '#ef4444', fontWeight: 800, cursor: 'pointer', fontSize: 12 }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+
+                      {/* Add new attribute trigger */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: 10, marginTop: 10 }}>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. Weight" 
+                          value={newAttrName} 
+                          onChange={e => setNewAttrName(e.target.value)} 
+                          style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="Options (comma separated: 1kg, 5kg)" 
+                          value={newAttrOptions} 
+                          onChange={e => setNewAttrOptions(e.target.value)} 
+                          style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                        />
+                        <button 
+                          type="button" 
+                          onClick={handleAddAttribute}
+                          style={{ background: '#1e40af', color: '#ffffff', border: 'none', borderRadius: 4, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          + Add
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Generate Variants button */}
+                    {productForm.variations?.attributes?.length > 0 && (
+                      <div style={{ borderTop: '1px solid #bfdbfe', paddingTop: 12 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                          <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1e40af', margin: 0 }}>2. Manage Option Variations</h4>
+                          <button
+                            type="button"
+                            onClick={handleGenerateVariants}
+                            style={{ background: 'var(--g600)', color: '#ffffff', border: 'none', borderRadius: 4, padding: '6px 12px', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}
+                          >
+                            Generate/Update Variations
+                          </button>
+                        </div>
+
+                        {/* Variants configuration table/list */}
+                        {productForm.variations?.variants?.map((v, vIdx) => {
+                          const comboName = Object.entries(v.attributes).map(([name, opt]) => `${opt}`).join(' / ')
+                          return (
+                            <div key={v.id} style={{ background: '#ffffff', border: '1px solid #dbeafe', borderRadius: 6, padding: 12, marginBottom: 10 }}>
+                              <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--g800)', marginBottom: 8 }}>Variation: {comboName}</div>
+                              
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 8 }}>
+                                <div>
+                                  <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Price (NGN) *</label>
+                                  <input 
+                                    type="number" 
+                                    value={v.price} 
+                                    onChange={e => handleUpdateVariantField(vIdx, 'price', e.target.value ? parseInt(e.target.value) : '')} 
+                                    style={{ width: '100%', padding: '4px 8px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                                    required
+                                  />
+                                </div>
+                                <div>
+                                  <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Compare Price (NGN)</label>
+                                  <input 
+                                    type="number" 
+                                    value={v.compare_price} 
+                                    onChange={e => handleUpdateVariantField(vIdx, 'compare_price', e.target.value ? parseInt(e.target.value) : '')} 
+                                    style={{ width: '100%', padding: '4px 8px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                                  />
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 8 }}>
+                                <div>
+                                  <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Stock Qty</label>
+                                  <input 
+                                    type="number" 
+                                    value={v.stock} 
+                                    onChange={e => handleUpdateVariantField(vIdx, 'stock', e.target.value ? parseInt(e.target.value) : '')} 
+                                    placeholder="Leave blank for unlimited"
+                                    style={{ width: '100%', padding: '4px 8px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                                  />
+                                </div>
+                                <div>
+                                  <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Weight (kg)</label>
+                                  <input 
+                                    type="number" 
+                                    step="0.01"
+                                    value={v.weight} 
+                                    onChange={e => handleUpdateVariantField(vIdx, 'weight', e.target.value ? parseFloat(e.target.value) : '')} 
+                                    placeholder="e.g. 1.0"
+                                    style={{ width: '100%', padding: '4px 8px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Dropdown to select variant specific image */}
+                              {productForm.images && productForm.images.length > 0 && (
+                                <div>
+                                  <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Variant Image</label>
+                                  <select
+                                    value={v.image}
+                                    onChange={e => handleUpdateVariantField(vIdx, 'image', e.target.value)}
+                                    style={{ width: '100%', padding: '4px 8px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12, backgroundColor: '#fff' }}
+                                  >
+                                    <option value="">Use Featured Cover Image</option>
+                                    {productForm.images.map((url, imgIdx) => (
+                                      <option key={imgIdx} value={url}>Image Thumbnail #{imgIdx + 1}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Compare Price (NGN)</label>
-                  <input 
-                    type="number" 
-                    value={productForm.is_free ? '' : productForm.compare_price} 
-                    onChange={e => setProductForm({ ...productForm, compare_price: e.target.value })} 
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, backgroundColor: productForm.is_free ? '#f1f5f9' : '#fff' }} 
-                    disabled={productForm.is_free}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Cover Image URL</label>
-                  <input 
-                    type="url" 
-                    value={productForm.cover_image} 
-                    onChange={e => setProductForm({ ...productForm, cover_image: e.target.value })} 
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
-                    placeholder="https://..."
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Description</label>
-                <textarea 
-                  value={productForm.description} 
-                  onChange={e => setProductForm({ ...productForm, description: e.target.value })} 
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, minHeight: 60 }} 
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Features (one per line)</label>
-                <textarea 
-                  value={productForm.features} 
-                  onChange={e => setProductForm({ ...productForm, features: e.target.value })} 
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, minHeight: 60 }} 
-                  placeholder="20+ Premium Videos&#10;Downloadable resources"
-                />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <input 
-                    type="checkbox" 
-                    id="is_free" 
-                    checked={productForm.is_free} 
-                    onChange={e => setProductForm({ ...productForm, is_free: e.target.checked })} 
-                    style={{ width: 14, height: 14 }} 
-                  />
-                  <label htmlFor="is_free" style={{ fontWeight: 500, fontSize: 13, color: '#3c4257' }}>Free Product</label>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <input 
-                    type="checkbox" 
-                    id="is_published" 
-                    checked={productForm.is_published} 
-                    onChange={e => setProductForm({ ...productForm, is_published: e.target.checked })} 
-                    style={{ width: 14, height: 14 }} 
-                  />
-                  <label htmlFor="is_published" style={{ fontWeight: 500, fontSize: 13, color: '#3c4257' }}>Publish Product</label>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                <button type="submit" disabled={submitting} style={{ flex: 1, background: '#2563eb', color: '#fff', border: 'none', padding: '10px', borderRadius: 4, fontWeight: 500, cursor: submitting ? 'not-allowed' : 'pointer' }}>
-                  {submitting ? 'Saving...' : 'Save Product'}
-                </button>
-                <button 
-                  type="button" 
-                  onClick={() => setShowModal(false)} 
-                  style={{ flex: 1, background: '#f7f8f9', color: '#4f566b', border: '1px solid #cbd5e1', padding: '10px', borderRadius: 4, fontWeight: 500, cursor: 'pointer' }}
-                >
-                  Cancel
-                </button>
-              </div>
             </form>
           </div>
         </div>
@@ -1258,6 +1743,45 @@ export default function AdminDashboard() {
   const { user, profile, loading, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+
+  const [featureFlags, setFeatureFlags] = useState({
+    enable_academics: localStorage.getItem('enable_academics') === 'true',
+    enable_affiliates: localStorage.getItem('enable_affiliates') !== 'false',
+    enable_payouts: localStorage.getItem('enable_payouts') !== 'false',
+    enable_upsells: localStorage.getItem('enable_upsells') !== 'false',
+  })
+
+  useEffect(() => {
+    async function loadFlags() {
+      try {
+        const { data } = await supabase.from('settings').select('*')
+        if (data) {
+          const siteConfig = data.find(s => s.id === 'site_config')
+          if (siteConfig?.value) {
+            const academics = siteConfig.value.enable_academics ?? false
+            const affiliates = siteConfig.value.enable_affiliates ?? true
+            const payouts = siteConfig.value.enable_payouts ?? true
+            const upsells = siteConfig.value.enable_upsells ?? true
+
+            localStorage.setItem('enable_academics', academics)
+            localStorage.setItem('enable_affiliates', affiliates)
+            localStorage.setItem('enable_payouts', payouts)
+            localStorage.setItem('enable_upsells', upsells)
+
+            setFeatureFlags({
+              enable_academics: academics,
+              enable_affiliates: affiliates,
+              enable_payouts: payouts,
+              enable_upsells: upsells,
+            })
+          }
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    loadFlags()
+  }, [])
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -1331,7 +1855,7 @@ export default function AdminDashboard() {
             const id = `user-${p.id}`
             merged.push({
               id,
-              msg: `New Student registered: ${p.email}`,
+              msg: `New Customer registered: ${p.email}`,
               time: new Date(p.created_at).toLocaleDateString() + ' ' + new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               read: readAlerts.includes(id)
             })
@@ -1374,7 +1898,7 @@ export default function AdminDashboard() {
           profs.forEach(p => results.push({
             type: 'user',
             title: p.full_name || p.email,
-            subtitle: `Student Email: ${p.email}`,
+            subtitle: `Customer Email: ${p.email}`,
             path: `/admin/users`
           }))
         }
@@ -1464,7 +1988,7 @@ export default function AdminDashboard() {
       <div style={{ padding: '100px 20px', textAlign: 'center', background: '#f8fafc', minHeight: '100vh', fontFamily: 'var(--font)' }}>
         <h1 style={{ fontSize: 26, fontWeight: 600, color: '#1a1f36' }}>Access Denied</h1>
         <p style={{ color: '#697386', marginBottom: 24, fontSize: 14 }}>You do not have administrative privileges to view this portal.</p>
-        <Link to="/" style={{ color: '#2563eb', fontWeight: 500, textDecoration: 'none' }}>Return to Home</Link>
+        <Link to="/" style={{ color: 'var(--g600)', fontWeight: 500, textDecoration: 'none' }}>Return to Home</Link>
       </div>
     )
   }
@@ -1475,14 +1999,14 @@ export default function AdminDashboard() {
       path: '/admin', 
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" /> 
     },
-    { 
+    featureFlags.enable_academics && { 
       name: 'Academics', 
       path: '/admin/courses', 
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />,
       subItems: [
         { name: 'All Courses', path: '/admin/courses' },
         { name: 'Q&A Support', path: '/admin/qna' },
-        { name: 'Student Reviews', path: '/admin/reviews' }
+        { name: 'Customer Reviews', path: '/admin/reviews' }
       ]
     },
     { 
@@ -1493,10 +2017,10 @@ export default function AdminDashboard() {
         { name: 'Products', path: '/admin/products' },
         { name: 'Orders', path: '/admin/orders' },
         { name: 'Discount Coupons', path: '/admin/coupons' },
-        { name: 'Affiliates', path: '/admin/affiliates' },
-        { name: 'Payouts', path: '/admin/payouts' },
-        { name: 'Upsells', path: '/admin/upsells' }
-      ]
+        featureFlags.enable_affiliates && { name: 'Affiliates', path: '/admin/affiliates' },
+        featureFlags.enable_payouts && { name: 'Payouts', path: '/admin/payouts' },
+        featureFlags.enable_upsells && { name: 'Upsells', path: '/admin/upsells' }
+      ].filter(Boolean)
     },
     { 
       name: 'Marketing & Funnels', 
@@ -1514,7 +2038,7 @@ export default function AdminDashboard() {
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />,
       subItems: [
         { name: 'All Profiles', path: '/admin/users' },
-        { name: 'Enrolled Students', path: '/admin/users?role=user' },
+        { name: 'Registered Customers', path: '/admin/users?role=user' },
         { name: 'Instructors & Staff', path: '/admin/users?role=admin' }
       ]
     },
@@ -1524,16 +2048,16 @@ export default function AdminDashboard() {
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />,
       subItems: [
         { name: 'Platform Settings', path: '/admin/settings' },
-        { name: 'Certificates', path: '/admin/certificates' },
+        featureFlags.enable_academics && { name: 'Certificates', path: '/admin/certificates' },
         { name: 'Broadcast Emails', path: '/admin/announcements' }
-      ]
+      ].filter(Boolean)
     },
     { 
       name: 'Frontend Pages', 
       path: '/admin/pages', 
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
     }
-  ]
+  ].filter(Boolean)
 
   const isTablet = windowWidth < 1024
   const isSmall = windowWidth < 768
@@ -1713,7 +2237,7 @@ export default function AdminDashboard() {
           <img 
             src={profile?.avatar_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'} 
             alt="Admin Profile" 
-            style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1.5px solid #2563eb' }} 
+            style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1.5px solid var(--g600)' }} 
           />
           {!sidebarCollapsed && (
             <div style={{ minWidth: 0 }}>
@@ -1803,16 +2327,16 @@ export default function AdminDashboard() {
                 display: 'flex',
                 alignItems: 'center',
                 background: globalSearch ? '#fff' : '#f7f8fa',
-                border: `1.5px solid ${globalSearch ? '#2563eb' : '#e2e8f0'}`,
+                border: `1.5px solid ${globalSearch ? 'var(--g600)' : '#e2e8f0'}`,
                 borderRadius: 10,
                 padding: '0 8px 0 0',
                 width: 300,
                 transition: 'all 0.2s ease',
-                boxShadow: globalSearch ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
+                boxShadow: globalSearch ? '0 0 0 3px rgba(36, 106, 66,0.1)' : 'none',
                 overflow: 'hidden'
               }}>
                 {/* Search icon */}
-                <div style={{ padding: '0 10px', display: 'flex', alignItems: 'center', color: globalSearch ? '#2563eb' : '#94a3b8', transition: 'color 0.2s', flexShrink: 0 }}>
+                <div style={{ padding: '0 10px', display: 'flex', alignItems: 'center', color: globalSearch ? 'var(--g600)' : '#94a3b8', transition: 'color 0.2s', flexShrink: 0 }}>
                   {searching ? (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
                       <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
@@ -1878,8 +2402,8 @@ export default function AdminDashboard() {
                   {/* Result items */}
                   {globalResults.map((res, i) => {
                     const typeIcons = {
-                      product: { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>, color: '#2563eb', bg: 'rgba(37,99,235,0.08)' },
-                      user: { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, color: '#2563eb', bg: 'rgba(37,99,235,0.08)' },
+                      product: { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>, color: 'var(--g600)', bg: 'rgba(36, 106, 66,0.08)' },
+                      user: { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, color: 'var(--g600)', bg: 'rgba(36, 106, 66,0.08)' },
                       order: { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>, color: '#10b981', bg: 'rgba(16,185,129,0.08)' }
                     }
                     const typeStyle = typeIcons[res.type] || typeIcons.product
@@ -1962,7 +2486,7 @@ export default function AdminDashboard() {
                 }}>
                   <div style={{ padding: '8px 16px', borderBottom: '1px solid #f7f8f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontWeight: 600, fontSize: 13, color: '#1a1f36' }}>Notifications</span>
-                    <button onClick={handleMarkAllRead} style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: 11, cursor: 'pointer', fontWeight: 500 }}>Mark all read</button>
+                    <button onClick={handleMarkAllRead} style={{ background: 'none', border: 'none', color: 'var(--g600)', fontSize: 11, cursor: 'pointer', fontWeight: 500 }}>Mark all read</button>
                   </div>
                   <div style={{ maxHeight: 200, overflowY: 'auto' }}>
                     {alerts.length === 0 ? (
@@ -2036,8 +2560,8 @@ export default function AdminDashboard() {
         {/* Scrollable workspace content */}
         <main style={{ flex: 1, padding: isTablet ? '20px 16px' : '32px 40px', overflowY: 'auto', background: '#f7f8f9' }}>
           <Routes>
-            <Route path="/" element={<AdminOverview />} />
-            <Route path="/products" element={<AdminProducts />} />
+            <Route path="/" element={<AdminOverview featureFlags={featureFlags} />} />
+            <Route path="/products" element={<AdminProducts featureFlags={featureFlags} />} />
             <Route path="/courses" element={<AdminCourses />} />
             <Route path="/courses/:id" element={<AdminCourseBuilder />} />
             <Route path="/users" element={<AdminUsers />} />

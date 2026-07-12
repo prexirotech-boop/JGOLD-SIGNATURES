@@ -721,7 +721,7 @@ export default function AdminUsers() {
           <div style={{ background: '#ffffff', borderRadius: 12, border: '1px solid #e2e8f0', width: '100%', maxWidth: 440, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', gap: 16 }}>
             <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', margin: 0 }}>Register Internal Staff</h3>
             <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '10px 12px', fontSize: '11.5px', color: '#1e40af', lineHeight: 1.4 }}>
-              💡 <strong>Password Setup:</strong> Creating a staff entry sets up their placeholder admin profile. The staff member can simply register at <strong>/register</strong> using this email (or click <strong>Forgot Password</strong> to set a password) to activate their account and log in.
+              <strong>Password Setup:</strong> Creating a staff entry sets up their placeholder admin profile. The staff member can simply register at <strong>/register</strong> using this email (or click <strong>Forgot Password</strong> to set a password) to activate their account and log in.
             </div>
             <form onSubmit={handleCreateStaff} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               <div>

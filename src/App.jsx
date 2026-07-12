@@ -7,8 +7,6 @@ import SalesPage from './pages/SalesPage'
 import PaymentPage from './pages/PaymentPage'
 import ThankYouPage from './pages/ThankYouPage'
 import ProductDetailsPage from './pages/ProductDetailsPage'
-import LandingPage from './pages/LandingPage'
-import WebinarPage from './pages/WebinarPage'
 
 // Legal Pages
 import TermsPage from './pages/TermsPage'
@@ -31,7 +29,12 @@ import AccountPage from './pages/AccountPage'
 import AdminDashboard from './pages/AdminDashboard'
 import BlogPage from './pages/BlogPage'
 import FAQPage from './pages/FAQPage'
+import AffiliatePage from './pages/AffiliatePage'
+import QualityPage from './pages/QualityPage'
+import ExportPage from './pages/ExportPage'
+import GalleryPage from './pages/GalleryPage'
 import WhatsAppWidget from './components/WhatsAppWidget'
+import { supabase } from './lib/supabase'
 
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -39,6 +42,7 @@ import { useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { trackEvent } from './lib/analytics'
 import { getPages } from './lib/pagesScanner'
+import { CONFIG } from './lib/config'
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -50,63 +54,68 @@ function ScrollToTop() {
 
 function AppLayout() {
   const location = useLocation()
-  const [webinarWhatsAppActive, setWebinarWhatsAppActive] = useState(false)
-  
+
+  const [featureFlags, setFeatureFlags] = useState({
+    enable_academics: localStorage.getItem('enable_academics') === 'true',
+    enable_affiliates: localStorage.getItem('enable_affiliates') !== 'false',
+    enable_payouts: localStorage.getItem('enable_payouts') !== 'false',
+    enable_upsells: localStorage.getItem('enable_upsells') !== 'false',
+  })
+
+  useEffect(() => {
+    async function loadFlags() {
+      try {
+        const { data } = await supabase.from('settings').select('*')
+        if (data) {
+          const siteConfig = data.find(s => s.id === 'site_config')
+          if (siteConfig?.value) {
+            const academics = siteConfig.value.enable_academics ?? false
+            const affiliates = siteConfig.value.enable_affiliates ?? true
+            const payouts = siteConfig.value.enable_payouts ?? true
+            const upsells = siteConfig.value.enable_upsells ?? true
+
+            localStorage.setItem('enable_academics', academics)
+            localStorage.setItem('enable_affiliates', affiliates)
+            localStorage.setItem('enable_payouts', payouts)
+            localStorage.setItem('enable_upsells', upsells)
+
+            setFeatureFlags({
+              enable_academics: academics,
+              enable_affiliates: affiliates,
+              enable_payouts: payouts,
+              enable_upsells: upsells,
+            })
+          }
+        }
+      } catch (err) {
+        console.error('Error loading config flags:', err)
+      }
+    }
+    loadFlags()
+  }, [])
+
   // Track PageView on location changes for Facebook Pixel & DB Analytics
   useEffect(() => {
     trackEvent('page_view')
   }, [location])
 
-  // Timer to enable WhatsApp widget on webinar page after 55 minutes (persisted via localStorage start time)
-  useEffect(() => {
-    if (location.pathname.startsWith('/webinar')) {
-      let startTime = localStorage.getItem('webinar_start_time')
-      if (!startTime) {
-        startTime = Date.now().toString()
-        localStorage.setItem('webinar_start_time', startTime)
-      }
-
-      const startTimeMs = parseInt(startTime, 10)
-      const elapsed = Date.now() - startTimeMs
-      const targetTime = 55 * 60 * 1000
-
-      if (elapsed >= targetTime) {
-        setWebinarWhatsAppActive(true)
-      } else {
-        const remaining = targetTime - elapsed
-        const timer = setTimeout(() => {
-          setWebinarWhatsAppActive(true)
-        }, remaining)
-        return () => clearTimeout(timer)
-      }
-    } else {
-      setWebinarWhatsAppActive(false)
-    }
-  }, [location.pathname])
-
-  // Affiliate referral tracking disabled for now
-  
-  // Hide global Header and Footer on admin, student portal, course player, landing, and auth paths
+  // Hide global Header and Footer on admin, dashboard, course, account, and auth paths
   const hideHeaderFooter = 
     location.pathname.startsWith('/admin') || 
     location.pathname.startsWith('/dashboard') || 
     location.pathname.startsWith('/course/') ||
     location.pathname.startsWith('/account') ||
-    location.pathname.startsWith('/free-training') ||
-    location.pathname.startsWith('/freelance-web-design-lander') ||
-    location.pathname.startsWith('/webinar') ||
     location.pathname === '/login' ||
     location.pathname === '/register' ||
     location.pathname === '/forgot-password' ||
     location.pathname === '/reset-password' ||
     location.pathname === '/setup-account'
 
-  // WhatsApp widget: show in checkout page, course learning center, user dashboard, and webinar page (after 15 mins)
+  // WhatsApp widget: show in checkout page, course learning center, and user dashboard
   const showWhatsApp = 
     location.pathname.startsWith('/checkout') || 
     location.pathname.startsWith('/course/') || 
-    location.pathname.startsWith('/dashboard') ||
-    (location.pathname.startsWith('/webinar') && webinarWhatsAppActive)
+    location.pathname.startsWith('/dashboard')
 
   const isDashboard = 
     location.pathname.startsWith('/admin') || 
@@ -124,14 +133,17 @@ function AppLayout() {
 
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/free-training" element={<LandingPage />} />
-        <Route path="/freelance-web-design-lander" element={<LandingPage />} />
-        <Route path="/webinar" element={<WebinarPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/product/:productId" element={<ProductDetailsPage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/ebook" element={<EbookSalesPage />} />
-        <Route path="/course" element={<SalesPage />} />
+        {featureFlags.enable_academics && (
+          <>
+            <Route path="/ebook" element={<EbookSalesPage />} />
+            <Route path="/course" element={<SalesPage />} />
+            <Route path="/course/:courseId" element={<LMSCourse />} />
+            <Route path="/course/:courseId/:lessonId" element={<LMSCourse />} />
+          </>
+        )}
         <Route path="/checkout" element={<PaymentPage />} />
         <Route path="/success" element={<ThankYouPage />} />
         <Route path="/setup-account" element={<SetPasswordPage />} />
@@ -140,27 +152,28 @@ function AppLayout() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/dashboard" element={<LMSDashboard />} />
-        <Route path="/course/:courseId" element={<LMSCourse />} />
-        <Route path="/course/:courseId/:lessonId" element={<LMSCourse />} />
-        <Route path="/account" element={<LMSDashboard />} />
+        <Route path="/account" element={<AccountPage />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
         
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/refund" element={<RefundPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/quality" element={<QualityPage />} />
+        <Route path="/export" element={<ExportPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/affiliate" element={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050b14', color: '#fff' }}><h2>Affiliate System is temporarily disabled</h2></div>} />
+        <Route path="/affiliate" element={featureFlags.enable_affiliates ? <AffiliatePage /> : <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050b14', color: '#fff' }}><h2>Affiliate System is temporarily disabled</h2></div>} />
 
         {/* Dynamic / Auto-registered user created pages */}
         {getPages().map(page => {
           const staticPaths = [
-            '/', '/free-training', '/freelance-web-design-lander', '/products', '/product/:productId',
+            '/', '/products', '/product/:productId',
             '/about', '/ebook', '/course', '/checkout', '/success', '/setup-account', '/login',
             '/register', '/forgot-password', '/reset-password', '/dashboard', '/course/:courseId',
             '/course/:courseId/:lessonId', '/account', '/admin/*', '/terms', '/privacy', '/refund',
-            '/contact', '/blog', '/faq'
+            '/contact', '/blog', '/faq', '/quality', '/export', '/gallery'
           ]
           if (staticPaths.includes(page.path)) return null;
           return <Route key={page.path} path={page.path} element={<page.component />} />
@@ -171,7 +184,7 @@ function AppLayout() {
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
-      {showWhatsApp && <WhatsAppWidget />}
+      <WhatsAppWidget />
     </div>
   )
 }

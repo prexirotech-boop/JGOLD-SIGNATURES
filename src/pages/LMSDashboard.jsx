@@ -123,7 +123,7 @@ function MyLearningTab({ user }) {
         </svg>
         <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12, color: '#0b1329', fontFamily: 'var(--font-heading)' }}>No Courses Found</h2>
         <p style={{ color: '#64748b', marginBottom: 24, fontSize: 15, maxWidth: 400, margin: '0 auto 24px' }}>You haven't enrolled in any training programs yet. Start learning today!</p>
-        <Link to="/products" style={{ background: '#2563eb', color: '#fff', padding: '12px 28px', fontWeight: 700, textDecoration: 'none', display: 'inline-block', transition: 'background 0.15s' }}>Browse Products</Link>
+        <Link to="/products" style={{ background: 'var(--g600)', color: '#fff', padding: '12px 28px', fontWeight: 700, textDecoration: 'none', display: 'inline-block', transition: 'background 0.15s' }}>Browse Products</Link>
       </div>
     )
   }
@@ -184,6 +184,9 @@ function PurchaseHistoryTab({ user, profile }) {
       return;
     }
 
+    const brandName = localStorage.getItem('brandName') || 'MIFAS FARMS';
+    const cleanBrandName = brandName.replace(/["']/g, "");
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -227,17 +230,17 @@ function PurchaseHistoryTab({ user, profile }) {
             .title {
               font-size: 20px;
               font-weight: 800;
-              color: #0f172a;
+              color: #0d2e1a;
               margin: 0;
               text-transform: uppercase;
               letter-spacing: 1px;
-              background: linear-gradient(135deg, #2563eb, #1d4ed8);
+              background: linear-gradient(135deg, #123c24, #246a42);
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
             }
             .status-badge {
               background-color: #dcfce7;
-              color: #16a34a;
+              color: #15803d;
               padding: 6px 12px;
               border-radius: 9999px;
               font-size: 11px;
@@ -315,7 +318,7 @@ function PurchaseHistoryTab({ user, profile }) {
             .total-amount {
               font-size: 20px;
               font-weight: 800;
-              color: #2563eb;
+              color: #123c24;
             }
             .footer-note {
               text-align: center;
@@ -330,7 +333,7 @@ function PurchaseHistoryTab({ user, profile }) {
               display: block;
               width: 100%;
               padding: 14px;
-              background: linear-gradient(135deg, #2563eb, #1d4ed8);
+              background: linear-gradient(135deg, #123c24, #246a42);
               color: white;
               border: none;
               border-radius: 8px;
@@ -339,12 +342,12 @@ function PurchaseHistoryTab({ user, profile }) {
               cursor: pointer;
               text-align: center;
               margin-bottom: 28px;
-              box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+              box-shadow: 0 4px 10px rgba(18, 60, 36, 0.2);
               transition: all 0.2s;
             }
             .btn-print:hover {
               opacity: 0.95;
-              box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+              box-shadow: 0 4px 14px rgba(18, 60, 36, 0.3);
             }
             @media print {
               .btn-print {
@@ -367,7 +370,7 @@ function PurchaseHistoryTab({ user, profile }) {
             <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
             
             <div class="header">
-              <img class="logo" src="${window.location.origin}/logo.png" alt="Amplified Skills" />
+              <img class="logo" src="${window.location.origin}/logo.png" alt="${cleanBrandName}" />
               <div style="text-align: right;">
                 <h1 class="title">Receipt</h1>
                 <span class="status-badge">Paid</span>
@@ -377,27 +380,42 @@ function PurchaseHistoryTab({ user, profile }) {
             <div class="receipt-details">
               <div class="details-block">
                 <h4>Billed To</h4>
-                <p style="font-size: 15px; font-weight: 700;">${profile?.full_name || user?.user_metadata?.full_name || 'Valued Student'}</p>
+                <p style="font-size: 15px; font-weight: 700;">${profile?.full_name || user?.user_metadata?.full_name || 'Valued Customer'}</p>
                 <p style="font-weight: normal; color: #64748b; font-size: 13px; margin-top: 4px;">${user?.email || ''}</p>
+                ${order.customer_phone ? `<p style="font-weight: normal; color: #64748b; font-size: 13px; margin-top: 2px;">Phone: ${order.customer_phone}</p>` : ''}
               </div>
               <div class="details-block" style="text-align: right;">
-                <h4>Transaction Details</h4>
+                <h4>Transaction</h4>
                 <p style="font-size: 13px; font-weight: normal; color: #64748b;">Receipt #: <strong>${String(order.id).slice(0, 8).toUpperCase()}</strong></p>
                 <p style="font-size: 13px; font-weight: normal; color: #64748b; margin-top: 4px;">Date: ${new Date(order.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                ${order.reference ? `<p style="font-size: 11px; font-weight: normal; color: #94a3b8; margin-top: 4px; font-family: monospace;">Ref: ${order.reference}</p>` : ''}
               </div>
+
+              ${order.shipping_street ? `
+                <div class="details-block" style="grid-column: span 2; border-top: 1px solid #e2e8f0; padding-top: 16px; margin-top: 8px;">
+                  <h4>Shipping Information</h4>
+                  <p style="font-weight: normal; font-size: 13px; line-height: 1.6; color: #475569;">
+                    <strong>Recipient Name:</strong> ${order.shipping_name || order.customer_name || ''}<br/>
+                    <strong>Recipient Phone:</strong> ${order.shipping_phone || order.customer_phone || ''}<br/>
+                    <strong>Address:</strong> ${order.shipping_street || ''}, ${order.shipping_city || ''}, ${order.shipping_state || ''}, ${order.shipping_country || 'Nigeria'}<br/>
+                    ${order.shipping_postal_code ? `<strong>Postal Code:</strong> ${order.shipping_postal_code}<br/>` : ''}
+                    ${order.shipping_notes ? `<strong>Instructions:</strong> ${order.shipping_notes}` : ''}
+                  </p>
+                </div>
+              ` : ''}
             </div>
             
             <table class="table">
               <thead>
                 <tr>
-                  <th>Course / Item</th>
+                  <th>Product / Item</th>
                   <th style="text-align: right;">Total Amount</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td style="font-weight: 600; color: #0f172a;">
-                    ${(order.products?.title || 'Unknown Course').replace(/\s+slug$/i, '')}
+                    ${(order.products?.title || 'Unknown Product').replace(/\s+slug$/i, '')}
                   </td>
                   <td style="text-align: right; font-weight: 700; color: #0f172a;">₦${order.amount.toLocaleString()}</td>
                 </tr>
@@ -411,19 +429,19 @@ function PurchaseHistoryTab({ user, profile }) {
                   <span style="font-weight: 600; color: #0f172a;">₦${order.amount.toLocaleString()}</span>
                 </div>
                 <div class="total-row">
-                  <span style="color: #64748b;">VAT (0%):</span>
-                  <span style="font-weight: 600; color: #0f172a;">₦0</span>
+                  <span style="color: #64748b;">Shipping:</span>
+                  <span style="font-weight: 600; color: #0f172a;">₦${(order.delivery_fee || 0).toLocaleString()}</span>
                 </div>
                 <div class="total-amount-row">
                   <span style="color: #0f172a; font-weight: 700; font-size: 14px;">Total Paid:</span>
-                  <span class="total-amount">₦${order.amount.toLocaleString()}</span>
+                  <span class="total-amount">₦${(order.amount + (order.delivery_fee || 0)).toLocaleString()}</span>
                 </div>
               </div>
             </div>
             
             <div class="footer-note">
-              <p style="font-weight: 600; color: #0f172a; margin-bottom: 4px;">Thank you for studying with Amplified Skills!</p>
-              <p style="margin: 0; font-size: 12px;">This receipt is generated automatically. For questions, reach out to support@amplifiedskills.com</p>
+              <p style="font-weight: 600; color: #0f172a; margin-bottom: 4px;">Thank you for your purchase from ${cleanBrandName}!</p>
+              <p style="margin: 0; font-size: 12px;">This receipt is generated automatically. For questions, reach out to our support team.</p>
             </div>
           </div>
         </body>
@@ -490,6 +508,8 @@ function PurchaseHistoryTab({ user, profile }) {
             <th>Purchase Date</th>
             <th>Amount Paid</th>
             <th>Payment Status</th>
+            <th>Delivery Status</th>
+            <th>Tracking</th>
             <th style={{ textAlign: 'right' }}>Receipt</th>
           </tr>
         </thead>
@@ -519,13 +539,52 @@ function PurchaseHistoryTab({ user, profile }) {
                     {order.status.replace(/[\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim()}
                   </span>
                 </td>
+                <td>
+                  {order.shipping_status ? (
+                    <span style={{
+                      padding: '4px 10px',
+                      background: order.shipping_status === 'delivered' ? '#ecfdf5' : order.shipping_status === 'shipped' ? '#eff6ff' : '#f1f5f9',
+                      color: order.shipping_status === 'delivered' ? '#047857' : order.shipping_status === 'shipped' ? 'var(--g700)' : '#475569',
+                      border: `1px solid ${order.shipping_status === 'delivered' ? '#a7f3d0' : order.shipping_status === 'shipped' ? '#bfdbfe' : '#cbd5e1'}`,
+                      fontWeight: 700,
+                      fontSize: 10.5,
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                      display: 'inline-block',
+                      borderRadius: 4
+                    }}>
+                      {order.shipping_status}
+                    </span>
+                  ) : (
+                    <span style={{ color: '#94a3b8', fontSize: 12 }}>—</span>
+                  )}
+                </td>
+                <td>
+                  {order.tracking_number ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 4, fontSize: 12, color: '#334155', fontWeight: 600 }}>{order.tracking_number}</code>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(order.tracking_number)
+                          alert('Tracking number copied!')
+                        }}
+                        style={{ border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 2, color: '#64748b' }}
+                        title="Copy tracking number"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <span style={{ color: '#94a3b8', fontSize: 12 }}>Pending shipment</span>
+                  )}
+                </td>
                 <td style={{ textAlign: 'right' }}>
                   {order.status === 'paid' && (
                     <button 
                       onClick={() => downloadReceipt(order)}
                       style={{
                         background: '#eff6ff',
-                        color: '#2563eb',
+                        color: 'var(--g600)',
                         border: '1px solid #bfdbfe',
                         padding: '6px 12px',
                         borderRadius: 6,
@@ -558,6 +617,34 @@ function SettingsTab({ user }) {
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [avatarError, setAvatarError] = useState('')
   const [fullName, setFullName] = useState(user.user_metadata?.full_name || '')
+  const [shipping, setShipping] = useState({
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    phone: '',
+  })
+
+  useEffect(() => {
+    async function loadShipping() {
+      if (!user) return
+      try {
+        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+        if (data) {
+          setShipping({
+            street: data.shipping_street || '',
+            city: data.shipping_city || '',
+            state: data.shipping_state || '',
+            postalCode: data.shipping_postal_code || '',
+            phone: data.shipping_phone || '',
+          })
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    loadShipping()
+  }, [user])
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0]
@@ -611,12 +698,20 @@ function SettingsTab({ user }) {
         data: { full_name: fullName }
       })
       if (error) throw error
-      await supabase.from('profiles').update({ full_name: fullName }).eq('id', user.id)
+      await supabase.from('profiles').update({ 
+        full_name: fullName,
+        shipping_street: shipping.street,
+        shipping_city: shipping.city,
+        shipping_state: shipping.state,
+        shipping_postal_code: shipping.postalCode,
+        shipping_phone: shipping.phone
+      }).eq('id', user.id)
       await refreshProfile()
-      setMessage('Profile updated successfully.')
+      setMessage('Profile and shipping details updated successfully.')
       setTimeout(() => setMessage(''), 3000)
     } catch (err) {
       console.error(err.message)
+      setMessage('Error updating details: ' + err.message)
     } finally {
       setLoading(false)
     }
@@ -656,7 +751,7 @@ function SettingsTab({ user }) {
             style={{
               position: 'absolute', bottom: 0, right: 0,
               width: 26, height: 26, borderRadius: '50%',
-              background: '#2563eb', color: '#fff',
+              background: 'var(--g600)', color: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', border: '2px solid #fff', boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
               transition: 'background 0.15s'
@@ -694,6 +789,66 @@ function SettingsTab({ user }) {
             style={{ borderRadius: 4, border: '1px solid #cbd5e1' }}
             required
           />
+        </div>
+        <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid #cbd5e1', marginBottom: 24 }}>
+          <h3 style={{ fontSize: 17, fontWeight: 700, margin: '0 0 16px', color: '#0f172a' }}>Shipping Details</h3>
+          <div className="ud-form-group">
+            <label className="ud-form-label">Shipping Phone Number</label>
+            <input 
+              type="text" 
+              value={shipping.phone} 
+              onChange={e => setShipping({ ...shipping, phone: e.target.value })} 
+              className="ud-form-input" 
+              style={{ borderRadius: 4, border: '1px solid #cbd5e1' }}
+              placeholder="e.g. +234 80 1234 5678" 
+            />
+          </div>
+          <div className="ud-form-group">
+            <label className="ud-form-label">Street Address</label>
+            <input 
+              type="text" 
+              value={shipping.street} 
+              onChange={e => setShipping({ ...shipping, street: e.target.value })} 
+              className="ud-form-input" 
+              style={{ borderRadius: 4, border: '1px solid #cbd5e1' }}
+              placeholder="e.g. 15 Farms Road" 
+            />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="ud-form-group">
+              <label className="ud-form-label">City</label>
+              <input 
+                type="text" 
+                value={shipping.city} 
+                onChange={e => setShipping({ ...shipping, city: e.target.value })} 
+                className="ud-form-input" 
+                style={{ borderRadius: 4, border: '1px solid #cbd5e1' }}
+                placeholder="e.g. Ikeja" 
+              />
+            </div>
+            <div className="ud-form-group">
+              <label className="ud-form-label">State</label>
+              <input 
+                type="text" 
+                value={shipping.state} 
+                onChange={e => setShipping({ ...shipping, state: e.target.value })} 
+                className="ud-form-input" 
+                style={{ borderRadius: 4, border: '1px solid #cbd5e1' }}
+                placeholder="e.g. Lagos" 
+              />
+            </div>
+          </div>
+          <div className="ud-form-group">
+            <label className="ud-form-label">Postal / Zip Code</label>
+            <input 
+              type="text" 
+              value={shipping.postalCode} 
+              onChange={e => setShipping({ ...shipping, postalCode: e.target.value })} 
+              className="ud-form-input" 
+              style={{ borderRadius: 4, border: '1px solid #cbd5e1' }}
+              placeholder="e.g. 100001" 
+            />
+          </div>
         </div>
         <button type="submit" disabled={loading} className="ud-form-submit" style={{ borderRadius: 4 }}>
           {loading ? 'Saving...' : 'Save Changes'}
@@ -779,7 +934,7 @@ function WishlistTab({ user }) {
       <div style={{ padding: '80px 24px', textAlign: 'center', background: '#fff', border: '1px solid #d1d7dc', borderRadius: 4 }}>
         <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12, color: '#0b1329', fontFamily: 'var(--font-heading)' }}>Your Wishlist is Empty</h2>
         <p style={{ color: '#64748b', marginBottom: 24, fontSize: 15, maxWidth: 400, margin: '0 auto 24px' }}>Browse our training programs and save courses to purchase later.</p>
-        <Link to="/products" style={{ background: '#2563eb', color: '#fff', padding: '12px 28px', fontWeight: 700, textDecoration: 'none', display: 'inline-block' }}>Browse Products</Link>
+        <Link to="/products" style={{ background: 'var(--g600)', color: '#fff', padding: '12px 28px', fontWeight: 700, textDecoration: 'none', display: 'inline-block' }}>Browse Products</Link>
       </div>
     )
   }
@@ -811,7 +966,7 @@ function WishlistTab({ user }) {
                   <span style={{ fontSize: 18, fontWeight: 800, color: '#0b1329' }}>₦{prod.price.toLocaleString()}</span>
                   {prod.old_price && <span style={{ fontSize: 13, color: '#64748b', textDecoration: 'line-through' }}>₦{prod.old_price.toLocaleString()}</span>}
                 </div>
-                <Link to={prod.type === 'course' ? '/course' : '/ebook'} className="ud-card-btn" style={{ background: '#2563eb', color: '#fff', border: '1px solid #2563eb' }}>
+                <Link to={prod.type === 'course' ? '/course' : '/ebook'} className="ud-card-btn" style={{ background: 'var(--g600)', color: '#fff', border: '1px solid var(--g600)' }}>
                   Buy Now
                 </Link>
               </div>
@@ -929,8 +1084,8 @@ function NotificationsTab({ user }) {
         <div key={n.id} className="ud-notif-card" style={{ borderRadius: 4 }}>
           <div className="ud-notif-icon">
             {n.type === 'announcement' 
-              ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
-              : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+              : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             }
           </div>
           <div className="ud-notif-content">
@@ -1215,7 +1370,7 @@ function AffiliateTab({ user, profile }) {
                 <path d="M12 6v6l4 2" />
               </svg>
             ), 
-            color: '#2563eb' 
+            color: 'var(--g600)' 
           },
           { 
             label: 'Conversions', 
@@ -1315,7 +1470,7 @@ function AffiliateTab({ user, profile }) {
               fontWeight: activeSubTab === t.id ? 700 : 500,
               fontSize: 13,
               cursor: 'pointer',
-              color: activeSubTab === t.id ? '#2563eb' : '#64748b',
+              color: activeSubTab === t.id ? 'var(--g600)' : '#64748b',
               borderRadius: 8,
               boxShadow: activeSubTab === t.id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
               transition: 'all 0.15s',
@@ -1335,7 +1490,7 @@ function AffiliateTab({ user, profile }) {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 19l7-7 3 3-10 10-10-10 3-3 7 7zm0-16v11"/></svg>
               Share Your Link To Start Earning
             </div>
-            <p style={{ fontSize: 13, color: '#3b82f6', margin: '0 0 14px' }}>Every time someone buys through your link, you earn {affiliate?.commission_rate || 20}% of the sale.</p>
+            <p style={{ fontSize: 13, color: 'var(--g500)', margin: '0 0 14px' }}>Every time someone buys through your link, you earn {affiliate?.commission_rate || 20}% of the sale.</p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               {[
                 { label: 'WhatsApp', bg: '#25D366', url: `https://wa.me/?text=${encodeURIComponent(`Check out Amplified Skills - the best platform to learn in-demand skills! ${affiliateLink || ''}`)}` },
@@ -1368,7 +1523,7 @@ function AffiliateTab({ user, profile }) {
                   </div>
                 )
               })}
-              <button onClick={() => setActiveSubTab('commissions')} style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 700, fontSize: 13, cursor: 'pointer', padding: 0 }}>View all commissions →</button>
+              <button onClick={() => setActiveSubTab('commissions')} style={{ background: 'none', border: 'none', color: 'var(--g600)', fontWeight: 700, fontSize: 13, cursor: 'pointer', padding: 0 }}>View all commissions →</button>
             </div>
           )}
 
@@ -1528,7 +1683,7 @@ function AffiliateTab({ user, profile }) {
             },
           ].map(item => (
             <div key={item.step} style={{ display: 'flex', gap: 16, padding: '20px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{item.icon}</div>
+              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, var(--g600))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{item.icon}</div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: 15, color: '#0b1329', marginBottom: 4 }}>Step {item.step}: {item.title}</div>
                 <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{item.desc}</div>
@@ -1552,8 +1707,37 @@ export default function LMSDashboard() {
   const impersonatedUser = impersonatedStr ? JSON.parse(impersonatedStr) : null
 
   // Default to Account Settings if user navigated from /account specifically
-  const initialTab = location.pathname === '/account' ? 'settings' : 'learning'
+  const initialTab = location.pathname === '/account' ? 'settings' : (localStorage.getItem('enable_academics') === 'true' ? 'learning' : 'history')
   const [activeTab, setActiveTab] = useState(initialTab)
+  
+  const [features, setFeatures] = useState({
+    enable_academics: localStorage.getItem('enable_academics') === 'true',
+    enable_affiliates: localStorage.getItem('enable_affiliates') !== 'false'
+  })
+
+  useEffect(() => {
+    async function loadFlags() {
+      try {
+        const { data } = await supabase.from('settings').select('*')
+        if (data) {
+          const siteConfig = data.find(s => s.id === 'site_config')
+          if (siteConfig?.value) {
+            const academics = siteConfig.value.enable_academics ?? false
+            const affiliates = siteConfig.value.enable_affiliates ?? true
+            localStorage.setItem('enable_academics', academics)
+            localStorage.setItem('enable_affiliates', affiliates)
+            setFeatures({
+              enable_academics: academics,
+              enable_affiliates: affiliates
+            })
+          }
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    loadFlags()
+  }, [])
   
   // Left Collapsible Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -1597,8 +1781,8 @@ export default function LMSDashboard() {
         fontFamily: "var(--font)", zIndex: 9999
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-          <div style={{ position: 'absolute', width: 160, height: 160, background: 'radial-gradient(circle, rgba(37,99,235,0.25) 0%, rgba(37,99,235,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', filter: 'blur(24px)', animation: 'ambient-glow 3s ease-in-out infinite' }} />
-          <img src="/logo.png" alt="Amplified Skills" style={{ height: 64, width: 'auto', maxWidth: 220, objectFit: 'contain', marginBottom: 36, filter: 'drop-shadow(0 0 10px rgba(37,99,235,0.15))', animation: 'logo-pulse 2.2s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', width: 160, height: 160, background: 'radial-gradient(circle, rgba(36, 106, 66,0.25) 0%, rgba(36, 106, 66,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', filter: 'blur(24px)', animation: 'ambient-glow 3s ease-in-out infinite' }} />
+          <img src="/logo.png" alt="Amplified Skills" style={{ height: 64, width: 'auto', maxWidth: 220, objectFit: 'contain', marginBottom: 36, filter: 'drop-shadow(0 0 10px rgba(36, 106, 66,0.15))', animation: 'logo-pulse 2.2s ease-in-out infinite' }} />
           <div className="premium-spinner" />
           <p style={{ color: '#94a3b8', marginTop: 16, fontSize: '14px', letterSpacing: '0.5px', position: 'relative', zIndex: 1 }}>Loading portal session...</p>
         </div>
@@ -1607,8 +1791,8 @@ export default function LMSDashboard() {
             width: 32px;
             height: 32px;
             border: 3px solid rgba(255, 255, 255, 0.05);
-            border-top-color: #2563eb;
-            border-right-color: #3b82f6;
+            border-top-color: var(--g600);
+            border-right-color: var(--g500);
             border-radius: 50%;
             animation: spin-loader 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
           }
@@ -1616,8 +1800,8 @@ export default function LMSDashboard() {
             to { transform: rotate(360deg); }
           }
           @keyframes logo-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(37,99,235,0.1)); }
-            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 16px rgba(37,99,235,0.4)); }
+            0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(36, 106, 66,0.1)); }
+            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 16px rgba(36, 106, 66,0.4)); }
           }
           @keyframes ambient-glow {
             0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
@@ -1669,7 +1853,7 @@ export default function LMSDashboard() {
       {/* Impersonation Banner */}
       {impersonatedUser && (
         <div style={{ 
-          background: 'linear-gradient(90deg, #2563eb 0%, #0b1329 100%)', 
+          background: 'linear-gradient(90deg, var(--g600) 0%, #0b1329 100%)', 
           color: '#fff', 
           padding: '12px 24px', 
           display: 'flex', 
@@ -1750,28 +1934,27 @@ export default function LMSDashboard() {
                 <img
                   src={effectiveUser.user_metadata.avatar_url}
                   alt="Avatar"
-                  style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1.5px solid #2563eb' }}
+                  style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1.5px solid var(--g600)' }}
                 />
               ) : (
                 <UserAvatar user={effectiveUser} size={36} />
               )}
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontWeight: 700, color: '#fff', fontSize: 14.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{effectiveUser?.user_metadata?.full_name || capitalizedFirstName}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>Student Workspace</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>Customer Workspace</div>
               </div>
             </div>
 
             {/* Sidebar Navigation links */}
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+             <nav style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
               {[
-                { id: 'learning', label: 'All Courses', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /> },
+                features.enable_academics && { id: 'learning', label: 'All Courses', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /> },
                 { id: 'wishlist', label: 'Wishlist', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-7.682-7.682L12 5.67l-1.06-1.06a4.5 4.5 0 00-6.364 0z" /> },
-                { id: 'certificates', label: 'Certificates', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /> },
+                features.enable_academics && { id: 'certificates', label: 'Certificates', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /> },
                 { id: 'notifications', label: 'Notifications', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /> },
                 { id: 'history', label: 'Purchase History', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /> },
-                { id: 'affiliate', label: 'Affiliate Program', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
                 { id: 'settings', label: 'Account Settings', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> }
-              ].map(item => (
+              ].filter(Boolean).map(item => (
                 <button
                   key={item.id}
                   onClick={() => {
@@ -1823,7 +2006,7 @@ export default function LMSDashboard() {
                   <button
                     onClick={() => setActiveTab('settings')}
                     style={{
-                      background: '#2563eb', color: '#fff', border: 'none',
+                      background: 'var(--g600)', color: '#fff', border: 'none',
                       padding: '9px 18px', borderRadius: 8, fontWeight: 700,
                       fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap'
                     }}
@@ -1911,7 +2094,7 @@ export default function LMSDashboard() {
         
         .ud-sidebar-item.active {
           color: #fff;
-          background: #2563eb; /* Brand Blue active item */
+          background: var(--g600); /* Brand Blue active item */
         }
         
         .ud-sidebar-item svg {
@@ -2056,7 +2239,7 @@ export default function LMSDashboard() {
         
         .ud-progress-bar-fill {
           height: 100%;
-          background: #2563eb;
+          background: var(--g600);
           border-radius: 2px;
         }
         
@@ -2080,9 +2263,9 @@ export default function LMSDashboard() {
         .ud-card-btn {
           display: block;
           text-align: center;
-          border: 1.5px solid #2563eb;
+          border: 1.5px solid var(--g600);
           background: transparent;
-          color: #2563eb;
+          color: var(--g600);
           padding: 8px 16px;
           font-weight: 700;
           font-size: 13.5px;
@@ -2094,7 +2277,7 @@ export default function LMSDashboard() {
         }
         
         .ud-card-btn:hover {
-          background: #2563eb;
+          background: var(--g600);
           color: #fff;
         }
         
@@ -2132,14 +2315,14 @@ export default function LMSDashboard() {
         }
         
         .ud-form-input:focus {
-          border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+          border-color: var(--g600);
+          box-shadow: 0 0 0 3px rgba(36, 106, 66, 0.1);
         }
         
         .ud-form-submit {
-          background: #2563eb;
+          background: var(--g600);
           color: #fff;
-          border: 1px solid #2563eb;
+          border: 1px solid var(--g600);
           padding: 12px 24px;
           font-weight: 700;
           font-size: 14.5px;
@@ -2149,8 +2332,8 @@ export default function LMSDashboard() {
         }
         
         .ud-form-submit:hover {
-          background: #1d4ed8;
-          border-color: #1d4ed8;
+          background: var(--g700);
+          border-color: var(--g700);
         }
         
         .ud-form-submit:disabled {
@@ -2210,7 +2393,7 @@ export default function LMSDashboard() {
           height: 36px;
           border-radius: 50%;
           background: #eff6ff;
-          color: #2563eb;
+          color: var(--g600);
           display: flex;
           align-items: center;
           justify-content: center;

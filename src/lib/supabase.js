@@ -32,6 +32,15 @@ export async function createPendingOrder({
   amount,
   affiliateCode,
   affiliateId,
+  shippingName,
+  shippingPhone,
+  shippingStreet,
+  shippingCity,
+  shippingState,
+  shippingPostalCode,
+  shippingNotes,
+  shippingCountry,
+  deliveryFee = 0,
 }) {
   try {
     const cleanEmail = (email || '').trim().toLowerCase()
@@ -50,6 +59,16 @@ export async function createPendingOrder({
         currency: 'NGN',
         affiliate_code: affiliateCode || null,
         affiliate_id: affiliateId || null,
+        shipping_name: shippingName || name || null,
+        shipping_phone: shippingPhone || phone || null,
+        shipping_street: shippingStreet || null,
+        shipping_city: shippingCity || null,
+        shipping_state: shippingState || null,
+        shipping_country: shippingCountry || null,
+        shipping_postal_code: shippingPostalCode || null,
+        shipping_notes: shippingNotes || null,
+        shipping_status: shippingStreet ? 'pending' : null,
+        delivery_fee: deliveryFee,
       })
       .select('id, product_id')
       .single()
@@ -291,5 +310,38 @@ export async function saveOrder({ reference, name, email, phone, isEbook = false
   } catch (err) {
     console.error('[saveOrder] Unexpected error:', err)
     return true
+  }
+}
+
+/**
+ * Update a user's default shipping details in profiles.
+ */
+export async function updateProfileShipping({
+  userId,
+  street,
+  city,
+  state,
+  postalCode,
+  phone,
+}) {
+  if (!userId) return { error: { message: 'User ID is required' } }
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        shipping_street: street,
+        shipping_city: city,
+        shipping_state: state,
+        shipping_postal_code: postalCode,
+        shipping_phone: phone,
+      })
+      .eq('id', userId)
+      .select()
+      .single()
+
+    return { data, error }
+  } catch (err) {
+    console.error('[updateProfileShipping] Unexpected error:', err)
+    return { data: null, error: err }
   }
 }

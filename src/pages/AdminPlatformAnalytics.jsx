@@ -14,7 +14,7 @@ const formatNaira = (amount) => {
 export default function AdminPlatformAnalytics() {
   const [timeframe, setTimeframe] = useState('30d') // 'today', 'yesterday', '7d', '30d', 'all'
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('overview') // 'overview', 'revenue', 'sales', 'students', 'products'
+  const [activeTab, setActiveTab] = useState('overview') // 'overview', 'revenue', 'sales', 'customers', 'products'
   
   // Database States
   const [orders, setOrders] = useState([])
@@ -495,7 +495,7 @@ export default function AdminPlatformAnalytics() {
         <div>
           <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: '#0f172a' }}>Platform Analytics Dashboard</h2>
           <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: 13.5 }}>
-            Analyze sales history, revenue growth, student profiles, and product sales.
+            Analyze sales history, revenue growth, customer profiles, and product sales.
           </p>
         </div>
         
@@ -549,7 +549,7 @@ export default function AdminPlatformAnalytics() {
             {[
               { label: 'Gross Revenue', val: formatNaira(totalRevenue), sub: `From ${paidOrders.length} paid orders`, color: '#2563eb', focus: true },
               { label: 'Total Sales (Orders)', val: totalOrdersCount, sub: `AOV: ${formatNaira(aov)}` },
-              { label: 'Enrolled Students', val: totalStudents, sub: 'Total registered students database' },
+              { label: 'Registered Customers', val: totalStudents, sub: 'Total registered customers database' },
               { label: 'Active Products', val: activeProducts, sub: `Published of ${products.length} products total` }
             ].map((k, i) => (
               <div 
@@ -586,7 +586,7 @@ export default function AdminPlatformAnalytics() {
               { id: 'overview', name: 'Growth Overview' },
               { id: 'revenue', name: `Revenue Details (${paidOrders.length})` },
               { id: 'sales', name: `Orders History (${orders.length})` },
-              { id: 'students', name: `Students Profiles (${studentProfiles.length})` },
+              { id: 'students', name: `Customers Profiles (${studentProfiles.length})` },
               { id: 'products', name: `Products Performance (${products.length})` }
             ].map(tab => (
               <button
@@ -818,10 +818,10 @@ export default function AdminPlatformAnalytics() {
             <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 24 }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Students Registered Profiles</h3>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Customers Registered Profiles</h3>
                 <input
                   type="text"
-                  placeholder="Search students..."
+                  placeholder="Search customers..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ border: '1px solid #cbd5e1', borderRadius: 8, padding: '8px 12px', fontSize: 13, width: 260 }}
@@ -832,7 +832,7 @@ export default function AdminPlatformAnalytics() {
                 <table className="responsive-table" style={{ minWidth: 850 }}>
                   <thead>
                     <tr style={{ borderBottom: '2px solid #e2e8f0', fontSize: 13, color: '#64748b' }}>
-                      <th style={{ padding: '12px 8px' }}>Student Info</th>
+                      <th style={{ padding: '12px 8px' }}>Customer Info</th>
                       <th style={{ padding: '12px 8px' }}>Role</th>
                       <th style={{ padding: '12px 8px' }}>Courses Enrolled</th>
                       <th style={{ padding: '12px 8px' }}>Joined Date</th>
@@ -858,7 +858,7 @@ export default function AdminPlatformAnalytics() {
                                 </div>
                               )}
                               <div>
-                                <div style={{ fontWeight: 600, color: '#0f172a' }}>{st.full_name || 'Student Account'}</div>
+                                <div style={{ fontWeight: 600, color: '#0f172a' }}>{st.full_name || 'Customer Account'}</div>
                                 <span style={{ fontSize: 11.5, color: '#64748b' }}>{st.email}</span>
                               </div>
                             </div>

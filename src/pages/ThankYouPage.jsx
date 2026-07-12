@@ -39,17 +39,20 @@ export default function ThankYouPage() {
           {/* Download card */}
           <div style={{ background: '#fff', borderRadius: 'var(--r-2xl)', padding: 32, textAlign: 'center', boxShadow: 'var(--sh-xl)', border: '2px solid var(--g200)', marginBottom: 20, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 5, background: 'linear-gradient(90deg, var(--g700), var(--gold), var(--g600))' }} />
-            <div style={{ fontSize: '3.5rem', marginBottom: 10 }}>📗</div>
+            <div style={{ marginBottom: 10 }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block' }}><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"></path><path d="M6 6h10M6 10h10"></path></svg>
+            </div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 5 }}>The N50K Blueprint</h2>
             <p style={{ fontSize: '.88rem', color: 'var(--n500)', marginBottom: 6 }}>Complete 55-Page Guide + All 4 Bonuses</p>
             {customer?.email && (
               <p style={{ fontSize: '.82rem', color: 'var(--g600)', fontWeight: 600, background: 'var(--g50)', display: 'inline-block', padding: '4px 14px', borderRadius: 50, marginBottom: 20 }}>
-                📧 Also sent to: {customer.email}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'middle' }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                Also sent to: {customer.email}
               </p>
             )}
             <a href={CONFIG.PDF_URL} download style={{ display: 'block' }}>
               <button className="btn-download">
-                <span>⬇️</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 <span>Download Your Blueprint Now</span>
               </button>
             </a>
@@ -57,7 +60,7 @@ export default function ThankYouPage() {
 
           {/* Next steps */}
           <div style={{ background: 'var(--g50)', border: '1.5px solid var(--g200)', borderRadius: 'var(--r-xl)', padding: '22px 20px', marginBottom: 16 }}>
-            <p style={{ fontWeight: 800, color: 'var(--g800)', marginBottom: 12, fontSize: '.92rem' }}>🚀 Start Here — Do This Right Now:</p>
+            <p style={{ fontWeight: 800, color: 'var(--g800)', marginBottom: 12, fontSize: '.92rem' }}>Start Here — Do This Right Now:</p>
             <ol style={{ paddingLeft: 0 }}>
               {[
                 'Download your Blueprint and save it to your phone',
@@ -76,9 +79,12 @@ export default function ThankYouPage() {
 
           {/* Bonuses */}
           <div style={{ background: '#fff', borderRadius: 'var(--r-xl)', padding: '22px 20px', border: '1.5px solid var(--n200)', marginBottom: 16 }}>
-            <p style={{ fontWeight: 700, fontSize: '.88rem', marginBottom: 12, color: 'var(--n700)' }}>🎁 Your Free Bonuses Are Inside the PDF:</p>
+            <p style={{ fontWeight: 700, fontSize: '.88rem', marginBottom: 12, color: 'var(--n700)' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'middle' }}><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+              Your Free Bonuses Are Inside the PDF:
+            </p>
             <div className="grid-2" style={{ gap: 8 }}>
-              {['📋 Supplier Directory', '📱 30 Social Captions', '📊 100-Day Action Plan', '🛠️ Free Tools Directory'].map(b => (
+              {['Supplier Directory', '30 Social Captions', '100-Day Action Plan', 'Free Tools Directory'].map(b => (
                 <div key={b} style={{ background: 'var(--g50)', borderRadius: 10, padding: '10px 14px', border: '1px solid var(--g100)', fontSize: '.86rem', fontWeight: 600, color: 'var(--g800)' }}>
                   {b}
                 </div>

@@ -6,12 +6,16 @@ import { supabase, createEnrollment } from '../lib/supabase'
 // ─────────────────────────────────────────────────────────────────────────────
 
 const STATUS = {
-  paid:      { label: 'Paid',      bg: 'rgba(22,163,74,0.1)',   color: '#15803d', border: 'rgba(22,163,74,0.25)',  dot: '#22c55e',  icon: '✓' },
-  pending:   { label: 'Pending',   bg: 'rgba(234,179,8,0.1)',   color: '#a16207', border: 'rgba(234,179,8,0.25)',  dot: '#eab308',  icon: '◷' },
-  cancelled: { label: 'Cancelled', bg: 'rgba(239,68,68,0.08)',  color: '#b91c1c', border: 'rgba(239,68,68,0.15)',  dot: '#ef4444',  icon: '✕' },
-  abandoned: { label: 'Abandoned', bg: 'rgba(100,116,139,0.1)', color: '#475569', border: 'rgba(100,116,139,0.2)', dot: '#94a3b8',  icon: '✕' },
-  refunded:  { label: 'Refunded',  bg: 'rgba(220,38,38,0.09)',  color: '#dc2626', border: 'rgba(220,38,38,0.2)',   dot: '#ef4444',  icon: '↩' },
-  failed:    { label: 'Failed',    bg: 'rgba(249,115,22,0.09)', color: '#c2410c', border: 'rgba(249,115,22,0.2)',  dot: '#f97316',  icon: '!' },
+  paid:       { label: 'Paid',       bg: 'rgba(22,163,74,0.1)',   color: '#15803d', border: 'rgba(22,163,74,0.25)',  dot: '#22c55e',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><polyline points="20 6 9 17 4 12"></polyline></svg> },
+  pending:    { label: 'Pending',    bg: 'rgba(234,179,8,0.1)',   color: '#a16207', border: 'rgba(234,179,8,0.25)',  dot: '#eab308',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> },
+  cancelled:  { label: 'Cancelled',  bg: 'rgba(239,68,68,0.08)',  color: '#b91c1c', border: 'rgba(239,68,68,0.15)',  dot: '#ef4444',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> },
+  abandoned:  { label: 'Abandoned',  bg: 'rgba(100,116,139,0.1)', color: '#475569', border: 'rgba(100,116,139,0.2)', dot: '#94a3b8',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> },
+  refunded:   { label: 'Refunded',   bg: 'rgba(220,38,38,0.09)',  color: '#dc2626', border: 'rgba(220,38,38,0.2)',   dot: '#ef4444',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg> },
+  failed:     { label: 'Failed',     bg: 'rgba(249,115,22,0.09)', color: '#c2410c', border: 'rgba(249,115,22,0.2)',  dot: '#f97316',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> },
+  processing: { label: 'Processing', bg: 'rgba(59,130,246,0.1)',   color: '#1d4ed8', border: 'rgba(59,130,246,0.25)',  dot: '#3b82f6',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 3s linear infinite', flexShrink: 0 }}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> },
+  shipped:    { label: 'Shipped',    bg: 'rgba(168,85,247,0.1)',   color: '#7e22ce', border: 'rgba(168,85,247,0.25)',  dot: '#a855f7',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> },
+  delivered:  { label: 'Delivered',  bg: 'rgba(16,185,129,0.1)',   color: '#047857', border: 'rgba(16,185,129,0.25)',  dot: '#10b981',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><polyline points="20 6 9 17 4 12"></polyline></svg> },
+  returned:   { label: 'Returned',   bg: 'rgba(239,68,68,0.1)',    color: '#b91c1c', border: 'rgba(239,68,68,0.25)',   dot: '#ef4444',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> },
 }
 
 const PAY_METHODS = { paystack: 'Paystack', manual: 'Manual', bank: 'Bank Transfer', cash: 'Cash' }
@@ -37,11 +41,11 @@ function StatusDropdown({ value, onChange }) {
   }, [])
 
   const currentOpt = value === 'all' 
-    ? { label: 'All Statuses', icon: '🕒' } 
+    ? { label: 'All Statuses', icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> } 
     : { label: STATUS[value]?.label || value, icon: STATUS[value]?.icon || '' }
 
   const options = [
-    { value: 'all', label: 'All Statuses', icon: '🕒' },
+    { value: 'all', label: 'All Statuses', icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> },
     ...Object.entries(STATUS).map(([k, v]) => ({
       value: k,
       label: v.label,
@@ -309,6 +313,40 @@ const DAction = ({ children, color, icon, onClick }) => {
 function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
   if (!order) return null
 
+  const [shippingStatus, setShippingStatus] = useState(order.shipping_status || 'pending')
+  const [trackingNumber, setTrackingNumber] = useState(order.tracking_number || '')
+  const [savingShipping, setSavingShipping] = useState(false)
+
+  useEffect(() => {
+    setShippingStatus(order.shipping_status || 'pending')
+    setTrackingNumber(order.tracking_number || '')
+  }, [order])
+
+  const handleSaveShipping = async () => {
+    setSavingShipping(true)
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          shipping_status: shippingStatus,
+          tracking_number: trackingNumber.trim() || null
+        })
+        .eq('id', order.id)
+
+      if (error) {
+        alert('Error updating shipping: ' + error.message)
+      } else {
+        order.shipping_status = shippingStatus
+        order.tracking_number = trackingNumber.trim() || null
+        alert('Shipping details updated successfully!')
+      }
+    } catch (e) {
+      alert('Error: ' + e.message)
+    } finally {
+      setSavingShipping(false)
+    }
+  }
+
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }} onClick={onClose} />
@@ -335,7 +373,7 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
         {/* Hero amount card */}
         <div style={{ padding: '18px 22px', background: '#fafbff', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           <div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>{fmt(order.amount)}</div>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>{fmt(order.amount + (order.delivery_fee || 0))}</div>
             <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 5 }}>{fmtDT(order.created_at)}</div>
           </div>
           <StatusBadge status={order.status} />
@@ -356,16 +394,59 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
 
           <DSection title="Payment">
             <DRow label="Amount"    value={fmt(order.amount)} accent="#0f172a" />
+            {order.delivery_fee > 0 && <DRow label="Delivery Fee" value={fmt(order.delivery_fee)} accent="#db2777" />}
             <DRow label="Currency"  value={order.currency || 'NGN'} />
             <DRow label="Method"    value={PAY_METHODS[order.payment_method] || order.payment_method} />
             <DRow label="Reference" value={order.reference} mono />
             <DRow label="Order ID"  value={idStr(order.id)} mono />
           </DSection>
 
+          {order.shipping_street && (
+            <DSection title="Shipping & Fulfillment">
+              <DRow label="Recipient Name" value={order.shipping_name || order.customer_name} />
+              <DRow label="Recipient Phone" value={order.shipping_phone || order.customer_phone} />
+              <DRow label="Address" value={`${order.shipping_street}, ${order.shipping_city}, ${order.shipping_state} ${order.shipping_postal_code || ''}`} />
+              {order.shipping_notes && <DRow label="Delivery Notes" value={order.shipping_notes} />}
+              
+              <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.4 }}>Shipping Status</label>
+                <select 
+                  value={shippingStatus} 
+                  onChange={e => setShippingStatus(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px', outline: 'none' }}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="returned">Returned</option>
+                </select>
+
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.4, marginTop: '6px' }}>Tracking Number</label>
+                <input 
+                  type="text" 
+                  value={trackingNumber} 
+                  onChange={e => setTrackingNumber(e.target.value)}
+                  placeholder="e.g. TRK-12345678"
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
+                />
+
+                <button 
+                  type="button" 
+                  onClick={handleSaveShipping}
+                  disabled={savingShipping}
+                  style={{ marginTop: '8px', padding: '8px 12px', background: '#db2777', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '12.5px' }}
+                >
+                  {savingShipping ? 'Saving...' : '✓ Update Shipping details'}
+                </button>
+              </div>
+            </DSection>
+          )}
+
           <DSection title="Actions">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {(order.status === 'pending' || order.status === 'abandoned' || order.status === 'cancelled') &&
-                <DAction color="#059669" icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>} onClick={() => onStatusChange(order, 'paid')}>Mark as Paid & Grant Access</DAction>}
+                <DAction color="#059669" icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>} onClick={() => onStatusChange(order, 'paid')}>Mark as Paid</DAction>}
               {order.status === 'paid' && order.products?.type === 'course' &&
                 <DAction color="#2563eb" icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>} onClick={() => onEnroll(order)}>Re-Grant Course Access</DAction>}
               {order.status === 'paid' &&
@@ -441,13 +522,13 @@ function CreateOrderModal({ isOpen, onClose, products, onCreated }) {
           </div>
           {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>{error}</div>}
           <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '11px 13px', fontSize: '12px', color: '#1e40af', lineHeight: 1.45, marginBottom: 16 }}>
-            💡 <strong>No Password Needed:</strong> If the student doesn't have an account, they can simply sign up later at <strong>/register</strong> using this exact email (or click <strong>Forgot Password</strong> to set a password). The system will automatically link their manual orders and course access.
+            <strong>No Password Needed:</strong> If the customer doesn't have an account, they can simply sign up later at <strong>/register</strong> using this exact email (or click <strong>Forgot Password</strong> to set a password). The system will automatically link their manual orders and course access.
           </div>
         </div>
 
         <form onSubmit={handleSubmit} style={{ padding: '0 26px 26px', display: 'flex', flexDirection: 'column', gap: 15 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <div><label style={lbl}>Email *</label><input type="email" value={form.customer_email} onChange={e => setF('customer_email', e.target.value)} style={inp} placeholder="student@email.com" required onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} /></div>
+            <div><label style={lbl}>Email *</label><input type="email" value={form.customer_email} onChange={e => setF('customer_email', e.target.value)} style={inp} placeholder="customer@email.com" required onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} /></div>
             <div><label style={lbl}>Full Name</label><input type="text" value={form.customer_name} onChange={e => setF('customer_name', e.target.value)} style={inp} placeholder="John Doe" onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} /></div>
           </div>
           <div><label style={lbl}>Phone Number</label><input type="tel" value={form.customer_phone} onChange={e => setF('customer_phone', e.target.value)} style={inp} placeholder="08012345678" onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} /></div>

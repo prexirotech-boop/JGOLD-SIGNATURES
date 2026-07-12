@@ -40,7 +40,7 @@ export default function UserMenu({ user }) {
           <div className="std-dropdown-header">
             <div className="std-dropdown-avatar"><UserAvatar user={user} size={40} /></div>
             <div className="std-dropdown-info">
-              <p className="std-dropdown-name">{user.user_metadata?.full_name || 'Student'}</p>
+              <p className="std-dropdown-name">{user.user_metadata?.full_name || 'Customer'}</p>
               <p className="std-dropdown-email">{user.email}</p>
             </div>
           </div>
@@ -52,7 +52,7 @@ export default function UserMenu({ user }) {
               </Link>
             )}
             <Link to="/dashboard" onClick={() => setOpen(false)} className="std-dropdown-item">
-              My learning
+              {localStorage.getItem('enable_academics') === 'true' ? 'My learning' : 'My Dashboard'}
             </Link>
             <Link to="/account" onClick={() => setOpen(false)} className="std-dropdown-item">
               Account settings

@@ -30,10 +30,10 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Brand (Navy Blue and Vibrant Blue Theme) */
-  --g900: #050b14; --g800: #0b1329; --g700: #1e3a8a;
-  --g600: #1d4ed8; --g500: #2563eb; --g400: #3b82f6;
-  --g200: #93c5fd; --g100: #dbeafe; --g50:  #eff6ff;
+  /* Brand (Forest Green MIFAS FARMS Organic Theme) */
+  --g900: #0a2214; --g800: #123c24; --g700: #1b5333;
+  --g600: #246a42; --g500: #338854; --g400: #5cb57c;
+  --g200: #a3e2bb; --g100: #d1f4df; --g50:  #f0fdf4;
   --gold: #f59e0b; --gold-d: #b45309; --gold-l: #fef3c7;
   --red:  #dc2626; --red-l: #fef2f2;
   /* Neutrals */
@@ -457,8 +457,8 @@ ul, ol { list-style: none; }
 
 /* ─── APP SAAS CSS (LMS, Account, Header) ───────────────────────────────── */
 :root {
-  --brand-primary: #2563eb;
-  --brand-hover: #1d4ed8;
+  --brand-primary: #123c24;
+  --brand-hover: #0c2918;
   --bg-app: #f8fafc;
   --bg-surface: #ffffff;
   --border-color: #e2e8f0;

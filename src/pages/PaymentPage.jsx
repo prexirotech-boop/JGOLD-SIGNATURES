@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { CONFIG } from '../lib/config'
-import { supabase, createPendingOrder, completeOrder } from '../lib/supabase'
+import { supabase, createPendingOrder, completeOrder, updateProfileShipping } from '../lib/supabase'
 import { trackEvent } from '../lib/analytics'
 import OrderBump from '../components/OrderBump'
 import { useAffiliate } from '../hooks/useAffiliate'
@@ -85,6 +85,12 @@ export default function PaymentPage() {
     name:  localStorage.getItem('checkout_name')  || '',
     email: localStorage.getItem('checkout_email') || '',
     phone: localStorage.getItem('checkout_phone') || '',
+    shipping_street: localStorage.getItem('checkout_shipping_street') || '',
+    shipping_city: localStorage.getItem('checkout_shipping_city') || '',
+    shipping_state: localStorage.getItem('checkout_shipping_state') || '',
+    shipping_country: localStorage.getItem('checkout_shipping_country') || 'Nigeria',
+    shipping_postal_code: localStorage.getItem('checkout_shipping_postal_code') || '',
+    shipping_notes: localStorage.getItem('checkout_shipping_notes') || '',
   }))
   const [errors, setErrors] = useState({})
 
@@ -138,7 +144,8 @@ export default function PaymentPage() {
 
   // Derived attributes
   const isEbook = product ? product.type === 'ebook' : false
-  const productTitle = product ? product.title.replace(/\s+slug$/i, '') : (isEbook ? 'The N50K Blueprint (PDF)' : CONFIG.BOOK_TITLE)
+  const isPhysical = product ? product.type === 'physical' : false
+  const productTitle = product ? product.title.replace(/\s+slug$/i, '') : (isEbook ? 'The N50K Blueprint (PDF)' : isPhysical ? 'Premium Product' : CONFIG.BOOK_TITLE)
   const bonuses = product && Array.isArray(product.features) ? product.features.filter(Boolean) : []
   const basePrice = product ? product.price : CONFIG.PRICE_NAIRA
   const oldPrice = product?.old_price || null
@@ -179,7 +186,7 @@ export default function PaymentPage() {
         if (!activeProduct) {
           // Try loading from cart
           try {
-            const cart = JSON.parse(localStorage.getItem('amplified_cart')) || []
+            const cart = JSON.parse(localStorage.getItem('ecom_cart')) || []
             if (cart.length > 0) {
               const { data } = await supabase.from('products').select('*').eq('id', cart[0].id).maybeSingle()
               if (data) activeProduct = data
@@ -198,15 +205,45 @@ export default function PaymentPage() {
         }
         
         if (activeProduct) {
+          const variantIdParam = searchParams.get('variant')
+          const variantId = variantIdParam || (() => {
+            try {
+              const cart = JSON.parse(localStorage.getItem('ecom_cart')) || []
+              const item = cart.find(x => x.id === activeProduct.id)
+              return item?.variant_id
+            } catch (e) {}
+          })()
+
+          if (variantId && activeProduct.variations?.variants) {
+            const variant = activeProduct.variations.variants.find(v => v.id === variantId)
+            if (variant) {
+              const optStr = Object.entries(variant.attributes || {})
+                .map(([k, v]) => `${v}`)
+                .join(', ')
+
+              activeProduct = {
+                ...activeProduct,
+                variant_id: variant.id,
+                title: `${activeProduct.title.replace(/\s+slug$/i, '')} (${optStr})`,
+                price: variant.price || activeProduct.price,
+                old_price: variant.compare_price || activeProduct.compare_price,
+                cover_image: variant.image || activeProduct.cover_image
+              }
+            }
+          }
+
           setProduct(activeProduct)
           
           // Auto-add checkout product to cart if not present
           try {
-            const cartKey = 'amplified_cart'
+            const cartKey = 'ecom_cart'
             let cart = JSON.parse(localStorage.getItem(cartKey)) || []
-            if (!cart.some(item => item.id === activeProduct.id)) {
+            if (!cart.some(item => item.id === activeProduct.id && item.variant_id === activeProduct.variant_id)) {
+              // Filter out items with same base product but no variant or different variant if we want to update it
+              cart = cart.filter(item => item.id !== activeProduct.id)
               cart.push({
                 id: activeProduct.id,
+                variant_id: activeProduct.variant_id || null,
                 title: activeProduct.title,
                 price: activeProduct.price,
                 old_price: activeProduct.old_price,
@@ -243,10 +280,29 @@ export default function PaymentPage() {
     }
   }, [product, productTitle, finalTotal])
 
-  // Pre-populate if student is logged in
+  // Pre-populate if customer is logged in
   useEffect(() => {
     if (user) {
-      setForm(f => ({ ...f, email: user.email || '', name: user.user_metadata?.full_name || f.name }))
+      async function loadProfile() {
+        try {
+          const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+          if (data) {
+            setForm(f => ({
+              ...f,
+              email: user.email || '',
+              name: data.full_name || f.name,
+              phone: data.shipping_phone || f.phone || '',
+              shipping_street: data.shipping_street || '',
+              shipping_city: data.shipping_city || '',
+              shipping_state: data.shipping_state || '',
+              shipping_postal_code: data.shipping_postal_code || '',
+            }))
+          }
+        } catch (e) {
+          console.warn('[PaymentPage] Error loading profile defaults:', e)
+        }
+      }
+      loadProfile()
     }
   }, [user])
 
@@ -283,9 +339,9 @@ export default function PaymentPage() {
     setForm(f => ({ ...f, [k]: v }))
     if (errors[k]) setErrors(e => ({ ...e, [k]: '' }))
     // Persist safe fields to localStorage so they survive refreshes
-    if (k === 'name')  localStorage.setItem('checkout_name',  v)
-    if (k === 'email') localStorage.setItem('checkout_email', v)
-    if (k === 'phone') localStorage.setItem('checkout_phone', v)
+    if (['name', 'email', 'phone', 'shipping_street', 'shipping_city', 'shipping_state', 'shipping_country', 'shipping_postal_code', 'shipping_notes'].includes(k)) {
+      localStorage.setItem(`checkout_${k}`, v)
+    }
   }
 
   const validate = () => {
@@ -295,6 +351,13 @@ export default function PaymentPage() {
     if (!/^(\+234|0)[789]\d{9}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid phone number'
     if (!user && !emailExists && guestPassword.length < 6) e.password = 'Password must be at least 6 characters'
     if (!user && emailExists && !loginPassword) e.loginPassword = 'Password is required for this email'
+    
+    if (isPhysical) {
+      if (!form.shipping_street.trim()) e.shipping_street = 'Street address is required'
+      if (!form.shipping_city.trim()) e.shipping_city = 'City is required'
+      if (!form.shipping_state.trim()) e.shipping_state = 'State / Region is required'
+      if (!form.shipping_postal_code.trim()) e.shipping_postal_code = 'Postal / Zip code is required'
+    }
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -374,6 +437,14 @@ export default function PaymentPage() {
       amount: discountedPrice,
       affiliateCode: affCode,
       affiliateId: affId,
+      shippingName: isPhysical ? name : null,
+      shippingPhone: isPhysical ? phone : null,
+      shippingStreet: isPhysical ? form.shipping_street.trim() : null,
+      shippingCity: isPhysical ? form.shipping_city.trim() : null,
+      shippingState: isPhysical ? form.shipping_state.trim() : null,
+      shippingCountry: isPhysical ? form.shipping_country : null,
+      shippingPostalCode: isPhysical ? form.shipping_postal_code.trim() : null,
+      shippingNotes: isPhysical ? form.shipping_notes.trim() : null,
     })
     pendingOrderIdRef.current = orderId
 
@@ -386,6 +457,8 @@ export default function PaymentPage() {
           ? Math.max(0, base - bump.discount_value)
           : base
 
+      const bumpIsPhysical = bump.offered_product?.type === 'physical'
+
       await createPendingOrder({
         reference: `${ref}-bump-${bump.id}`,
         name, email, phone,
@@ -393,6 +466,14 @@ export default function PaymentPage() {
         amount: bumpPrice,
         affiliateCode: affCode,
         affiliateId: affId,
+        shippingName: bumpIsPhysical ? name : null,
+        shippingPhone: bumpIsPhysical ? phone : null,
+        shippingStreet: bumpIsPhysical ? form.shipping_street.trim() : null,
+        shippingCity: bumpIsPhysical ? form.shipping_city.trim() : null,
+        shippingState: bumpIsPhysical ? form.shipping_state.trim() : null,
+        shippingCountry: bumpIsPhysical ? form.shipping_country : null,
+        shippingPostalCode: bumpIsPhysical ? form.shipping_postal_code.trim() : null,
+        shippingNotes: bumpIsPhysical ? form.shipping_notes.trim() : null,
       })
     }
 
@@ -479,10 +560,38 @@ export default function PaymentPage() {
       phone,
     })
 
-    // Clear saved checkout fields on successful payment
+    // Clear saved checkout fields and cart on successful payment
     localStorage.removeItem('checkout_name')
     localStorage.removeItem('checkout_email')
     localStorage.removeItem('checkout_phone')
+    localStorage.removeItem('checkout_shipping_street')
+    localStorage.removeItem('checkout_shipping_city')
+    localStorage.removeItem('checkout_shipping_state')
+    localStorage.removeItem('checkout_shipping_postal_code')
+    localStorage.removeItem('checkout_shipping_notes')
+    localStorage.removeItem('ecom_cart')
+    window.dispatchEvent(new Event('cart_updated'))
+
+    if (isPhysical && userId) {
+      try {
+        await updateProfileShipping({
+          userId,
+          street: form.shipping_street.trim(),
+          city: form.shipping_city.trim(),
+          state: form.shipping_state.trim(),
+          postalCode: form.shipping_postal_code.trim(),
+          phone: phone,
+        })
+      } catch (err) {
+        console.warn('[PaymentPage] failed saving user default address:', err)
+      }
+    }
+
+    if (isPhysical) {
+      setLoading(false)
+      navigate('/success')
+      return
+    }
 
     if (isEbook) {
       navigate('/success')
@@ -523,7 +632,7 @@ export default function PaymentPage() {
         <div className="shopify-product-info">
           <h4 className="shopify-product-title">{productTitle}</h4>
           <span className="shopify-product-desc">
-            {isEbook ? 'Digital PDF Guide & Masterclass' : 'Full Access Course + Support'}
+            {isEbook ? 'Digital Download' : isPhysical ? 'Physical Product — Free Delivery' : 'Digital Download'}
           </span>
         </div>
         <div className="shopify-product-price-col">
@@ -661,7 +770,7 @@ export default function PaymentPage() {
       {/* Safe SSL Guarantee Box */}
       <div className="shopify-guarantee-box">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <p>Instant &amp; secure delivery. Access is created immediately upon purchase confirmation.</p>
+        <p>Secure checkout. Your order will be processed and dispatched after payment confirmation.</p>
       </div>
     </div>
   )
@@ -675,8 +784,8 @@ export default function PaymentPage() {
         fontFamily: "var(--font)", zIndex: 9999
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-          <div style={{ position: 'absolute', width: 160, height: 160, background: 'radial-gradient(circle, rgba(37,99,235,0.25) 0%, rgba(37,99,235,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', filter: 'blur(24px)', animation: 'ambient-glow 3s ease-in-out infinite' }} />
-          <img src="/logo.png" alt="Amplified Skills" style={{ height: 64, width: 'auto', maxWidth: 220, objectFit: 'contain', marginBottom: 36, filter: 'drop-shadow(0 0 10px rgba(37,99,235,0.15))', animation: 'logo-pulse 2.2s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', width: 160, height: 160, background: 'radial-gradient(circle, rgba(36, 106, 66,0.25) 0%, rgba(36, 106, 66,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', filter: 'blur(24px)', animation: 'ambient-glow 3s ease-in-out infinite' }} />
+          <img src="/logo.png" alt="Amplified Skills" style={{ height: 64, width: 'auto', maxWidth: 220, objectFit: 'contain', marginBottom: 36, filter: 'drop-shadow(0 0 10px rgba(36, 106, 66,0.15))', animation: 'logo-pulse 2.2s ease-in-out infinite' }} />
           <div className="premium-spinner" />
           <p style={{ color: '#94a3b8', marginTop: 16, fontSize: '14px', letterSpacing: '0.5px', position: 'relative', zIndex: 1 }}>Loading checkout...</p>
         </div>
@@ -685,7 +794,7 @@ export default function PaymentPage() {
             width: 32px;
             height: 32px;
             border: 3px solid rgba(255, 255, 255, 0.05);
-            border-top-color: #2563eb;
+            border-top-color: var(--g600);
             border-radius: 50%;
             animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
           }
@@ -811,8 +920,8 @@ export default function PaymentPage() {
         }
         .sp-field-group.focused .sp-input-container {
           background: #ffffff;
-          border-color: #2563eb;
-          box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12) !important;
+          border-color: var(--g600);
+          box-shadow: 0 0 0 4px rgba(36, 106, 66, 0.12) !important;
         }
         .sp-field-group.has-error .sp-input-container {
           border-color: #ef4444;
@@ -862,7 +971,7 @@ export default function PaymentPage() {
           font-weight: 600;
         }
         .sp-field-group.focused .sp-label {
-          color: #2563eb;
+          color: var(--g600);
         }
         .sp-field-group.has-error .sp-label {
           color: #ef4444;
@@ -1218,7 +1327,7 @@ export default function PaymentPage() {
           transition: border-color 0.2s;
         }
         .shopify-coupon-input:focus {
-          border-color: #2563eb;
+          border-color: var(--g600);
         }
         .shopify-coupon-btn {
           height: 40px;
@@ -1366,7 +1475,7 @@ export default function PaymentPage() {
           align-items: center;
           gap: 8px;
           font-size: 13.5px;
-          color: #2563eb;
+          color: var(--g600);
         }
         .sp-mobile-summary-bar-price {
           font-size: 15px;
@@ -1422,7 +1531,7 @@ export default function PaymentPage() {
           width: 10px;
           height: 10px;
           border: 1.5px solid rgba(0,0,0,0.1);
-          border-top-color: #2563eb;
+          border-top-color: var(--g600);
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
         }
@@ -1522,7 +1631,7 @@ export default function PaymentPage() {
                 {!user && emailExists && !checkingEmail && (
                   <div className="sp-detect-box warn">
                     <p>Existing Account Detected</p>
-                    <small>You already have a student profile. Enter your password to authenticate this purchase.</small>
+                    <small>You already have a customer profile. Enter your password to authenticate this purchase.</small>
                     <Field
                       id="inline-login-pw"
                       label="Password"
@@ -1531,7 +1640,7 @@ export default function PaymentPage() {
                       val={loginPassword}
                       err={errors.loginPassword || loginError}
                       onChange={v => { setLoginPassword(v); setLoginError(''); setErrors(er => ({ ...er, loginPassword: '' })) }}
-                      right={<a href="/forgot-password" target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>Forgot?</a>}
+                      right={<a href="/forgot-password" target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: 'var(--g600)', textDecoration: 'none', fontWeight: 600 }}>Forgot?</a>}
                     />
                   </div>
                 )}
@@ -1539,11 +1648,11 @@ export default function PaymentPage() {
                 {/* New User detected - create password */}
                 {!user && !emailExists && !checkingEmail && form.email && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email) && (
                   <div className="sp-detect-box info">
-                    <p>Secure Student Account Setup</p>
-                    <small>Create a password. This secures your dashboard account where you can access the training materials.</small>
+                    <p>Create Your Account</p>
+                    <small>Create a password to track your order, manage returns and access your purchase history.</small>
                     <Field
                       id="guest-pw"
-                      label="Create dashboard password"
+                      label="Create account password"
                       type="password"
                       placeholder="Minimum 6 characters"
                       val={guestPassword}
@@ -1572,6 +1681,96 @@ export default function PaymentPage() {
                   err={errors.phone} 
                   onChange={v => set('phone', v)} 
                 />
+
+                {isPhysical && (
+                  <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a1a', margin: '12px 0 6px' }}>Shipping Address</h4>
+                    <Field 
+                      id="shipping_street" 
+                      label="Street address" 
+                      placeholder="12, Allen Avenue" 
+                      val={form.shipping_street} 
+                      err={errors.shipping_street} 
+                      onChange={v => set('shipping_street', v)} 
+                    />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <Field 
+                        id="shipping_city" 
+                        label="City" 
+                        placeholder="Ikeja" 
+                        val={form.shipping_city} 
+                        err={errors.shipping_city} 
+                        onChange={v => set('shipping_city', v)} 
+                      />
+                      <Field 
+                        id="shipping_state" 
+                        label="State / Region" 
+                        placeholder="Lagos" 
+                        val={form.shipping_state} 
+                        err={errors.shipping_state} 
+                        onChange={v => set('shipping_state', v)} 
+                      />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <Field 
+                        id="shipping_postal_code" 
+                        label="Postal / Zip code" 
+                        placeholder="100001" 
+                        val={form.shipping_postal_code} 
+                        err={errors.shipping_postal_code} 
+                        onChange={v => set('shipping_postal_code', v)} 
+                      />
+                      <div className="sp-field-group">
+                        <div className="sp-input-container" style={{ background: '#f8fafc', borderColor: '#e2e8f0', position: 'relative' }}>
+                          <select 
+                            value={form.shipping_country} 
+                            onChange={e => set('shipping_country', e.target.value)} 
+                            className="sp-input"
+                            style={{
+                              width: '100%',
+                              padding: '24px 14px 8px',
+                              fontSize: '14.5px',
+                              border: 'none',
+                              borderRadius: '10px',
+                              background: 'transparent',
+                              outline: 'none',
+                              color: '#1e293b',
+                              height: '54px',
+                              fontWeight: '500',
+                              appearance: 'none',
+                              backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
+                              backgroundRepeat: 'no-repeat',
+                              backgroundPosition: 'right 14px center',
+                              backgroundSize: '16px'
+                            }}
+                          >
+                            <option value="Nigeria">Nigeria 🇳🇬</option>
+                            <option value="United States">United States 🇺🇸</option>
+                            <option value="United Kingdom">United Kingdom 🇬🇧</option>
+                            <option value="Canada">Canada 🇨🇦</option>
+                            <option value="Netherlands">Netherlands 🇳🇱</option>
+                            <option value="Germany">Germany 🇩🇪</option>
+                            <option value="France">France 🇫🇷</option>
+                            <option value="South Africa">South Africa 🇿🇦</option>
+                            <option value="Ghana">Ghana 🇬🇭</option>
+                            <option value="Kenya">Kenya 🇰🇪</option>
+                            <option value="United Arab Emirates">United Arab Emirates 🇦🇪</option>
+                            <option value="China">China 🇨🇳</option>
+                            <option value="India">India 🇮🇳</option>
+                          </select>
+                          <label className="sp-label" style={{ transform: 'translateY(-9px)', fontSize: '11px', top: '15px', fontWeight: '600' }}>Country</label>
+                        </div>
+                      </div>
+                    </div>
+                    <Field 
+                      id="shipping_notes" 
+                      label="Order notes / delivery instructions (optional)" 
+                      placeholder="E.g. Deliver to receptionist" 
+                      val={form.shipping_notes} 
+                      onChange={v => set('shipping_notes', v)} 
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

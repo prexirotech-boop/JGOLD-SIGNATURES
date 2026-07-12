@@ -6,7 +6,7 @@ export default function UserAvatar({ user, size = 40 }) {
   if (!user) return null
 
   // If user metadata full_name is not available, use the email part before @, and capitalize it.
-  let nameStr = 'Student'
+  let nameStr = 'Customer'
   if (user.user_metadata?.full_name) {
     nameStr = user.user_metadata.full_name
   } else if (user.email) {
