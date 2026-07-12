@@ -68,6 +68,16 @@ export default function LandingPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Social Proof Toast State
   const [activeNotifIdx, setActiveNotifIdx] = useState(0)
@@ -234,6 +244,7 @@ export default function LandingPage() {
                   aspect="0.5625" 
                   playbar="false"
                   play-bar-control="false"
+                  fullscreen-control={isMobile ? "false" : "true"}
                   style={{ width: '100%', height: '100%', display: 'block' }}
                 ></wistia-player>
               </div>

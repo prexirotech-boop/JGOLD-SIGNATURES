@@ -91,6 +91,16 @@ export default function WebinarPage() {
   const [product, setProduct] = useState(null)
   const [showCTASection, setShowCTASection] = useState(false)
   const [showBriefsSection, setShowBriefsSection] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Load product from database to fetch price and old_price dynamically
   useEffect(() => {
@@ -241,6 +251,7 @@ export default function WebinarPage() {
               aspect="1.7777777777777777" 
               playbar="false"
               play-bar-control="false"
+              fullscreen-control={isMobile ? "false" : "true"}
               style={{ width: '100%', height: '100%', display: 'block' }}
             ></wistia-player>
           </div>
