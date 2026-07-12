@@ -1,126 +1,303 @@
 import { useEffect } from 'react'
-import { CONFIG } from '../lib/config'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import UpsellWidget from '../components/UpsellWidget'
 
 export default function ThankYouPage() {
   const { user } = useAuth()
   const customer = JSON.parse(localStorage.getItem('paid_customer') || '{}')
 
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
 
-  const first = (customer?.name || 'Champion').split(' ')[0]
+  const firstName = (customer?.name || 'Valued Customer').split(' ')[0]
+
+  const amount = customer?.amount || 0
+  const deliveryFee = customer?.delivery_fee || 0
+  const total = amount + deliveryFee
 
   return (
-    <>
-      {/* Hero */}
-      <div className="ty-hero">
-        <div className="wrap t-center">
-          <div className="check-circle">🎉</div>
-          <h1 className="h1 t-white" style={{ marginBottom: 12 }}>
-            {first}, Your Blueprint is Ready!
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,.72)', fontSize: '1rem', maxWidth: 460, margin: '0 auto' }}>
-            Payment confirmed. Your N50K Blueprint and all bonuses are ready for you right now.
+    <div style={{ background: '#f8fafc', minHeight: '100vh', padding: '60px 20px', fontFamily: "'Outfit', sans-serif" }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        
+        {/* Header confirmation block */}
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '72px',
+            height: '72px',
+            borderRadius: '50%',
+            background: 'rgba(36, 106, 66, 0.1)',
+            color: 'var(--g600)',
+            marginBottom: '24px'
+          }}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--g600)', textTransform: 'uppercase', letterSpacing: '2px', margin: '0 0 8px' }}>
+            {customer?.ref ? `Order #${String(customer.ref).slice(-8).toUpperCase()}` : 'Order Confirmed'}
           </p>
-          {customer?.ref && (
-            <p style={{ color: 'rgba(255,255,255,.38)', fontSize: '.76rem', marginTop: 12 }}>
-              Order ref: {customer.ref}
-            </p>
-          )}
+          <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>
+            Thank you, {firstName}!
+          </h1>
+          <p style={{ fontSize: '16px', color: '#475569', maxWidth: '520px', margin: '0 auto', lineHeight: '1.6' }}>
+            Your order has been received and is now being processed. A confirmation email has been sent to <strong style={{ color: '#0f172a' }}>{customer?.email}</strong>.
+          </p>
         </div>
-      </div>
 
-      <section className="section-sm">
-        <div className="wrap-n">
-          {/* Post-Purchase One-Time Offer Widget */}
-          <UpsellWidget placement="thankyou" userId={user?.id} />
-
-          {/* Download card */}
-          <div style={{ background: '#fff', borderRadius: 'var(--r-2xl)', padding: 32, textAlign: 'center', boxShadow: 'var(--sh-xl)', border: '2px solid var(--g200)', marginBottom: 20, position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 5, background: 'linear-gradient(90deg, var(--g700), var(--gold), var(--g600))' }} />
-            <div style={{ marginBottom: 10 }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block' }}><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"></path><path d="M6 6h10M6 10h10"></path></svg>
-            </div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 5 }}>The N50K Blueprint</h2>
-            <p style={{ fontSize: '.88rem', color: 'var(--n500)', marginBottom: 6 }}>Complete 55-Page Guide + All 4 Bonuses</p>
-            {customer?.email && (
-              <p style={{ fontSize: '.82rem', color: 'var(--g600)', fontWeight: 600, background: 'var(--g50)', display: 'inline-block', padding: '4px 14px', borderRadius: 50, marginBottom: 20 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'middle' }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                Also sent to: {customer.email}
+        {/* Core Layout Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1.2fr 0.8fr',
+          gap: '32px',
+          alignItems: 'start'
+        }} className="ty-grid-responsive">
+          
+          {/* Left Column: Details & Dashboard Tracking */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            
+            {/* Dashboard Tracking CTA Card */}
+            <div style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '16px',
+              padding: '32px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <line x1="9" y1="3" x2="9" y2="21" />
+                  <line x1="9" y1="9" x2="21" y2="9" />
+                  <line x1="9" y1="15" x2="21" y2="15" />
+                </svg>
+                Track Your Order In Real-Time
+              </h3>
+              <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.6', margin: '0 0 24px' }}>
+                Create or access your customer dashboard profile to view real-time delivery status, access premium downloads, download printable PDF receipts, and contact support instantly.
               </p>
-            )}
-            <a href={CONFIG.PDF_URL} download style={{ display: 'block' }}>
-              <button className="btn-download">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span>Download Your Blueprint Now</span>
-              </button>
-            </a>
-          </div>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <Link to="/dashboard" style={{ textDecoration: 'none', flex: 1, minWidth: '220px' }}>
+                  <button className="btn-primary" style={{
+                    width: '100%',
+                    padding: '14px 24px',
+                    background: 'linear-gradient(135deg, var(--g600), var(--g700))',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontWeight: 600,
+                    fontSize: '14.5px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 10px rgba(36, 106, 66, 0.2)',
+                    transition: 'all 0.2s'
+                  }}>
+                    Go to Customer Dashboard
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </button>
+                </Link>
+                <Link to="/products" style={{ textDecoration: 'none' }}>
+                  <button style={{
+                    padding: '14px 24px',
+                    background: '#ffffff',
+                    color: '#475569',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '10px',
+                    fontWeight: 600,
+                    fontSize: '14.5px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--g600)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = '#cbd5e1'}
+                  >
+                    Continue Shopping
+                  </button>
+                </Link>
+              </div>
+            </div>
 
-          {/* Next steps */}
-          <div style={{ background: 'var(--g50)', border: '1.5px solid var(--g200)', borderRadius: 'var(--r-xl)', padding: '22px 20px', marginBottom: 16 }}>
-            <p style={{ fontWeight: 800, color: 'var(--g800)', marginBottom: 12, fontSize: '.92rem' }}>Start Here — Do This Right Now:</p>
-            <ol style={{ paddingLeft: 0 }}>
-              {[
-                'Download your Blueprint and save it to your phone',
-                'Read Chapter 1 & 2 today — takes less than 30 minutes',
-                'Pick your business from Chapter 3 by tomorrow',
-                'Set up WhatsApp Business and post your first offer this week',
-                'Tell 10 people what you\'re building — accountability starts now',
-              ].map((step, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '7px 0', borderBottom: i < 4 ? '1px solid var(--g200)' : 'none', fontSize: '.9rem', color: 'var(--n700)' }}>
-                  <span style={{ width: 26, height: 26, minWidth: 26, borderRadius: '50%', background: 'var(--g700)', color: '#fff', fontWeight: 800, fontSize: '.76rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
-                  {step}
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          {/* Bonuses */}
-          <div style={{ background: '#fff', borderRadius: 'var(--r-xl)', padding: '22px 20px', border: '1.5px solid var(--n200)', marginBottom: 16 }}>
-            <p style={{ fontWeight: 700, fontSize: '.88rem', marginBottom: 12, color: 'var(--n700)' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'middle' }}><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-              Your Free Bonuses Are Inside the PDF:
-            </p>
-            <div className="grid-2" style={{ gap: 8 }}>
-              {['Supplier Directory', '30 Social Captions', '100-Day Action Plan', 'Free Tools Directory'].map(b => (
-                <div key={b} style={{ background: 'var(--g50)', borderRadius: 10, padding: '10px 14px', border: '1px solid var(--g100)', fontSize: '.86rem', fontWeight: 600, color: 'var(--g800)' }}>
-                  {b}
+            {/* Customer & Shipping Information Card */}
+            <div style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '16px',
+              padding: '32px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: '0 0 20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                Customer Information
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }} className="ty-info-responsive">
+                
+                {/* Contact Information */}
+                <div>
+                  <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px' }}>
+                    Contact Information
+                  </h4>
+                  <p style={{ fontSize: '14.5px', color: '#1e293b', fontWeight: 500, margin: '0 0 4px' }}>
+                    {customer?.name}
+                  </p>
+                  <p style={{ fontSize: '13.5px', color: '#475569', margin: '0 0 2px' }}>
+                    {customer?.email}
+                  </p>
+                  <p style={{ fontSize: '13.5px', color: '#475569', margin: 0 }}>
+                    {customer?.phone}
+                  </p>
                 </div>
-              ))}
+
+                {/* Payment Method */}
+                <div>
+                  <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px' }}>
+                    Payment Method
+                  </h4>
+                  <p style={{ fontSize: '14.5px', color: '#1e293b', fontWeight: 500, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                      <line x1="1" y1="10" x2="23" y2="10" />
+                    </svg>
+                    Paystack (Card/Transfer)
+                  </p>
+                  <p style={{ fontSize: '12.5px', color: '#64748b', marginTop: '4px' }}>
+                    Transaction Status: <span style={{ color: '#16a34a', fontWeight: 600 }}>PAID</span>
+                  </p>
+                </div>
+
+                {/* Shipping Address */}
+                {customer?.shipping_street && (
+                  <div style={{ gridColumn: 'span 2', borderTop: '1px solid #f1f5f9', paddingTop: '16px', marginTop: '8px' }}>
+                    <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px' }}>
+                      Shipping Address
+                    </h4>
+                    <p style={{ fontSize: '14.5px', color: '#1e293b', fontWeight: 500, margin: '0 0 4px' }}>
+                      {customer?.shipping_name || customer?.name}
+                    </p>
+                    <p style={{ fontSize: '14px', color: '#475569', lineHeight: '1.5', margin: 0 }}>
+                      {customer?.shipping_street}<br />
+                      {customer?.shipping_city}, {customer?.shipping_state}<br />
+                      {customer?.shipping_country || 'Nigeria'} {customer?.shipping_postal_code ? `(${customer.shipping_postal_code})` : ''}
+                    </p>
+                    {customer?.shipping_notes && (
+                      <p style={{ fontSize: '13px', color: '#64748b', fontStyle: 'italic', marginTop: '8px', background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', borderLeft: '3px solid var(--g500)' }}>
+                        <strong>Instructions:</strong> {customer.shipping_notes}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Share */}
-          <div style={{ background: 'var(--n50)', borderRadius: 'var(--r-xl)', padding: '22px 20px', border: '1.5px solid var(--n200)', marginBottom: 16, textAlign: 'center' }}>
-            <p style={{ fontWeight: 700, marginBottom: 6 }}>💚 Share — Help Another Nigerian Build</p>
-            <p style={{ fontSize: '.84rem', color: 'var(--n500)', marginBottom: 14 }}>Know someone who needs this? Share the page and give them the same opportunity you just took.</p>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-              {[
-                { label: 'WhatsApp', bg: '#25D366', url: `https://wa.me/?text=${encodeURIComponent(`I just got the N50K Blueprint — the complete guide to starting a profitable business in Nigeria with ₦50K. You should get it too: ${window.location.origin}`)}` },
-                { label: 'Facebook', bg: '#1877F2', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}` },
-                { label: 'X / Twitter', bg: '#000', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just got the N50K Blueprint! Starting my business journey. You should too 👉 ${window.location.origin}`)}` },
-              ].map(({ label, bg, url }) => (
-                <a key={label} href={url} target="_blank" rel="noopener noreferrer">
-                  <button style={{ background: bg, color: '#fff', padding: '10px 18px', borderRadius: 50, fontWeight: 700, fontSize: '.83rem', border: 'none', cursor: 'pointer', transition: 'opacity .2s', opacity: .9 }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                    onMouseLeave={e => e.currentTarget.style.opacity = .9}
-                  >{label}</button>
-                </a>
-              ))}
+          {/* Right Column: Order Summary */}
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0, borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+              Order Summary
+            </h3>
+            
+            {/* Products Row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9' }}>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                background: 'var(--g50)',
+                borderRadius: '8px',
+                border: '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--g600)',
+                flexShrink: 0
+              }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {customer?.product_title || 'MIFAS Product'}
+                </h4>
+                <p style={{ fontSize: '13px', color: '#64748b', margin: 0, textTransform: 'capitalize' }}>
+                  Type: {customer?.product_type || 'Product'}
+                </p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px' }}>
+                  ₦{amount.toLocaleString()}
+                </p>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+                  Qty: 1
+                </p>
+              </div>
+            </div>
+
+            {/* Price Calculations */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#475569' }}>
+                <span>Subtotal</span>
+                <span style={{ fontWeight: 600, color: '#0f172a' }}>₦{amount.toLocaleString()}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#475569' }}>
+                <span>Shipping Fee</span>
+                <span style={{ fontWeight: 600, color: '#0f172a' }}>
+                  {deliveryFee > 0 ? `₦${deliveryFee.toLocaleString()}` : 'Free'}
+                </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                fontSize: '18px',
+                color: '#0f172a',
+                borderTop: '2px dashed #e2e8f0',
+                paddingTop: '16px',
+                marginTop: '4px'
+              }}>
+                <span style={{ fontWeight: 800 }}>Total</span>
+                <span style={{ fontWeight: 800, color: 'var(--g600)' }}>₦{total.toLocaleString()}</span>
+              </div>
             </div>
           </div>
-
-          {/* Guarantee reminder */}
-          <div style={{ background: 'var(--gold-l)', borderRadius: 'var(--r-lg)', padding: '18px 20px', textAlign: 'center', border: '1.5px solid var(--gold)' }}>
-            <p style={{ fontWeight: 700, color: 'var(--g800)', fontSize: '.9rem' }}>🔐 Your Access Is Permanent</p>
-            <p style={{ fontSize: '.81rem', color: 'var(--n600)', marginTop: 5 }}>Your Blueprint is tied to your email — yours forever. Every future update is included at no extra cost.</p>
-          </div>
-
         </div>
-      </section>
 
-    </>
+        {/* Styling overrides for responsive grid layout */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (max-width: 868px) {
+            .ty-grid-responsive {
+              grid-template-columns: 1fr !important;
+              gap: 24px !important;
+            }
+          }
+          @media (max-width: 580px) {
+            .ty-info-responsive {
+              grid-template-columns: 1fr !important;
+              gap: 20px !important;
+            }
+            .ty-info-responsive > div {
+              grid-column: span 1 !important;
+            }
+          }
+        `}} />
+      </div>
+    </div>
   )
 }

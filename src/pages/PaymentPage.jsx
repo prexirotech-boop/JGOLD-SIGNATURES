@@ -549,6 +549,16 @@ export default function PaymentPage() {
       product_id: product?.id,
       product_type: product?.type,
       product_title: productTitle,
+      amount: discountedPrice,
+      delivery_fee: deliveryFee,
+      shipping_name: isPhysical ? name : null,
+      shipping_phone: isPhysical ? phone : null,
+      shipping_street: isPhysical ? form.shipping_street.trim() : null,
+      shipping_city: isPhysical ? form.shipping_city.trim() : null,
+      shipping_state: isPhysical ? form.shipping_state.trim() : null,
+      shipping_country: isPhysical ? form.shipping_country : null,
+      shipping_postal_code: isPhysical ? form.shipping_postal_code.trim() : null,
+      shipping_notes: isPhysical ? form.shipping_notes.trim() : null,
     }))
 
     await completeOrder({
