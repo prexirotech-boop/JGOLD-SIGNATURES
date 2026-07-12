@@ -57,13 +57,28 @@ function AppLayout() {
     trackEvent('page_view')
   }, [location])
 
-  // Timer to enable WhatsApp widget on webinar page after 55 minutes
+  // Timer to enable WhatsApp widget on webinar page after 55 minutes (persisted via localStorage start time)
   useEffect(() => {
     if (location.pathname.startsWith('/webinar')) {
-      const timer = setTimeout(() => {
+      let startTime = localStorage.getItem('webinar_start_time')
+      if (!startTime) {
+        startTime = Date.now().toString()
+        localStorage.setItem('webinar_start_time', startTime)
+      }
+
+      const startTimeMs = parseInt(startTime, 10)
+      const elapsed = Date.now() - startTimeMs
+      const targetTime = 55 * 60 * 1000
+
+      if (elapsed >= targetTime) {
         setWebinarWhatsAppActive(true)
-      }, 55 * 60 * 1000) // 55 minutes
-      return () => clearTimeout(timer)
+      } else {
+        const remaining = targetTime - elapsed
+        const timer = setTimeout(() => {
+          setWebinarWhatsAppActive(true)
+        }, remaining)
+        return () => clearTimeout(timer)
+      }
     } else {
       setWebinarWhatsAppActive(false)
     }

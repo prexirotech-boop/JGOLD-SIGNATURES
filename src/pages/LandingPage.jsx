@@ -232,6 +232,8 @@ export default function LandingPage() {
                 <wistia-player 
                   media-id="n7ski2kp6w" 
                   aspect="0.5625" 
+                  playbar="false"
+                  play-bar-control="false"
                   style={{ width: '100%', height: '100%', display: 'block' }}
                 ></wistia-player>
               </div>

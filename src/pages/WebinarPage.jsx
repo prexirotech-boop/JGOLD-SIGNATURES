@@ -142,31 +142,46 @@ export default function WebinarPage() {
     setEvergreenDate(date.toLocaleDateString('en-US', options))
   }, [])
 
-  // Reveal CTA section after 50 minutes (3,000,000ms)
+  // Persist start time in localStorage and manage reveal timers
   useEffect(() => {
-    const ctaTimer = setTimeout(() => {
-      setShowCTASection(true)
-    }, 50 * 60 * 1000)
+    let startTime = localStorage.getItem('webinar_start_time')
+    if (!startTime) {
+      startTime = Date.now().toString()
+      localStorage.setItem('webinar_start_time', startTime)
+    }
 
-    return () => clearTimeout(ctaTimer)
-  }, [])
+    const startTimeMs = parseInt(startTime, 10)
+    let briefsTimerId = null
+    let ctaTimerId = null
 
-  // Reveal Briefs section after 2 minutes (120,000ms)
-  useEffect(() => {
-    const briefsTimer = setTimeout(() => {
+    // 1. Briefs Reveal Timer: 2 minutes (120,000ms)
+    const elapsedBriefs = Date.now() - startTimeMs
+    if (elapsedBriefs >= 2 * 60 * 1000) {
       setShowBriefsSection(true)
-    }, 2 * 60 * 1000)
+    } else {
+      const remainingBriefs = (2 * 60 * 1000) - elapsedBriefs
+      briefsTimerId = setTimeout(() => {
+        setShowBriefsSection(true)
+      }, remainingBriefs)
+    }
 
-    return () => clearTimeout(briefsTimer)
-  }, [])
-
-  // Activate sales notifications after 50 minutes (3,000,000ms)
-  useEffect(() => {
-    const timer = setTimeout(() => {
+    // 2. CTA & Sales Notification Reveal Timer: 50 minutes (3,000,000ms)
+    const elapsedCta = Date.now() - startTimeMs
+    if (elapsedCta >= 50 * 60 * 1000) {
+      setShowCTASection(true)
       setSalesActive(true)
-    }, 50 * 60 * 1000)
+    } else {
+      const remainingCta = (50 * 60 * 1000) - elapsedCta
+      ctaTimerId = setTimeout(() => {
+        setShowCTASection(true)
+        setSalesActive(true)
+      }, remainingCta)
+    }
 
-    return () => clearTimeout(timer)
+    return () => {
+      if (briefsTimerId) clearTimeout(briefsTimerId)
+      if (ctaTimerId) clearTimeout(ctaTimerId)
+    }
   }, [])
 
   // Handle sales notification popup rotation
@@ -224,6 +239,8 @@ export default function WebinarPage() {
             <wistia-player 
               media-id="7w73000sy2" 
               aspect="1.7777777777777777" 
+              playbar="false"
+              play-bar-control="false"
               style={{ width: '100%', height: '100%', display: 'block' }}
             ></wistia-player>
           </div>
