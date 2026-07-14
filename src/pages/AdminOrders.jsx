@@ -391,14 +391,16 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
           <DSection title="Product">
             <DRow label="Title" value={(order.products?.title || 'Unknown').replace(/\s+slug$/i,'')} />
             <DRow label="Type"  value={order.products?.type} />
-            {order.quantity !== undefined && order.quantity !== null && (
-              <DRow label="Quantity" value={order.quantity} />
+            <DRow label="Quantity" value={order.quantity || 1} />
+            {order.quantity > 1 && order.amount && (
+              <DRow label="Unit Price" value={fmt(Math.round(order.amount / order.quantity))} />
             )}
           </DSection>
 
           <DSection title="Payment">
-            <DRow label="Amount"    value={fmt(order.amount)} accent="#0f172a" />
+            <DRow label="Product Subtotal" value={fmt(order.amount)} accent="#0f172a" />
             {order.delivery_fee > 0 && <DRow label="Delivery Fee" value={fmt(order.delivery_fee)} accent="#db2777" />}
+            <DRow label="Total Amount" value={fmt((order.amount || 0) + (order.delivery_fee || 0))} accent="#059669" />
             <DRow label="Currency"  value={order.currency || 'NGN'} />
             <DRow label="Method"    value={PAY_METHODS[order.payment_method] || order.payment_method} />
             <DRow label="Reference" value={order.reference} mono />
@@ -515,14 +517,25 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function CreateOrderModal({ isOpen, onClose, products, onCreated }) {
-  const [form, setForm] = useState({ customer_email: '', customer_name: '', customer_phone: '', product_id: '', amount: '', reference: '', status: 'paid', payment_method: 'manual' })
+  const [form, setForm] = useState({ customer_email: '', customer_name: '', customer_phone: '', product_id: '', amount: '', reference: '', status: 'paid', payment_method: 'manual', quantity: 1 })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const setF = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const handleProductChange = pid => {
     const p = products.find(x => x.id === pid)
-    setForm(f => ({ ...f, product_id: pid, amount: p ? p.price : f.amount }))
+    const qty = parseInt(form.quantity) || 1
+    setForm(f => ({ ...f, product_id: pid, amount: p ? p.price * qty : f.amount }))
+  }
+
+  const handleQuantityChange = qtyVal => {
+    const qty = parseInt(qtyVal) || 1
+    const p = products.find(x => x.id === form.product_id)
+    setForm(f => ({
+      ...f,
+      quantity: qtyVal,
+      amount: p ? p.price * qty : f.amount
+    }))
   }
 
   const handleSubmit = async e => {
@@ -536,6 +549,7 @@ function CreateOrderModal({ isOpen, onClose, products, onCreated }) {
         customer_name: form.customer_name.trim() || null, customer_phone: form.customer_phone.trim() || null,
         product_id: form.product_id, amount: parseInt(form.amount), currency: 'NGN',
         status: form.status, payment_method: form.payment_method,
+        quantity: parseInt(form.quantity) || 1
       })
       if (insertErr) { setError(insertErr.code === '23505' ? 'This reference already exists.' : insertErr.message); return }
       if (form.status === 'paid') {
@@ -581,12 +595,18 @@ function CreateOrderModal({ isOpen, onClose, products, onCreated }) {
             <div><label style={lbl}>Full Name</label><input type="text" value={form.customer_name} onChange={e => setF('customer_name', e.target.value)} style={inp} placeholder="John Doe" onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} /></div>
           </div>
           <div><label style={lbl}>Phone Number</label><input type="tel" value={form.customer_phone} onChange={e => setF('customer_phone', e.target.value)} style={inp} placeholder="08012345678" onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} /></div>
-          <div>
-            <label style={lbl}>Product *</label>
-            <select value={form.product_id} onChange={e => handleProductChange(e.target.value)} style={{ ...inp, cursor: 'pointer' }} required>
-              <option value="">Select product…</option>
-              {products.map(p => <option key={p.id} value={p.id}>{p.title.replace(/\s+slug$/i,'')} — {fmt(p.price)}</option>)}
-            </select>
+          <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: 14 }}>
+            <div>
+              <label style={lbl}>Product *</label>
+              <select value={form.product_id} onChange={e => handleProductChange(e.target.value)} style={{ ...inp, cursor: 'pointer' }} required>
+                <option value="">Select product…</option>
+                {products.map(p => <option key={p.id} value={p.id}>{p.title.replace(/\s+slug$/i,'')} — {fmt(p.price)}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={lbl}>Quantity *</label>
+              <input type="number" min="1" value={form.quantity} onChange={e => handleQuantityChange(e.target.value)} style={inp} required />
+            </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div><label style={lbl}>Amount (NGN) *</label><input type="number" value={form.amount} onChange={e => setF('amount', e.target.value)} style={inp} placeholder="10000" required min="0" onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} /></div>
@@ -634,11 +654,14 @@ const MobileOrderCard = ({ order, onClick }) => (
     <div style={{ fontSize: 12.5, color: '#64748b', marginBottom: 10 }}>{order.customer_email}</div>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, borderTop: '1px solid #f1f5f9' }}>
       <div>
-        <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 1 }}>{(order.products?.title || 'Unknown').replace(/\s+slug$/i,'').slice(0,28)}</div>
+        <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 1 }}>
+          {(order.products?.title || 'Unknown').replace(/\s+slug$/i,'').slice(0,28)}
+          {order.quantity > 1 && <span style={{ textTransform: 'none', color: '#475569', fontWeight: 700 }}> (×{order.quantity})</span>}
+        </div>
         <div style={{ fontSize: 12, color: '#94a3b8' }}>{fmtD(order.created_at)}</div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 17, fontWeight: 900, color: '#0f172a' }}>{fmt(order.amount)}</span>
+        <span style={{ fontSize: 17, fontWeight: 900, color: '#0f172a' }}>{fmt((order.amount || 0) + (order.delivery_fee || 0))}</span>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
@@ -681,7 +704,7 @@ export default function AdminOrders() {
           amount, currency, status, payment_method, product_id, created_at,
           shipping_name, shipping_phone, shipping_street, shipping_city,
           shipping_state, shipping_country, shipping_postal_code, shipping_notes,
-          shipping_status, tracking_number, delivery_fee, bank_receipt_url,
+          shipping_status, tracking_number, delivery_fee, bank_receipt_url, quantity,
           products ( id, title, type )
         `).order('created_at', { ascending: false }),
         supabase.from('products').select('id, title, price, type'),
@@ -968,10 +991,13 @@ export default function AdminOrders() {
                         <div style={{ fontSize:12, color:'#8792a2' }}>{o.customer_email}</div>
                       </td>
                       <td style={{ padding:'14px 18px', maxWidth:180 }}>
-                        <div style={{ fontWeight:600, color:'#334155', fontSize:13, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{(o.products?.title||'Unknown').replace(/\s+slug$/i,'')}</div>
+                        <div style={{ fontWeight:600, color:'#334155', fontSize:13, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                          {(o.products?.title||'Unknown').replace(/\s+slug$/i,'')}
+                          {o.quantity > 1 && <span style={{ color: '#475569', fontWeight: 700, fontSize: 11.5 }}> (×{o.quantity})</span>}
+                        </div>
                         {o.products?.type && <div style={{ fontSize:10.5, color:'#b0b8c9', marginTop:2, textTransform:'uppercase', fontWeight:700, letterSpacing:0.4 }}>{o.products.type}</div>}
                       </td>
-                      <td style={{ padding:'14px 18px', fontWeight:900, fontSize:14.5, color:'#0f172a', whiteSpace:'nowrap' }}>{fmt(o.amount)}</td>
+                      <td style={{ padding:'14px 18px', fontWeight:900, fontSize:14.5, color:'#0f172a', whiteSpace:'nowrap' }}>{fmt((o.amount || 0) + (o.delivery_fee || 0))}</td>
                       <td style={{ padding:'14px 18px' }}><StatusBadge status={o.status} /></td>
                       <td style={{ padding:'14px 18px', fontSize:12.5, color:'#64748b', whiteSpace:'nowrap' }}>{PAY_METHODS[o.payment_method] || o.payment_method || '—'}</td>
                       <td style={{ padding:'14px 18px', fontSize:12.5, color:'#64748b', whiteSpace:'nowrap' }}>{fmtD(o.created_at)}</td>
