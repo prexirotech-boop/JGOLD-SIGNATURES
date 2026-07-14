@@ -79,7 +79,7 @@ export default function HomePage() {
               We source, process and export premium quality agricultural products from Nigeria to the world with integrity, quality and excellence.
             </p>
 
-            <div style={{ display: 'flex', gap: '18px', marginTop: '8px' }} className="hero-actions">
+            <div style={{ display: 'flex', gap: '14px', marginTop: '8px', flexWrap: 'wrap' }} className="hero-actions">
               <Link to="/products" style={{
                 background: '#0d2e1a',
                 color: '#fff',
@@ -337,7 +337,7 @@ export default function HomePage() {
 
       {/* ─── PREMIUM PRODUCTS CATALOG ─── */}
       <section style={{ padding: '80px 24px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '36px' }} className="section-header-flex">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '36px', flexWrap: 'wrap', gap: '16px' }} className="section-header-flex">
           <div>
             <span style={{ fontSize: '13px', fontWeight: '800', color: '#246a42', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(45deg)' }}>
@@ -663,6 +663,11 @@ export default function HomePage() {
           }
           .hero-actions {
             justify-content: center;
+            flex-direction: column;
+          }
+          .hero-actions a {
+            width: 100%;
+            justify-content: center;
           }
           .hero-image-col {
             justify-content: center !important;
@@ -696,6 +701,10 @@ export default function HomePage() {
           }
           .products-section-title {
             font-size: 24px !important;
+          }
+          .section-header-flex {
+            flex-direction: column !important;
+            align-items: flex-start !important;
           }
         }
         @media (max-width: 480px) {

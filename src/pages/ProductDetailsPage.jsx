@@ -516,14 +516,24 @@ export default function ProductDetailsPage() {
               <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a', width: '160px' }}>Weight</td>
               <td style={{ padding: '12px 0', color: '#475569' }}>{selectedVariant?.weight || product.weight || 'N/A'} kg</td>
             </tr>
-            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-              <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a' }}>Packaging</td>
-              <td style={{ padding: '12px 0', color: '#475569' }}>Export grade bulk sacks / drums</td>
-            </tr>
-            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-              <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a' }}>Origin</td>
-              <td style={{ padding: '12px 0', color: '#475569' }}>Nigeria</td>
-            </tr>
+            {(product.packaging) && (
+              <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a' }}>Packaging</td>
+                <td style={{ padding: '12px 0', color: '#475569' }}>{product.packaging}</td>
+              </tr>
+            )}
+            {(product.origin) && (
+              <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a' }}>Origin</td>
+                <td style={{ padding: '12px 0', color: '#475569' }}>{product.origin}</td>
+              </tr>
+            )}
+            {(product.meta_title) && (
+              <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a' }}>Category</td>
+                <td style={{ padding: '12px 0', color: '#475569' }}>{product.meta_title}</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>
@@ -586,7 +596,7 @@ export default function ProductDetailsPage() {
             </Link>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="related-products-grid">
             {relatedProducts.map(prod => {
               // Resolve related product price & discount
               let displayPrice = prod.price
@@ -706,6 +716,14 @@ export default function ProductDetailsPage() {
           .product-details-grid {
             grid-template-columns: 1fr !important;
             gap: 32px !important;
+          }
+          .related-products-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .related-products-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
         .product-card-hover:hover {

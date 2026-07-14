@@ -758,7 +758,9 @@ function AdminProducts({ featureFlags }) {
     is_free: false,
     stock_quantity: '',
     weight: '',
-    category: ''
+    category: '',
+    packaging: '',
+    origin: ''
   })
 
   const [uploading, setUploading] = useState(false)
@@ -804,7 +806,9 @@ function AdminProducts({ featureFlags }) {
       is_free: false,
       stock_quantity: '',
       weight: '',
-      category: ''
+      category: '',
+      packaging: '',
+      origin: ''
     })
     setShowModal(true)
   }
@@ -828,7 +832,9 @@ function AdminProducts({ featureFlags }) {
       is_free: p.is_free || false,
       stock_quantity: p.stock_quantity !== null && p.stock_quantity !== undefined ? p.stock_quantity : '',
       weight: p.weight !== null && p.weight !== undefined ? p.weight : '',
-      category: p.meta_title || ''
+      category: p.meta_title || '',
+      packaging: p.packaging || '',
+      origin: p.origin || ''
     })
     setShowModal(true)
   }
@@ -1003,7 +1009,9 @@ function AdminProducts({ featureFlags }) {
       is_free: isFree,
       stock_quantity: productForm.type === 'physical' && productForm.stock_quantity !== '' ? parseInt(productForm.stock_quantity, 10) : null,
       weight: productForm.type === 'physical' && productForm.weight !== '' ? parseFloat(productForm.weight) : null,
-      meta_title: productForm.category ? productForm.category.trim() : null
+      meta_title: productForm.category ? productForm.category.trim() : null,
+      packaging: productForm.packaging ? productForm.packaging.trim() : null,
+      origin: productForm.origin ? productForm.origin.trim() : null
     }
 
     try {
@@ -1055,7 +1063,10 @@ function AdminProducts({ featureFlags }) {
         is_published: false,
         is_free: product.is_free || false,
         stock_quantity: product.stock_quantity,
-        weight: product.weight
+        weight: product.weight,
+        meta_title: product.meta_title || null,
+        packaging: product.packaging || null,
+        origin: product.origin || null
       }
 
       const { data, error } = await supabase
@@ -1662,6 +1673,30 @@ function AdminProducts({ featureFlags }) {
                         value={productForm.category || ''} 
                         onChange={e => setProductForm({ ...productForm, category: e.target.value })} 
                         placeholder="e.g. Agricultural Exports, Spices, Nuts..." 
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
+                      />
+                    </div>
+
+                    {/* Packaging Field */}
+                    <div>
+                      <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Packaging</label>
+                      <input 
+                        type="text" 
+                        value={productForm.packaging || ''} 
+                        onChange={e => setProductForm({ ...productForm, packaging: e.target.value })} 
+                        placeholder="e.g. Export grade bulk sacks / drums" 
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
+                      />
+                    </div>
+
+                    {/* Origin Field */}
+                    <div>
+                      <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Origin / Source</label>
+                      <input 
+                        type="text" 
+                        value={productForm.origin || ''} 
+                        onChange={e => setProductForm({ ...productForm, origin: e.target.value })} 
+                        placeholder="e.g. Nigeria, Southwestern Region" 
                         style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
                       />
                     </div>

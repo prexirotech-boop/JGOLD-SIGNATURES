@@ -99,8 +99,8 @@ export default function AccountPage() {
             width: 32px;
             height: 32px;
             border: 3px solid rgba(255, 255, 255, 0.05);
-            border-top-color: #2563eb;
-            border-right-color: #3b82f6;
+            border-top-color: var(--brand-primary, #0d2e1a);
+            border-right-color: #246a42;
             border-radius: 50%;
             animation: spin-loader 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
           }
@@ -108,8 +108,8 @@ export default function AccountPage() {
             to { transform: rotate(360deg); }
           }
           @keyframes logo-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(37,99,235,0.1)); }
-            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 16px rgba(37,99,235,0.4)); }
+            0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(13,46,26,0.1)); }
+            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 16px rgba(13,46,26,0.4)); }
           }
           @keyframes ambient-glow {
             0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
@@ -249,7 +249,7 @@ export default function AccountPage() {
                     className="std-btn std-btn-primary" 
                     onClick={handleUpdateShipping}
                     disabled={updatingShipping}
-                    style={{ background: '#db2777', border: 'none', cursor: 'pointer', padding: '10px 20px', borderRadius: '4px', color: '#fff', fontWeight: 600 }}
+                    style={{ background: 'var(--brand-primary)', border: 'none', cursor: 'pointer', padding: '10px 20px', borderRadius: '4px', color: '#fff', fontWeight: 600 }}
                   >
                     {updatingShipping ? 'Saving...' : 'Update Address'}
                   </button>
