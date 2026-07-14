@@ -718,10 +718,10 @@ export default function ProductDetailsPage() {
             gap: 32px !important;
           }
           .related-products-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-columns: repeat(4, 1fr) !important;
           }
         }
-        @media (max-width: 768px) {
+        @media (max-width: 480px) {
           .related-products-grid {
             grid-template-columns: repeat(2, 1fr) !important;
           }

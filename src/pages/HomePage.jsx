@@ -338,7 +338,7 @@ export default function HomePage() {
       {/* ─── PREMIUM PRODUCTS CATALOG ─── */}
       <section style={{ padding: '80px 24px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '36px', flexWrap: 'wrap', gap: '16px' }} className="section-header-flex">
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: '13px', fontWeight: '800', color: '#246a42', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(45deg)' }}>
                 <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 22 2c0 5-1.5 9-6.1 14.8A7 7 0 0 1 11 20z" />
