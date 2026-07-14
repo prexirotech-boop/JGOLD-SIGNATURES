@@ -1713,8 +1713,9 @@ function AdminProducts({ featureFlags }) {
 
                     {/* Delivery Settings */}
                     <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 14 }}>
-                      <label style={{ display: 'block', fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#3c4257' }}>
-                        🚚 Delivery / Shipping
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#3c4257' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        Delivery / Shipping
                       </label>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                         <input
@@ -1724,8 +1725,9 @@ function AdminProducts({ featureFlags }) {
                           onChange={e => setProductForm({ ...productForm, free_delivery: e.target.checked, delivery_fee: e.target.checked ? '' : productForm.delivery_fee })}
                           style={{ width: 15, height: 15, accentColor: '#16a34a' }}
                         />
-                        <label htmlFor="free_delivery" style={{ fontSize: 13, fontWeight: 700, color: '#16a34a', cursor: 'pointer' }}>
-                          ✅ Free Delivery (no shipping charge)
+                        <label htmlFor="free_delivery" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 700, color: '#16a34a', cursor: 'pointer' }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                          Free Delivery (no shipping charge)
                         </label>
                       </div>
                       {!productForm.free_delivery && (

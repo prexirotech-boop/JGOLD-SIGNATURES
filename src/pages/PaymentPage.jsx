@@ -1002,10 +1002,15 @@ export default function PaymentPage() {
             <span className="calc-value">₦{bumpsTotal.toLocaleString()}</span>
           </div>
         )}
-        <div className="shopify-calc-row" style={{ color: deliveryFee === 0 ? '#16a34a' : 'inherit' }}>
-          <span>Shipping</span>
-          <span className="calc-value" style={{ fontWeight: deliveryFee === 0 ? 700 : 600 }}>
-            {deliveryFee === 0 ? '🚚 Free' : `₦${deliveryFee.toLocaleString()}`}
+        <div className="shopify-calc-row">
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Shipping
+          </span>
+          <span className="calc-value" style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 4 }}>
+            {deliveryFee === 0
+              ? <><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Free</>
+              : `₦${deliveryFee.toLocaleString()}`}
           </span>
         </div>
 

@@ -469,9 +469,16 @@ export default function Header() {
                 <span>Subtotal</span>
                 <span className="cart-total-price">₦{cartSubtotal.toLocaleString()}</span>
               </div>
-              <div className="cart-total-row" style={{ marginBottom: 8, fontSize: 13, color: cartShipping === 0 ? '#16a34a' : '#475569' }}>
-                <span>Shipping</span>
-                <span style={{ fontWeight: 700 }}>{cartShipping === 0 ? 'Free' : `₦${cartShipping.toLocaleString()}`}</span>
+              <div className="cart-total-row" style={{ marginBottom: 8, fontSize: 13, color: '#475569' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  Shipping
+                </span>
+                <span style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 3 }}>
+                  {cartShipping === 0
+                    ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Free</>
+                    : `₦${cartShipping.toLocaleString()}`}
+                </span>
               </div>
               {cartShipping > 0 && (
                 <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: 8, marginBottom: 8 }}>
