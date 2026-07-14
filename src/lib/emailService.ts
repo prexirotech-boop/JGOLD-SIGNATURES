@@ -51,7 +51,7 @@ export async function sendOrderConfirmed(data: {
     // Customer confirmation
     trigger('order_confirmed', data.email, data),
     // Admin notification
-    trigger('admin_new_order', data.email, { ...data, payment_method: data.payment_method || 'paystack' }),
+    trigger('admin_new_order', 'admin', { ...data, payment_method: data.payment_method || 'paystack' }),
   ])
 }
 
@@ -76,7 +76,7 @@ export async function sendBankTransferPending(data: {
 }) {
   await Promise.all([
     trigger('bank_transfer', data.email, data),
-    trigger('admin_new_order', data.email, { ...data, payment_method: 'bank_transfer' }),
+    trigger('admin_new_order', 'admin', { ...data, payment_method: 'bank_transfer' }),
   ])
 }
 

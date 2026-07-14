@@ -17,8 +17,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || ""
 const ADMIN_EMAIL    = Deno.env.get("ADMIN_EMAIL") || "nprecious.official@gmail.com"
-const FROM_EMAIL     = Deno.env.get("FROM_EMAIL") || "MIFAS Store <orders@mifas.ng>"
-const STORE_URL      = Deno.env.get("STORE_URL") || "https://mifas.vercel.app"
+const FROM_EMAIL     = Deno.env.get("FROM_EMAIL") || "MIFAS Store <orders@mifasfarmsexport.com>"
+const STORE_URL      = Deno.env.get("STORE_URL") || "https://mifasfarmsexport.com"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -65,10 +65,10 @@ function baseTemplate(content: string, previewText = "") {
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="center">
-                    <div style="display:inline-block;background:rgba(255,255,255,0.12);border-radius:12px;padding:10px 20px;margin-bottom:16px;">
-                      <span style="color:#ffffff;font-size:18px;font-weight:900;letter-spacing:3px;text-transform:uppercase;">MIFAS</span>
-                    </div>
-                    <p style="color:rgba(255,255,255,0.65);margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Premium Agricultural Exports · Nigeria</p>
+                    <a href="${STORE_URL}" target="_blank" style="text-decoration:none;">
+                      <img src="https://mifasfarmsexport.com/logo.png" alt="MIFAS Agricultural Exports" width="180" style="max-width:220px;height:auto;display:block;margin:0 auto 12px;border:0;" />
+                    </a>
+                    <p style="color:rgba(255,255,255,0.75);margin:0;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;">Premium Agricultural Exports · Nigeria</p>
                   </td>
                 </tr>
               </table>
@@ -561,7 +561,8 @@ serve(async (req: Request) => {
       })
     }
 
-    const recipients = Array.isArray(to) ? to : [to]
+    // Map "admin" to the ADMIN_EMAIL environment variable
+    const recipients = to === "admin" ? [ADMIN_EMAIL] : (Array.isArray(to) ? to : [to])
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
