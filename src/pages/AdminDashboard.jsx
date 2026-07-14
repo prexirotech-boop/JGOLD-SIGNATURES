@@ -762,7 +762,8 @@ function AdminProducts({ featureFlags }) {
     packaging: '',
     origin: '',
     delivery_fee: '',
-    free_delivery: false
+    free_delivery: false,
+    shipping_charge_per_item: false
   })
 
   const [uploading, setUploading] = useState(false)
@@ -812,7 +813,8 @@ function AdminProducts({ featureFlags }) {
       packaging: '',
       origin: '',
       delivery_fee: '',
-      free_delivery: false
+      free_delivery: false,
+      shipping_charge_per_item: false
     })
     setShowModal(true)
   }
@@ -840,7 +842,8 @@ function AdminProducts({ featureFlags }) {
       packaging: p.packaging || '',
       origin: p.origin || '',
       delivery_fee: p.delivery_fee !== null && p.delivery_fee !== undefined ? p.delivery_fee : '',
-      free_delivery: p.free_delivery || false
+      free_delivery: p.free_delivery || false,
+      shipping_charge_per_item: p.shipping_charge_per_item || false
     })
     setShowModal(true)
   }
@@ -1019,7 +1022,8 @@ function AdminProducts({ featureFlags }) {
       packaging: productForm.packaging ? productForm.packaging.trim() : null,
       origin: productForm.origin ? productForm.origin.trim() : null,
       free_delivery: productForm.free_delivery || false,
-      delivery_fee: productForm.free_delivery ? 0 : (productForm.delivery_fee !== '' ? parseFloat(productForm.delivery_fee) : 0)
+      delivery_fee: productForm.free_delivery ? 0 : (productForm.delivery_fee !== '' ? parseFloat(productForm.delivery_fee) : 0),
+      shipping_charge_per_item: productForm.shipping_charge_per_item || false
     }
 
     try {
@@ -1076,7 +1080,8 @@ function AdminProducts({ featureFlags }) {
         packaging: product.packaging || null,
         origin: product.origin || null,
         free_delivery: product.free_delivery || false,
-        delivery_fee: product.delivery_fee || 0
+        delivery_fee: product.delivery_fee || 0,
+        shipping_charge_per_item: product.shipping_charge_per_item || false
       }
 
       const { data, error } = await supabase
@@ -1742,10 +1747,22 @@ function AdminProducts({ featureFlags }) {
                             value={productForm.delivery_fee}
                             onChange={e => setProductForm({ ...productForm, delivery_fee: e.target.value })}
                             placeholder="e.g. 2500"
-                            style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, marginBottom: 12 }}
                           />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                            <input
+                              type="checkbox"
+                              id="shipping_charge_per_item"
+                              checked={productForm.shipping_charge_per_item || false}
+                              onChange={e => setProductForm({ ...productForm, shipping_charge_per_item: e.target.checked })}
+                              style={{ width: 14, height: 14 }}
+                            />
+                            <label htmlFor="shipping_charge_per_item" style={{ fontSize: 12, fontWeight: 600, color: '#475569', cursor: 'pointer' }}>
+                              Multiply delivery fee by quantity (Dynamic charging)
+                            </label>
+                          </div>
                           <p style={{ margin: '4px 0 0', fontSize: 11, color: '#94a3b8' }}>
-                            This fee is added to the product price at checkout and shown in the cart.
+                            Uncheck this to charge a fixed flat rate regardless of quantity purchased.
                           </p>
                         </div>
                       )}

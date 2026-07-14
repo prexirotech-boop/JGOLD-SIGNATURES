@@ -43,6 +43,7 @@ export async function createPendingOrder({
   deliveryFee = 0,
   paymentMethod = 'paystack',
   bankReceiptUrl = null,
+  quantity = 1,
 }) {
   try {
     const cleanEmail = (email || '').trim().toLowerCase()
@@ -72,6 +73,7 @@ export async function createPendingOrder({
         shipping_status: shippingStreet ? 'pending' : null,
         delivery_fee: deliveryFee,
         bank_receipt_url: bankReceiptUrl,
+        quantity: quantity || 1,
       })
       .select('id, product_id')
       .single()

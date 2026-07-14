@@ -391,6 +391,9 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
           <DSection title="Product">
             <DRow label="Title" value={(order.products?.title || 'Unknown').replace(/\s+slug$/i,'')} />
             <DRow label="Type"  value={order.products?.type} />
+            {order.quantity !== undefined && order.quantity !== null && (
+              <DRow label="Quantity" value={order.quantity} />
+            )}
           </DSection>
 
           <DSection title="Payment">

@@ -201,11 +201,23 @@ export default function PaymentPage() {
   const basePrice = product ? product.price : CONFIG.PRICE_NAIRA
   const oldPrice = product?.old_price || null
 
+  const checkoutQuantity = (() => {
+    try {
+      const cart = JSON.parse(localStorage.getItem('ecom_cart')) || []
+      const item = cart.find(x => x.id === product?.id && x.variant_id === (product?.variant_id || null))
+      return item?.quantity || 1
+    } catch (e) {
+      return 1
+    }
+  })()
+
   const discountedPrice = appliedCoupon
     ? appliedCoupon.type === 'percentage'
       ? Math.round(basePrice * (1 - appliedCoupon.value / 100))
       : Math.max(0, basePrice - appliedCoupon.value)
     : basePrice
+
+  const checkoutSubtotal = discountedPrice * checkoutQuantity
 
   const bumpsTotal = selectedBumps.reduce((sum, bump) => {
     const base = bump.offered_product?.price || 0
@@ -218,10 +230,15 @@ export default function PaymentPage() {
     return sum + base
   }, 0)
 
-  // Delivery fee: 0 if product has free_delivery flag OR no fee set
-  const deliveryFee = product?.free_delivery ? 0 : (parseFloat(product?.delivery_fee) || 0)
+  // Delivery fee: 0 if product has free_delivery flag OR no fee set.
+  // Checks shipping_charge_per_item flag to decide if fee multiplies with quantity or stays fixed/flat rate.
+  const deliveryFee = product?.free_delivery 
+    ? 0 
+    : (product?.shipping_charge_per_item 
+        ? (parseFloat(product?.delivery_fee) || 0) * checkoutQuantity 
+        : (parseFloat(product?.delivery_fee) || 0))
 
-  const finalTotal = discountedPrice + bumpsTotal + deliveryFee
+  const finalTotal = checkoutSubtotal + bumpsTotal + deliveryFee
 
   // Load product from database and sync with cart
   useEffect(() => {
@@ -536,7 +553,9 @@ export default function PaymentPage() {
         const { orderId, error: orderErr } = await createPendingOrder({
           reference: ref, name, email, phone,
           productId: product?.id || null,
-          amount: discountedPrice,
+          amount: checkoutSubtotal,
+          deliveryFee: deliveryFee,
+          quantity: checkoutQuantity,
           affiliateCode: affCode,
           affiliateId: affId,
           shippingName: isPhysical ? name : null,
@@ -653,7 +672,7 @@ export default function PaymentPage() {
           product_title: productTitle,
           product_type: product?.type,
           product_image: product?.cover_image,
-          amount: discountedPrice,
+          amount: finalTotal,
         })
         navigate('/success')
         return
@@ -672,7 +691,9 @@ export default function PaymentPage() {
     const { orderId } = await createPendingOrder({
       reference: ref, name, email, phone,
       productId: product?.id || null,
-      amount: discountedPrice,
+      amount: checkoutSubtotal,
+      deliveryFee: deliveryFee,
+      quantity: checkoutQuantity,
       affiliateCode: affCode,
       affiliateId: affId,
       shippingName: isPhysical ? name : null,
@@ -848,7 +869,7 @@ export default function PaymentPage() {
       product_title: productTitle,
       product_type: product?.type,
       product_image: product?.cover_image,
-      amount: discountedPrice,
+      amount: finalTotal,
       payment_method: 'paystack',
       shipping_street: isPhysical ? form.shipping_street : undefined,
       shipping_city: isPhysical ? form.shipping_city : undefined,
@@ -872,17 +893,26 @@ export default function PaymentPage() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 22 4"/></svg>
               </div>
             )}
-            <span className="shopify-thumbnail-badge">1</span>
+            <span className="shopify-thumbnail-badge">{checkoutQuantity}</span>
           </div>
         </div>
         <div className="shopify-product-info">
           <h4 className="shopify-product-title">{productTitle}</h4>
           <span className="shopify-product-desc">
-            {isEbook ? 'Digital Download' : isPhysical ? 'Physical Product — Free Delivery' : 'Digital Download'}
+            {isEbook 
+              ? 'Digital Download' 
+              : isPhysical 
+                ? (product?.free_delivery ? 'Physical Product — Free Delivery' : 'Physical Product') 
+                : 'Digital Download'}
           </span>
+          {checkoutQuantity > 1 && (
+            <span className="shopify-product-desc" style={{ display: 'block', fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+              {checkoutQuantity} × ₦{discountedPrice.toLocaleString()} each
+            </span>
+          )}
         </div>
         <div className="shopify-product-price-col">
-          <span className="shopify-item-price">₦{basePrice.toLocaleString()}</span>
+          <span className="shopify-item-price">₦{checkoutSubtotal.toLocaleString()}</span>
         </div>
       </div>
 
