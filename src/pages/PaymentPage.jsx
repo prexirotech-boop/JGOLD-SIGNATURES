@@ -1155,7 +1155,7 @@ export default function PaymentPage() {
           margin-bottom: 24px;
         }
         .sp-logo {
-          max-height: 34px;
+          max-height: 58px;
           width: auto;
         }
         
@@ -1884,7 +1884,7 @@ export default function PaymentPage() {
           {/* Logo */}
           <div className="sp-logo-wrapper">
             <Link to="/">
-              <img src="/logo.png" alt="Amplified Skills" className="sp-logo" onError={e => { e.currentTarget.style.display = 'none' }} />
+              <img src="/logo.png" alt="MIFAS Agricultural Exports" className="sp-logo" onError={e => { e.currentTarget.style.display = 'none' }} />
             </Link>
           </div>
 
