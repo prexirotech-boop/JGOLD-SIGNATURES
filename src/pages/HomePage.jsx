@@ -4,7 +4,6 @@ import { supabase } from '../lib/supabase'
 
 function getShortDesc(product) {
   if (!product) return ''
-  if (product.short_description) return product.short_description
   const desc = product.description || ''
   if (!desc) return ''
   if (desc.includes('<')) {
@@ -23,9 +22,8 @@ export default function HomePage() {
       try {
         const { data } = await supabase
           .from('products')
-          .select('id, title, slug, cover_image, price, old_price, short_description, description, variations, type')
+          .select('id, title, slug, cover_image, price, old_price, description, variations, type')
           .eq('is_published', true)
-          .eq('type', 'physical')
           .order('created_at', { ascending: false })
           .limit(8)
         if (data) setFeaturedProducts(data)
@@ -386,7 +384,7 @@ export default function HomePage() {
             <p style={{ margin: 0 }}>Products coming soon. Check back shortly!</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="products-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }} className="products-grid">
             {featuredProducts.map(prod => {
               let displayPrice = prod.price
               let displayOldPrice = prod.old_price
@@ -629,7 +627,7 @@ export default function HomePage() {
         @media (max-width: 1200px) {
           .products-grid {
             grid-template-columns: repeat(3, 1fr) !important;
-            gap: 20px !important;
+            gap: 16px !important;
           }
           .stats-grid-new {
             grid-template-columns: repeat(3, 1fr) !important;
@@ -702,7 +700,8 @@ export default function HomePage() {
         }
         @media (max-width: 480px) {
           .products-grid {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
           }
           .stats-grid-new {
             grid-template-columns: 1fr !important;

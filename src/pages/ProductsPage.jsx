@@ -167,43 +167,14 @@ export default function ProductsPage() {
           <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
             High-quality physical products shipped directly to your door. Secure payment gateway and fast delivery.
           </p>
-          
-          {/* Stats Badges */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '24px',
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: '60px',
-            padding: '12px 28px',
-            alignSelf: 'center',
-            marginTop: '16px',
-            flexWrap: 'wrap',
-            justifyContent: 'center'
-          }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span style={{ fontSize: '16px', fontWeight: 900, color: '#ffffff' }}>15,000+</span>
-              <span style={{ fontSize: '10px', color: '#a3e2bb', fontWeight: 600 }}>Happy Customers</span>
-            </div>
-            <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.15)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span style={{ fontSize: '16px', fontWeight: 900, color: '#ffffff' }}>4.9★</span>
-              <span style={{ fontSize: '10px', color: '#a3e2bb', fontWeight: 600 }}>Customer Rating</span>
-            </div>
-            <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.15)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span style={{ fontSize: '16px', fontWeight: 900, color: '#ffffff' }}>24/7</span>
-              <span style={{ fontSize: '10px', color: '#a3e2bb', fontWeight: 600 }}>Customer Support</span>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* ─── FILTER BAR ─── */}
       <section style={{ borderBottom: '1px solid #e2e8f0', background: '#ffffff', position: 'sticky', top: 0, zIndex: 90 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px', gap: '12px' }}>
+          {/* Scrollable filter tabs on mobile */}
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none', flexShrink: 1, minWidth: 0 }} className="filter-tabs-scroll">
             {[
               { label: 'All Products', value: 'all' },
               { label: 'Bitter Kola', value: 'bitter-kola' },
@@ -215,7 +186,6 @@ export default function ProductsPage() {
                 key={cat.value}
                 onClick={() => {
                   setCategoryFilter(cat.value)
-                  // reset URL params to avoid conflicts
                   navigate('/products')
                 }}
                 style={{
@@ -225,6 +195,8 @@ export default function ProductsPage() {
                   fontSize: '12.5px',
                   fontWeight: 600,
                   cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
                   background: (categoryQueryParam || categoryFilter) === cat.value ? 'rgba(18,60,36,0.06)' : 'transparent',
                   color: (categoryQueryParam || categoryFilter) === cat.value ? 'var(--brand-primary)' : '#64748b',
                   transition: 'all 0.15s ease'
@@ -240,7 +212,7 @@ export default function ProductsPage() {
               </button>
             ))}
           </div>
-          <div style={{ fontSize: '12.5px', color: '#94a3b8', fontWeight: 600 }}>
+          <div style={{ fontSize: '12.5px', color: '#94a3b8', fontWeight: 600, flexShrink: 0 }}>
             {loading ? 'Counting...' : `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`}
           </div>
         </div>
@@ -265,7 +237,7 @@ export default function ProductsPage() {
             <p style={{ margin: 0, fontSize: '13.5px' }}>Check back soon for new organic harvests!</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="products-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }} className="products-grid">
             {filtered.map(product => {
               const isWishlisted = wishlistedIds.includes(product.id)
               const ratingInfo = reviewsMap[product.id] || null
@@ -428,6 +400,9 @@ export default function ProductsPage() {
         .product-card-hover:hover .card-btn-hover {
           background-color: var(--brand-hover) !important;
         }
+        .filter-tabs-scroll::-webkit-scrollbar {
+          display: none;
+        }
         @media (max-width: 1024px) {
           .products-grid {
             grid-template-columns: repeat(3, 1fr) !important;
@@ -446,7 +421,7 @@ export default function ProductsPage() {
         }
         @media (max-width: 480px) {
           .products-grid {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: repeat(2, 1fr) !important;
           }
           .bottom-banner-flex {
             flex-direction: column;
