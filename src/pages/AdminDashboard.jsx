@@ -992,7 +992,7 @@ function AdminProducts({ featureFlags }) {
       description: productForm.description.trim(),
       price: isFree ? 0 : (parseInt(productForm.price) || 0),
       old_price: isFree ? null : (productForm.compare_price ? parseInt(productForm.compare_price) : null),
-      cover_image: productForm.cover_image.trim() || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800',
+      cover_image: (productForm.cover_image || '').trim() || (productForm.images && productForm.images[0]) || '/logo.png',
       images: productForm.images || [],
       variations: isVariable ? (productForm.variations || { attributes: [], variants: [] }) : { attributes: [], variants: [] },
       features: productForm.features.split('\n').map(f => f.trim()).filter(Boolean),
@@ -1031,6 +1031,76 @@ function AdminProducts({ featureFlags }) {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handleDuplicateProduct = async (product) => {
+    if (!window.confirm(`Are you sure you want to duplicate "${product.title}"?`)) return
+    try {
+      const uniqueSlug = `${product.slug}-copy-${Date.now().toString().slice(-4)}`
+      const payload = {
+        title: `${product.title} (Copy)`,
+        slug: uniqueSlug,
+        type: product.type,
+        description: product.description || '',
+        price: product.price || 0,
+        old_price: product.old_price || null,
+        cover_image: product.cover_image || '',
+        images: product.images || [],
+        variations: product.variations || { attributes: [], variants: [] },
+        features: product.features || [],
+        is_published: false,
+        is_free: product.is_free || false,
+        stock_quantity: product.stock_quantity,
+        weight: product.weight
+      }
+
+      const { data, error } = await supabase
+        .from('products')
+        .insert(payload)
+        .select()
+        .single()
+
+      if (error) throw error
+      setProducts([data, ...products])
+      alert('Product duplicated successfully as Draft!')
+    } catch (err) {
+      alert(`Duplication failed: ${err.message}`)
+    }
+  }
+
+  const [draggedIndex, setDraggedIndex] = useState(null)
+
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/html', e.target.parentNode)
+  }
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === index) return
+
+    const updatedImages = [...productForm.images]
+    const draggedItem = updatedImages[draggedIndex]
+    updatedImages.splice(draggedIndex, 1)
+    updatedImages.splice(index, 0, draggedItem)
+
+    setDraggedIndex(index)
+    setProductForm({
+      ...productForm,
+      images: updatedImages
+    })
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+  }
+
+  const handleSetFeaturedImage = (url) => {
+    setProductForm({
+      ...productForm,
+      cover_image: url
+    })
   }
 
   const filteredProducts = products.filter(p => {
@@ -1174,6 +1244,12 @@ function AdminProducts({ featureFlags }) {
                     </button>
                   )}
                   <button 
+                    onClick={() => handleDuplicateProduct(p)}
+                    style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
+                  >
+                    Duplicate
+                  </button>
+                  <button 
                     onClick={() => handleOpenEdit(p)}
                     style={{ background: 'none', border: 'none', color: '#4f566b', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
                   >
@@ -1233,6 +1309,12 @@ function AdminProducts({ featureFlags }) {
                               Curriculum
                             </button>
                           )}
+                          <button 
+                            onClick={() => handleDuplicateProduct(p)}
+                            style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
+                          >
+                            Duplicate
+                          </button>
                           <button 
                             onClick={() => handleOpenEdit(p)}
                             style={{ background: 'none', border: 'none', color: '#4f566b', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
@@ -1453,15 +1535,23 @@ function AdminProducts({ featureFlags }) {
                   {productForm.images && productForm.images.length > 0 && (
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 12 }}>
                       {productForm.images.map((url, i) => (
-                        <div key={i} style={{
-                          width: 60,
-                          height: 60,
-                          borderRadius: 4,
-                          overflow: 'hidden',
-                          position: 'relative',
-                          border: productForm.cover_image === url ? '2.5px solid #10b981' : '1px solid #cbd5e1',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
-                        }}>
+                        <div 
+                          key={i} 
+                          draggable={true}
+                          onDragStart={(e) => handleDragStart(e, i)}
+                          onDragOver={(e) => handleDragOver(e, i)}
+                          onDragEnd={handleDragEnd}
+                          style={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 4,
+                            overflow: 'hidden',
+                            position: 'relative',
+                            border: productForm.cover_image === url ? '2.5px solid #10b981' : '1px solid #cbd5e1',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                            cursor: 'grab'
+                          }}
+                        >
                           <img src={url} alt="Uploaded thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           <button
                             type="button"

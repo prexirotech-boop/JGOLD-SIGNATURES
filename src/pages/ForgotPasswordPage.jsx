@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
     <div className="auth-container-root">
       <div className="auth-card-wrapper">
         <Link to="/" className="auth-brand-logo">
-          <img src="/logo.png" alt="Amplified Skills" />
+          <img src="/logo.png" alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} />
         </Link>
         
         <div className="auth-card">

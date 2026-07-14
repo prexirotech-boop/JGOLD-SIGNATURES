@@ -106,10 +106,10 @@ export default function LoginPage() {
         
         <div className="auth-header">
           <Link to="/" className="auth-brand-logo">
-            <img src="/logo.png" alt="Amplified Skills" onError={e => { e.currentTarget.style.display = 'none' }} />
+            <img src="/logo.png" alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} onError={e => { e.currentTarget.style.display = 'none' }} />
           </Link>
           <h2>Welcome back</h2>
-          <p>Sign in to your Amplified Skills account to continue.</p>
+          <p>Sign in to your {localStorage.getItem('brandName') || 'MIFAS FARMS'} account to continue.</p>
         </div>
 
         <div className="auth-card">
