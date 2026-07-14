@@ -371,10 +371,10 @@ export default function PaymentPage() {
               email: user.email || '',
               name: data.full_name || f.name,
               phone: data.shipping_phone || f.phone || '',
-              shipping_street: data.shipping_street || '',
-              shipping_city: data.shipping_city || '',
-              shipping_state: data.shipping_state || '',
-              shipping_postal_code: data.shipping_postal_code || '',
+              shipping_street: data.shipping_street || f.shipping_street || '',
+              shipping_city: data.shipping_city || f.shipping_city || '',
+              shipping_state: data.shipping_state || f.shipping_state || '',
+              shipping_postal_code: data.shipping_postal_code || f.shipping_postal_code || '',
             }))
           }
         } catch (e) {
