@@ -121,6 +121,11 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Close cart drawer on page navigation
+  useEffect(() => {
+    setShowCartDrawer(false)
+  }, [location])
+
   // Filter products based on search query
   useEffect(() => {
     if (!searchQuery.trim()) {
