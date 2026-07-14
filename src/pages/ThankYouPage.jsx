@@ -44,7 +44,15 @@ export default function ThankYouPage() {
             Thank you, {firstName}!
           </h1>
           <p style={{ fontSize: '16px', color: '#475569', maxWidth: '520px', margin: '0 auto', lineHeight: '1.6' }}>
-            Your order has been received and is now being processed. A confirmation email has been sent to <strong style={{ color: '#0f172a' }}>{customer?.email}</strong>.
+            {customer?.payment_method === 'bank_transfer' ? (
+              <>
+                Your order has been received and is <strong>pending verification</strong> of your bank transfer receipt. We will process your order as soon as your payment is verified.
+              </>
+            ) : (
+              <>
+                Your order has been received and is now being processed. A confirmation email has been sent to <strong style={{ color: '#0f172a' }}>{customer?.email}</strong>.
+              </>
+            )}
           </p>
         </div>
 
@@ -166,10 +174,15 @@ export default function ThankYouPage() {
                       <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
                       <line x1="1" y1="10" x2="23" y2="10" />
                     </svg>
-                    Paystack (Card/Transfer)
+                    {customer?.payment_method === 'bank_transfer' ? 'Direct Bank Transfer' : 'Paystack (Card/Transfer)'}
                   </p>
                   <p style={{ fontSize: '12.5px', color: '#64748b', marginTop: '4px' }}>
-                    Transaction Status: <span style={{ color: '#16a34a', fontWeight: 600 }}>PAID</span>
+                    Transaction Status:{' '}
+                    {customer?.payment_method === 'bank_transfer' ? (
+                      <span style={{ color: '#f59e0b', fontWeight: 600 }}>PENDING REVIEW</span>
+                    ) : (
+                      <span style={{ color: '#16a34a', fontWeight: 600 }}>PAID</span>
+                    )}
                   </p>
                 </div>
 

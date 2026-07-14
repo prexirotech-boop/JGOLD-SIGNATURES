@@ -1,196 +1,108 @@
-import React from 'react';
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function PrivacyPage() {
-
   return (
-    <div className="policy-page-layout">
-      <div className="policy-container">
+    <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
+      
+      {/* Page Hero Header */}
+      <section style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>
+            Data Protection
+          </span>
+          <h1 style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }}>
+            Privacy Policy
+          </h1>
+          <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
+            How we collect, secure, and handle buyer account credentials, shipping details, and transaction data at MIFAS FARMS.
+          </p>
+        </div>
+      </section>
 
-        {/* Title Header */}
-        <header className="policy-header">
-          <span className="policy-badge">Data Privacy</span>
-          <h1 className="policy-title">Privacy Policy</h1>
-          <p className="policy-meta">Last updated: {new Date().getFullYear()}</p>
-        </header>
-
-        {/* Content Details */}
-        <div className="policy-card">
-          <p className="policy-intro">
-            This Privacy Policy document describes how <strong>Amplified Skills</strong> ("the Platform," "we," "us," or "our") collects, uses, records, and protects your personal information when you access our website, enroll in our training programs, or buy our digital blueprints.
+      {/* Content Details */}
+      <section style={{ padding: '80px 24px', maxWidth: '850px', margin: '0 auto' }}>
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px',
+          padding: '40px',
+          boxShadow: '0 4px 12px rgba(15, 23, 42, 0.03)'
+        }} className="policy-card">
+          <p style={{ fontSize: '16px', lineHeight: '1.75', color: '#475569', marginTop: 0, marginBottom: '32px' }}>
+            At <strong>MIFAS FARMS LTD</strong>, we value the trust of our clients, farmers, and website users. This Privacy Policy details our commitment to securing information collected through our retail checkout, order tracking panels, and export quotation forms.
           </p>
 
-          <section className="policy-section">
-            <h2 className="section-title">1. Information We Collect</h2>
-            <p>
-              When you enroll in our courses, download blueprints, or sign up for account access, we collect personal information that you provide to us voluntarily. This includes:
-            </p>
-            <ul className="policy-list">
-              <li><strong>Personal Identifiers:</strong> Your full name, email address, and phone number.</li>
-              <li><strong>Purchase Records:</strong> Details of the blueprints or courses you have purchased and transaction reference IDs.</li>
-            </ul>
-            <p>
-              We collect this information purely for the purposes of order fulfillment, student account generation, dashboard access authentication, and providing customer support.
-            </p>
-          </section>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>1. Information We Collect</h2>
+              <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#475569', marginBottom: '12px' }}>
+                When ordering commodities or requesting FOB quotations, we collect standard identifiers required to clear shipping custom documents and deliver shipments:
+              </p>
+              <ul style={{ paddingLeft: '20px', margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', color: '#475569', fontSize: '14.5px' }}>
+                <li><strong>Contact details:</strong> Full name, telephone number, business email address.</li>
+                <li><strong>Logistics details:</strong> Physical shipping street address, destination port details, country, and customs notes.</li>
+                <li><strong>Documents upload:</strong> Bank payment screenshots or receipt files provided during direct bank transfers.</li>
+              </ul>
+            </div>
 
-          <section className="policy-section">
-            <h2 className="section-title">2. How We Use Your Information</h2>
-            <p>
-              We use the collected information for the following specific purposes:
-            </p>
-            <ul className="policy-list">
-              <li>Delivering automated registration and product access details to your email.</li>
-              <li>Setting up and authenticating your student portal account.</li>
-              <li>Allowing our support agents to verify your purchase history if you lose access links.</li>
-              <li>Sending periodic updates, billing notifications, and promotional offers (which you can opt-out of at any time).</li>
-            </ul>
-          </section>
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>2. How We Use Collected Data</h2>
+              <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#475569', margin: 0 }}>
+                Collected data is used strictly for processing order deliveries, generating tax invoices and receipts, coordinating logistics clearances with the Nigerian Agricultural Quarantine Service (NAQS), and notifying buyers of shipment tracking milestones. We do not sell or lease your records to third-party marketing companies.
+              </p>
+            </div>
 
-          <section className="policy-section">
-            <h2 className="section-title">3. Payment & Data Security</h2>
-            <p>
-              All customer payments are processed securely through our verified payment gateway partner, <strong>Paystack</strong>. 
-            </p>
-            <p>
-              We do not collect, process, or store your credit/debit card numbers, bank pin details, or USSD codes on our own servers. Paystack handles all payment card industry (PCI) compliance protocols.
-            </p>
-          </section>
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>3. Secure Payments Gateways</h2>
+              <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#475569', margin: 0 }}>
+                Local credit card and instant bank payments are processed securely by <strong>Paystack Gateway</strong>. MIFAS FARMS does not store or process card numbers, bank PINs, or routing codes on our servers. Direct bank transfer receipts uploaded during manual checkout are stored in secure, private folders on Supabase Storage.
+              </p>
+            </div>
 
-          <section className="policy-section">
-            <h2 className="section-title">4. Third-Party Sharing & Cookies</h2>
-            <p>
-              We respect your privacy. We do not sell, rent, trade, or share your personal information with third-party marketers. 
-            </p>
-            <p>
-              We use basic cookies and tracking technologies (like Facebook Pixel) to analyze traffic, manage session persistence, remember cart selections on browser refresh, and optimize your navigation experience.
-            </p>
-          </section>
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>4. Cookies & Web Analytics</h2>
+              <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#475569', margin: 0 }}>
+                We use secure browser cookies to manage checkout cart persistence across reloads and analyze site usage trends. This helps us ensure that your order details survive browser crashes and checkout is seamless.
+              </p>
+            </div>
 
-          <section className="policy-section">
-            <h2 className="section-title">5. Social Media Disclaimer</h2>
-            <p>
-              This website is not affiliated with, endorsed by, or associated with Meta Platforms, Inc. or Facebook Inc. in any way. "Facebook" and "Meta" are registered trademarks of their respective owners.
-            </p>
-          </section>
+          </div>
         </div>
+      </section>
 
-      </div>
+      {/* Call to action */}
+      <section style={{ padding: '60px 24px', background: '#f8fafc', textAlign: 'center', borderTop: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '24px', color: '#0d2e1a', fontWeight: 800, margin: 0 }}>Need your records removed?</h2>
+          <p style={{ fontSize: '14.5px', color: '#64748b', margin: 0 }}>
+            If you wish to terminate your buyer account or have your delivery history archived, reach out to our administration helpdesk.
+          </p>
+          <Link to="/contact" style={{
+            background: 'var(--brand-primary)',
+            color: '#ffffff',
+            padding: '11px 24px',
+            borderRadius: '6px',
+            fontWeight: 700,
+            textDecoration: 'none',
+            fontSize: '13.5px',
+            transition: 'background-color 0.2s'
+          }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
+             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}>
+            Contact Support
+          </Link>
+        </div>
+      </section>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        .policy-page-layout {
-          background-color: #f8fafc;
-          min-height: 100vh;
-          color: #334155;
-          font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
-          padding: 80px 20px;
-          box-sizing: border-box;
-        }
-        .policy-container {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        .back-home-btn {
-          background: none;
-          border: none;
-          color: #64748b;
-          font-size: 14px;
-          fontWeight: 600;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 0;
-          margin-bottom: 32px;
-          transition: color 0.15s ease;
-        }
-        .back-home-btn:hover {
-          color: #2563eb;
-        }
-        .policy-header {
-          margin-bottom: 40px;
-        }
-        .policy-badge {
-          display: inline-block;
-          background: rgba(37, 99, 235, 0.06);
-          color: #2563eb;
-          border: 1px solid rgba(37, 99, 235, 0.15);
-          padding: 5px 12px;
-          border-radius: 50px;
-          font-size: 11px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-bottom: 12px;
-        }
-        .policy-title {
-          font-size: 38px;
-          font-weight: 850;
-          color: #0f172a;
-          margin: 0 0 8px;
-          letter-spacing: -0.8px;
-        }
-        .policy-meta {
-          font-size: 13.5px;
-          color: #64748b;
-          margin: 0;
-        }
-        .policy-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 40px;
-          box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04);
-        }
-        .policy-intro {
-          font-size: 16px;
-          line-height: 1.7;
-          color: #475569;
-          margin-top: 0;
-          margin-bottom: 32px;
-        }
-        .policy-section {
-          margin-bottom: 32px;
-          border-top: 1px solid #f1f5f9;
-          padding-top: 28px;
-        }
-        .policy-section:last-of-type {
-          margin-bottom: 0;
-        }
-        .section-title {
-          font-size: 20px;
-          font-weight: 800;
-          color: #0f172a;
-          margin: 0 0 16px;
-        }
-        .policy-section p {
-          font-size: 15px;
-          line-height: 1.7;
-          color: #475569;
-          margin: 0 0 16px;
-        }
-        .policy-section p:last-child {
-          margin-bottom: 0;
-        }
-        .policy-list {
-          list-style: disc;
-          padding-left: 20px;
-          margin-bottom: 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          font-size: 15px;
-          line-height: 1.6;
-          color: #475569;
-        }
+      <style>{`
         @media (max-width: 600px) {
           .policy-card {
-            padding: 24px;
-          }
-          .policy-title {
-            font-size: 30px;
+            padding: 24px !important;
           }
         }
-      `}} />
+      `}</style>
+
     </div>
-  );
+  )
 }

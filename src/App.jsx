@@ -184,7 +184,7 @@ function AppLayout() {
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
-      <WhatsAppWidget />
+      {!location.pathname.startsWith('/admin') && <WhatsAppWidget />}
     </div>
   )
 }

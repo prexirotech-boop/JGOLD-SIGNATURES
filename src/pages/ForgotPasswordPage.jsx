@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
           text-decoration: none; margin-bottom: 24px;
         }
         .auth-brand-logo img {
-          height: 48px;
+          height: 80px;
           width: auto;
           object-fit: contain;
         }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 export default function FAQPage() {
@@ -25,42 +25,32 @@ export default function FAQPage() {
   const faqData = [
     {
       category: 'General',
-      question: 'What is Amplified Skills and how does it work?',
-      answer: 'Amplified Skills is Precious\' personal solo creator training platform where you can purchase premium blueprints, worksheets, and courses designed to level up your engineering and digital sales capabilities. All materials are instantly unlocked in your student dashboard upon purchase.'
+      question: 'What is MIFAS FARMS and how does it work?',
+      answer: 'MIFAS FARMS LTD is a premium Nigerian agribusiness and export enterprise. We source organic crops (Bitter Kola, Kolanuts, Palm Oil, Shea Butter) directly from farming cooperatives and distribute them to local retail buyers and global wholesale importers.'
     },
     {
       category: 'Payments',
       question: 'What payment methods do you support?',
-      answer: 'We process all payments securely via Paystack. You can pay via credit/debit card (Visa, Mastercard, Verve), bank transfer, or USSD code depending on your bank. All digital delivery occurs instantly upon Paystack payment confirmation.'
+      answer: 'We support credit/debit card payments, USSD, and instant transfers through Secure Paystack. We also offer direct bank transfers; you just need to upload a screenshot of your transfer receipt during checkout for our manual admin review.'
     },
     {
-      category: 'Courses',
-      question: 'How do I access my course lessons and blueprints?',
-      answer: 'After a successful payment, simply log into the platform using the email address you purchased with. Your enrolled courses will be listed under the "My Learning" tab on your student dashboard. Click "Start Course" or "Continue Learning" to enter the player.'
+      category: 'Products',
+      question: 'Where are your commodities sourced from?',
+      answer: 'All agricultural products are sourced directly from partner farms in agricultural regions in Nigeria. They are sorted, dried, and packaged at our Enugu facility to prevent contamination and safeguard standard quality.'
     },
     {
-      category: 'Certificates',
-      question: 'How do I earn and verify my completion certificate?',
-      answer: 'When your lesson progress reaches 100% (marking all lessons, quizzes, and modules as completed), the system automatically issues a unique, signed certificate of completion. You can view, download a PDF version, or retrieve a public verification link directly from the "Certificates" tab in your dashboard.'
+      category: 'Shipping',
+      question: 'Do you offer international container shipping?',
+      answer: 'Yes! We export globally in container load batches under FOB (Free On Board) or CIF (Cost, Insurance, and Freight) shipping terms, coordinating with leading cargo ocean liners.'
     },
     {
-      category: 'Q&A',
-      question: 'Can I ask questions if I get stuck on a curriculum lesson?',
-      answer: 'Yes! Inside the course player, there is a dedicated "Q&A" sidebar. You can ask questions directly under any lesson. Precious (the instructor) will review student questions and reply directly in the thread. You will receive an in-app notification when an answer is posted.'
-    },
-    {
-      category: 'Coupons',
-      question: 'How do I apply a discount coupon code?',
-      answer: 'During the checkout/payment page, enter your promo coupon code (e.g. AMPLIFIED50) in the promo box and click apply. The checkout price will update dynamically to reflect the discount before you initiate the Paystack payment portal.'
-    },
-    {
-      category: 'Refunds',
-      question: 'What is your refund policy?',
-      answer: 'Since digital courses, ebooks, and blueprints are intangible items delivered instantly upon payment confirmation, all sales are final. Please review our Refund Policy page for more details, or contact support if you encounter technical access issues.'
+      category: 'Quality',
+      question: 'Do you provide phytosanitary and lab certificates?',
+      answer: 'Absolutely. Every wholesale shipment includes a Phytosanitary Certificate issued by the Nigerian Agricultural Quarantine Service (NAQS), plus moisture and contamination test reports from accredited laboratory analysts.'
     }
   ]
 
-  const categories = ['All', 'General', 'Payments', 'Courses', 'Certificates', 'Q&A', 'Refunds']
+  const categories = ['All', 'General', 'Payments', 'Products', 'Shipping', 'Quality']
 
   const filteredFaqs = faqData.filter(faq => {
     const matchesSearch = 
@@ -79,215 +69,150 @@ export default function FAQPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#334155', fontFamily: "'Outfit', 'Inter', sans-serif", padding: '80px 20px 80px' }}>
-      <div style={{ maxWidth: 840, margin: '0 auto' }}>
-        
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 50 }}>
-          <span style={{ 
-            background: 'rgba(37, 99, 235, 0.06)', 
-            color: '#2563eb', 
-            padding: '6px 16px', 
-            borderRadius: 50, 
-            fontSize: 12, 
-            fontWeight: 700, 
-            letterSpacing: '1px', 
-            textTransform: 'uppercase', 
-            display: 'inline-block',
-            marginBottom: 20,
-            border: '1px solid rgba(37, 99, 235, 0.15)'
-          }}>
-            Help Center & FAQs
+    <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
+      
+      {/* Page Hero Header */}
+      <section style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>
+            Help Center
           </span>
-          <h1 style={{ fontSize: 'clamp(2.2rem, 5vw, 3rem)', fontWeight: 850, letterSpacing: '-1.2px', color: '#0f172a', margin: '0 0 16px', lineHeight: 1.2 }}>
-            Frequently Asked <span style={{ color: '#2563eb' }}>Questions</span>
+          <h1 style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }}>
+            Frequently Asked Questions
           </h1>
-          <p style={{ fontSize: 16, color: '#64748b', maxWidth: 550, margin: '0 auto 32px', lineHeight: 1.6 }}>
-            Quick solutions, onboarding guides, and common answers regarding student enrollment and course playback.
+          <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
+            Find quick answers about commodity standards, billing methods, quarantine clearance, and shipping options.
           </p>
+        </div>
+      </section>
 
-          {/* Search bar */}
-          <div style={{ position: 'relative', maxWidth: 500, margin: '0 auto 30px' }}>
-            <input 
-              type="text"
-              placeholder="Search help topics..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                width: '100%',
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 12,
-                padding: '14px 16px',
-                fontSize: 14.5,
-                color: '#0f172a',
-                outline: 'none',
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
-              }}
-              onFocus={e => {
-                e.target.style.borderColor = '#2563eb'
-                e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.12)'
-              }}
-              onBlur={e => {
-                e.target.style.borderColor = '#e2e8f0'
-                e.target.style.boxShadow = 'none'
-              }}
-            />
-          </div>
+      {/* Filter and Search Bar */}
+      <section style={{ padding: '48px 24px 24px', maxWidth: '840px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          {/* Search Input */}
+          <input 
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search FAQs (e.g. moisture, shipping, paystack)..."
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              fontSize: '15px',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
 
-          {/* Category tabs */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {/* Categories Tab Row */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }} className="categories-row">
             {categories.map(cat => (
               <button
                 key={cat}
-                onClick={() => {
-                  setActiveCategory(cat)
-                  setOpenIndex(null)
-                }}
+                onClick={() => setActiveCategory(cat)}
                 style={{
-                  background: activeCategory === cat ? '#2563eb' : '#ffffff',
-                  border: activeCategory === cat ? '1px solid #2563eb' : '1px solid #e2e8f0',
-                  padding: '7px 16px',
-                  borderRadius: 50,
-                  fontSize: 12.5,
-                  fontWeight: activeCategory === cat ? '700' : '600',
+                  padding: '8px 16px',
+                  borderRadius: '50px',
+                  border: '1.5px solid',
+                  borderColor: activeCategory === cat ? 'var(--brand-primary)' : '#cbd5e1',
+                  background: activeCategory === cat ? 'var(--brand-primary)' : 'transparent',
                   color: activeCategory === cat ? '#ffffff' : '#64748b',
-                  transition: 'all 0.2s ease',
+                  fontSize: '13px',
+                  fontWeight: 700,
                   cursor: 'pointer',
-                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.02)'
-                }}
-                onMouseEnter={e => {
-                  if (activeCategory !== cat) {
-                    e.target.style.borderColor = '#cbd5e1'
-                    e.target.style.color = '#0f172a'
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (activeCategory !== cat) {
-                    e.target.style.borderColor = '#e2e8f0'
-                    e.target.style.color = '#64748b'
-                  }
+                  transition: 'all 0.15s'
                 }}
               >
                 {cat}
               </button>
             ))}
           </div>
-        </div>
 
-        {/* FAQ Accordion List */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 60 }}>
-          {filteredFaqs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '48px 20px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-              <span style={{ fontSize: 32, display: 'block', marginBottom: 12 }}>🔍</span>
-              <p style={{ color: '#64748b', margin: 0 }}>No help items match your search. Try different keywords.</p>
-            </div>
-          ) : (
-            filteredFaqs.map((faq, idx) => {
-              const isOpen = openIndex === idx
-              return (
-                <div 
-                  key={idx}
+        </div>
+      </section>
+
+      {/* FAQs List Accordion */}
+      <section style={{ padding: '24px 24px 80px', maxWidth: '840px', margin: '0 auto' }}>
+        {filteredFaqs.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {filteredFaqs.map((faq, idx) => (
+              <div 
+                key={idx} 
+                style={{
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  background: '#f8fafc',
+                  overflow: 'hidden'
+                }}
+              >
+                <button
+                  onClick={() => toggleAccordion(idx)}
                   style={{
-                    background: '#ffffff',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                    transition: 'all 0.25s ease',
-                    boxShadow: isOpen ? '0 4px 20px rgba(0, 0, 0, 0.04)' : '0 1px 3px rgba(0, 0, 0, 0.02)'
+                    width: '100%',
+                    padding: '20px 24px',
+                    background: 'transparent',
+                    border: 'none',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    textAlign: 'left'
                   }}
                 >
-                  <button
-                    onClick={() => toggleAccordion(idx)}
-                    style={{
-                      width: '100%',
-                      padding: '20px 24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      textAlign: 'left',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: '#0f172a',
-                      fontSize: 16,
-                      fontWeight: 700,
-                      gap: 16
-                    }}
-                  >
-                    <span>{faq.question}</span>
-                    <span style={{
-                      color: isOpen ? '#2563eb' : '#64748b',
-                      fontSize: 20,
-                      fontWeight: '300',
-                      transition: 'transform 0.25s ease',
-                      transform: isOpen ? 'rotate(45deg)' : 'none',
-                      display: 'inline-block',
-                      lineHeight: 1
-                    }}>
-                      +
-                    </span>
-                  </button>
-
+                  <strong style={{ fontSize: '16px', color: '#0d2e1a' }}>{faq.question}</strong>
+                  <span style={{ fontSize: '18px', color: 'var(--brand-primary)', fontWeight: 800 }}>
+                    {openIndex === idx ? '−' : '+'}
+                  </span>
+                </button>
+                
+                {openIndex === idx && (
                   <div style={{
-                    maxHeight: isOpen ? 250 : 0,
-                    overflow: 'hidden',
-                    transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    background: '#f8fafc'
+                    padding: '0 24px 20px',
+                    fontSize: '14.5px',
+                    lineHeight: '1.65',
+                    color: '#475569',
+                    borderTop: '1px solid #e2e8f0',
+                    paddingTop: '16px'
                   }}>
-                    <div style={{ padding: '0 24px 20px', color: '#475569', fontSize: 14.5, lineHeight: 1.7, borderTop: '1px solid #e2e8f0', paddingTop: 12 }}>
-                      {faq.answer}
-                    </div>
+                    {faq.answer}
                   </div>
-                </div>
-              )
-            })
-          )}
-        </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '48px', border: '1px dashed #cbd5e1', borderRadius: '8px', color: '#64748b' }}>
+            No questions found matching your search.
+          </div>
+        )}
+      </section>
 
-        {/* Contact Banner */}
-        <div style={{ 
-          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', 
-          border: '1px solid rgba(37, 99, 235, 0.1)', 
-          borderRadius: 16, 
-          padding: '40px', 
-          textAlign: 'center',
-          boxShadow: '0 10px 30px rgba(37, 99, 235, 0.15)'
-        }}>
-          <h3 style={{ fontSize: 20, color: '#ffffff', fontWeight: 800, margin: '0 0 10px' }}>Still need assistance?</h3>
-          <p style={{ color: '#bfdbfe', fontSize: 14.5, margin: '0 0 24px', lineHeight: 1.6, maxWidth: 500, marginInline: 'auto' }}>
-            Our support team is always available to assist. Drop a line directly and we will get back to you within 24 hours.
+      {/* Call to action */}
+      <section style={{ padding: '60px 24px', background: '#f8fafc', textAlign: 'center', borderTop: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '24px', color: '#0d2e1a', fontWeight: 800, margin: 0 }}>Still have questions?</h2>
+          <p style={{ fontSize: '14.5px', color: '#64748b', margin: 0 }}>
+            If you need assistance with bulk cargo quotes or shipping schedules, please contact our helpdesk.
           </p>
-          <Link 
-            to="/contact" 
-            style={{ 
-              background: '#ffffff', 
-              color: '#1e40af', 
-              padding: '12px 28px', 
-              borderRadius: 8, 
-              fontWeight: 700, 
-              fontSize: 14.5, 
-              textDecoration: 'none',
-              display: 'inline-block',
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.1)',
-              transition: 'transform 0.2s, background-color 0.2s'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.backgroundColor = '#f8fafc'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'none'
-              e.currentTarget.style.backgroundColor = '#ffffff'
-            }}
-          >
-            Contact our team
+          <Link to="/contact" style={{
+            background: 'var(--brand-primary)',
+            color: '#ffffff',
+            padding: '11px 24px',
+            borderRadius: '6px',
+            fontWeight: 700,
+            textDecoration: 'none',
+            fontSize: '13.5px',
+            transition: 'background-color 0.2s'
+          }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
+             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}>
+            Contact Support
           </Link>
         </div>
+      </section>
 
-      </div>
     </div>
   )
 }

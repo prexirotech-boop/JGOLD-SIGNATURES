@@ -36,6 +36,12 @@ export default function AdminSettings() {
   const [stripeSecretKey, setStripeSecretKey] = useState('')
   const [resendApiKey, setResendApiKey] = useState('')
 
+  // Bank Account settings
+  const [bankAccounts, setBankAccounts] = useState([])
+  const [newBankName, setNewBankName] = useState('')
+  const [newAccNum, setNewAccNum] = useState('')
+  const [newAccName, setNewAccName] = useState('')
+
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth)
     window.addEventListener('resize', handleResize)
@@ -69,6 +75,12 @@ export default function AdminSettings() {
             setStripePublicKey(payConfig.value.stripe_public_key || '')
             setStripeSecretKey(payConfig.value.stripe_secret_key || '')
             setResendApiKey(payConfig.value.resend_api_key || '')
+          }
+          const bankConfig = data.find(s => s.id === 'bank_config')
+          if (bankConfig?.value?.accounts) {
+            setBankAccounts(bankConfig.value.accounts)
+          } else {
+            setBankAccounts([])
           }
         }
       } catch (err) {
@@ -203,6 +215,53 @@ export default function AdminSettings() {
       localStorage.setItem('enable_upsells', enableUpsells)
 
       setMessage('Platform settings & API credentials updated successfully!')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAddBankAccount = (e) => {
+    if (e) e.preventDefault()
+    if (!newBankName.trim() || !newAccNum.trim() || !newAccName.trim()) {
+      setError('Please fill in all bank details before adding.')
+      return
+    }
+    setBankAccounts(prev => [
+      ...prev,
+      {
+        bank_name: newBankName.trim(),
+        account_number: newAccNum.trim(),
+        account_name: newAccName.trim()
+      }
+    ])
+    setNewBankName('')
+    setNewAccNum('')
+    setNewAccName('')
+    setError('')
+  }
+
+  const handleRemoveBankAccount = (idx) => {
+    setBankAccounts(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  const handleUpdateBankSettings = async (e) => {
+    if (e) e.preventDefault()
+    setLoading(true)
+    setMessage('')
+    setError('')
+    try {
+      const { error: err } = await supabase
+        .from('settings')
+        .upsert({
+          id: 'bank_config',
+          value: { accounts: bankAccounts },
+          updated_at: new Date().toISOString()
+        })
+      if (err) throw err
+      setMessage('Bank account settings updated successfully!')
       setTimeout(() => setMessage(''), 3000)
     } catch (err) {
       setError(err.message)
@@ -473,6 +532,92 @@ export default function AdminSettings() {
 
               <button type="submit" style={{ alignSelf: 'flex-start', background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13.5, marginTop: 8, transition: 'all 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 Save Configurations
+              </button>
+            </form>
+          </div>
+
+          {/* Bank Account Settings Card */}
+          <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 24, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.04)' }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: '#1a1f36' }}>Bank Account Settings (For Manual Transfers)</h3>
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: 16 }}>Configure the bank accounts that will be shown to customers at checkout when they select the direct bank transfer payment method.</p>
+            
+            <form onSubmit={handleUpdateBankSettings} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Existing accounts list */}
+              {bankAccounts.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 14 }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.4 }}>Current Accounts</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {bankAccounts.map((acc, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#fff', border: '1px solid #cbd5e1', borderRadius: 6 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <span style={{ fontSize: 13.5, fontWeight: 600, color: '#0f172a' }}>{acc.bank_name}</span>
+                          <span style={{ fontSize: 12.5, color: '#475569' }}>Acc No: <strong style={{ color: '#0f172a' }}>{acc.account_number}</strong> &bull; Acc Name: {acc.account_name}</span>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => handleRemoveBankAccount(idx)}
+                          style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fee2e2', padding: '6px 10px', borderRadius: 4, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '20px 0', border: '2px dashed #cbd5e1', borderRadius: 8, color: '#64748b', fontSize: 13 }}>
+                  No bank accounts configured yet. Add one below!
+                </div>
+              )}
+
+              {/* Add New Account Form */}
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 14, marginTop: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Add Bank Account</span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginTop: 10 }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 12.5, marginBottom: 4, color: '#3c4257' }}>Bank Name</label>
+                    <input 
+                      type="text" 
+                      value={newBankName} 
+                      onChange={e => setNewBankName(e.target.value)} 
+                      placeholder="e.g. GTBank"
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 12.5, marginBottom: 4, color: '#3c4257' }}>Account Number</label>
+                    <input 
+                      type="text" 
+                      value={newAccNum} 
+                      onChange={e => setNewAccNum(e.target.value)} 
+                      placeholder="10 Digits"
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 12.5, marginBottom: 4, color: '#3c4257' }}>Account Name</label>
+                    <input 
+                      type="text" 
+                      value={newAccName} 
+                      onChange={e => setNewAccName(e.target.value)} 
+                      placeholder="e.g. MIFAS FARMS LTD"
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                    />
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={handleAddBankAccount}
+                  style={{ marginTop: 12, background: '#f1f5f9', color: '#1e293b', border: '1px solid #cbd5e1', padding: '8px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 12.5, fontWeight: 600, transition: 'all 0.15s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}
+                >
+                  + Add to List
+                </button>
+              </div>
+
+              <button type="submit" disabled={loading} style={{ alignSelf: 'flex-start', background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 6, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 13.5, marginTop: 8, transition: 'all 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                {loading ? 'Saving...' : 'Save Bank Accounts'}
               </button>
             </form>
           </div>

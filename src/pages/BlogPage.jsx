@@ -47,7 +47,7 @@ export default function BlogPage() {
     fetchPosts()
   }, [])
 
-  const categories = ['All', 'Strategy', 'Onboarding', 'Marketing', 'Mindset']
+  const categories = ['All', 'Farming', 'Exporting', 'Logistics', 'Quality']
 
   const filteredPosts = posts.filter(post => {
     const matchesSearch = 
@@ -66,63 +66,55 @@ export default function BlogPage() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#334155', fontFamily: "'Outfit', 'Inter', sans-serif", padding: '80px 20px 80px' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 60 }}>
-          <span style={{ 
-            background: 'rgba(37, 99, 235, 0.06)', 
-            color: '#2563eb', 
-            padding: '6px 16px', 
-            borderRadius: 50, 
-            fontSize: 12, 
-            fontWeight: 700, 
-            letterSpacing: '1px', 
-            textTransform: 'uppercase', 
-            display: 'inline-block',
-            marginBottom: 20,
-            border: '1px solid rgba(37, 99, 235, 0.15)'
-          }}>
-            Resource Hub & Tutorials
+    <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
+      
+      {/* Page Hero Header */}
+      <section style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>
+            Resource Hub
           </span>
-          <h1 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.2rem)', fontWeight: 850, letterSpacing: '-1.5px', color: '#0f172a', margin: '0 0 16px', lineHeight: 1.15 }}>
-            Amplified Skills <span style={{ color: '#2563eb' }}>Blueprint Blog</span>
+          <h1 style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)', color: '#ffffff' }}>
+            MIFAS FARMS Agricultural Blog
           </h1>
-          <p style={{ fontSize: 17, color: '#64748b', maxWidth: 600, margin: '0 auto 32px', lineHeight: 1.6 }}>
-            Premium articles, student onboarding guides, and business blueprints compiled by Precious.
+          <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
+            Insights into premium crop cultivation, maritime container loading protocols, and international trade clearance updates.
           </p>
+        </div>
+      </section>
 
-          {/* Search and Filters */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, maxWidth: 600, margin: '0 auto' }}>
-            <div style={{ position: 'relative', width: '100%' }}>
-              <input 
-                type="text"
-                placeholder="Search articles and blueprints..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                style={{
-                  width: '100%',
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 14,
-                  padding: '16px 20px 16px 52px',
-                  fontSize: 15,
-                  color: '#0f172a',
-                  outline: 'none',
-                  transition: 'all 0.3s ease',
-                  boxSizing: 'border-box',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
-                }}
-                onFocus={e => {
-                  e.target.style.borderColor = '#2563eb'
-                  e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.12)'
-                }}
-                onBlur={e => {
-                  e.target.style.borderColor = '#e2e8f0'
-                  e.target.style.boxShadow = 'none'
-                }}
-              />
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 20px 80px' }}>
+
+        {/* Search and Filters */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, maxWidth: 600, margin: '0 auto 48px' }}>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <input 
+              type="text"
+              placeholder="Search articles..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                width: '100%',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 14,
+                padding: '16px 20px 16px 52px',
+                fontSize: 15,
+                color: '#0f172a',
+                outline: 'none',
+                transition: 'all 0.3s ease',
+                boxSizing: 'border-box',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+              }}
+              onFocus={e => {
+                e.target.style.borderColor = 'var(--brand-primary)'
+                e.target.style.boxShadow = '0 0 0 3px rgba(36, 106, 66, 0.12)'
+              }}
+              onBlur={e => {
+                e.target.style.borderColor = '#e2e8f0'
+                e.target.style.boxShadow = 'none'
+              }}
+            />
               <svg 
                 viewBox="0 0 24 24" 
                 fill="none" 
@@ -144,8 +136,8 @@ export default function BlogPage() {
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   style={{
-                    background: activeCategory === cat ? '#2563eb' : '#ffffff',
-                    border: activeCategory === cat ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                    background: activeCategory === cat ? 'var(--brand-primary)' : '#ffffff',
+                    border: activeCategory === cat ? '1px solid var(--brand-primary)' : '1px solid #e2e8f0',
                     padding: '8px 18px',
                     borderRadius: 50,
                     fontSize: 13,
@@ -173,12 +165,11 @@ export default function BlogPage() {
               ))}
             </div>
           </div>
-        </div>
 
         {/* Content Section */}
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: '#64748b' }}>
-            <div style={{ width: 40, height: 40, border: '3px solid rgba(0,0,0,0.05)', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+            <div style={{ width: 40, height: 40, border: '3px solid rgba(0,0,0,0.05)', borderTopColor: 'var(--brand-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
             Loading resources...
           </div>
         ) : filteredPosts.length === 0 ? (
@@ -215,24 +206,24 @@ export default function BlogPage() {
                       className="blog-card-img"
                     />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: '#ffffff', fontWeight: 800, fontSize: 32 }}>
-                      AS
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #246a42 0%, #0d2e1a 100%)', color: '#ffffff', fontWeight: 800, fontSize: 32 }}>
+                      MF
                     </div>
                   )}
                   <span style={{
                     position: 'absolute',
                     top: 16,
                     left: 16,
-                    background: 'rgba(37, 99, 235, 0.08)',
-                    border: '1px solid rgba(37, 99, 235, 0.15)',
-                    color: '#2563eb',
+                    background: 'rgba(36, 106, 66, 0.08)',
+                    border: '1px solid rgba(36, 106, 66, 0.15)',
+                    color: 'var(--brand-primary)',
                     padding: '4px 10px',
                     borderRadius: 4,
                     fontSize: 11,
                     fontWeight: 700,
                     textTransform: 'uppercase'
                   }}>
-                    Blueprint
+                    Trade Update
                   </span>
                 </div>
                 
@@ -249,8 +240,8 @@ export default function BlogPage() {
                     {post.summary || 'No summary available. Click to open and read full article contents.'}
                   </p>
                   
-                  <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 6, color: '#2563eb', fontSize: 13.5, fontWeight: 700 }}>
-                    Read Blueprint
+                  <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--brand-primary)', fontSize: 13.5, fontWeight: 700 }}>
+                    Read Article
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                   </div>
                 </div>
@@ -280,8 +271,8 @@ export default function BlogPage() {
                 {selectedPost.cover_image ? (
                   <img src={selectedPost.cover_image} alt={selectedPost.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: '#ffffff', fontWeight: 800, fontSize: 48 }}>
-                    AS
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #246a42 0%, #0d2e1a 100%)', color: '#ffffff', fontWeight: 800, fontSize: 48 }}>
+                    MF
                   </div>
                 )}
                 
@@ -315,7 +306,7 @@ export default function BlogPage() {
               {/* Modal Body */}
               <div style={{ padding: '36px 40px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 13, color: '#64748b', marginBottom: 16 }}>
-                  <span>Instructor Precious</span>
+                  <span>MIFAS Trade Desk</span>
                   <span>&bull;</span>
                   <span>{new Date(selectedPost.created_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                 </div>
@@ -324,7 +315,7 @@ export default function BlogPage() {
                   {selectedPost.title}
                 </h2>
                 
-                <p style={{ fontSize: 16, color: '#475569', lineHeight: 1.7, fontStyle: 'italic', paddingLeft: 16, borderLeft: '3px solid #2563eb', margin: '0 0 32px' }}>
+                <p style={{ fontSize: 16, color: '#475569', lineHeight: 1.7, fontStyle: 'italic', paddingLeft: 16, borderLeft: '3px solid var(--brand-primary)', margin: '0 0 32px' }}>
                   {selectedPost.summary}
                 </p>
 
@@ -376,15 +367,15 @@ export default function BlogPage() {
           @keyframes spin { to { transform: rotate(360deg); } }
           .blog-card:hover {
             transform: translateY(-6px);
-            border-color: rgba(37, 99, 235, 0.3) !important;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08), 0 0 15px rgba(37, 99, 235, 0.04) !important;
+            border-color: rgba(36, 106, 66, 0.3) !important;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08), 0 0 15px rgba(36, 106, 66, 0.04) !important;
             background: #ffffff !important;
           }
           .blog-card:hover .blog-card-img {
             transform: scale(1.05);
           }
           .blog-card:hover .blog-title {
-            color: #2563eb !important;
+            color: var(--brand-primary) !important;
           }
         `}} />
 

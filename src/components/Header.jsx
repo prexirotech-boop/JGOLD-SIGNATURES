@@ -124,7 +124,7 @@ export default function Header() {
     <>
       <header className="global-header">
         <Link to={user ? "/dashboard" : "/"} className="brand-link" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-          <img src="/logo.png" alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} style={{ height: 52, width: 'auto', maxWidth: 220, objectFit: 'contain', objectPosition: 'left center', display: 'block', flexShrink: 0 }} />
+          <img src="/logo.png" alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} style={{ height: 76, width: 'auto', maxWidth: 280, objectFit: 'contain', objectPosition: 'left center', display: 'block', flexShrink: 0 }} />
         </Link>
 
         <div className="header-search-wrapper" ref={dropdownRef} style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
@@ -222,6 +222,7 @@ export default function Header() {
         <div className="header-actions">
           <Link 
             to="/contact?quote=true" 
+            className="header-quote-btn"
             style={{
               background: 'var(--brand-primary)',
               color: '#fff',

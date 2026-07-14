@@ -51,7 +51,7 @@ export default function Footer() {
                 alt="MIFAS FARMS LTD"
                 onClick={scrollToTop}
                 style={{
-                  height: '52px',
+                  height: '80px',
                   width: 'auto',
                   objectFit: 'contain',
                   cursor: 'pointer',

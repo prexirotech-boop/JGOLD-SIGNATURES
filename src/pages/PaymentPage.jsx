@@ -69,6 +69,34 @@ function Field({ id, label, hint, type = 'text', placeholder, val, err, disabled
 // MAIN SHOPIFY-STYLE PAYMENT PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 
+const ALL_COUNTRIES = [
+  "Nigeria", "United States", "United Kingdom", "Canada", "Ghana", "Kenya", "South Africa", "United Arab Emirates",
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
+  "Cabo Verde", "Cambodia", "Cameroon", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia",
+  "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+  "Fiji", "Finland", "France",
+  "Gabon", "Gambia", "Georgia", "Germany", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+  "Haiti", "Holy See", "Honduras", "Hungary",
+  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast",
+  "Jamaica", "Japan", "Jordan",
+  "Kazakhstan", "Kiribati", "Kuwait", "Kyrgyzstan",
+  "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar",
+  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "North Korea", "North Macedonia", "Norway",
+  "Oman",
+  "Pakistan", "Palau", "Palestine State", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
+  "Qatar",
+  "Romania", "Russia", "Rwanda",
+  "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+  "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
+  "Uganda", "Ukraine", "Uruguay", "Uzbekistan",
+  "Vanuatu", "Venezuela", "Vietnam",
+  "Yemen",
+  "Zambia", "Zimbabwe"
+];
+
 export default function PaymentPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -79,6 +107,13 @@ export default function PaymentPage() {
   const [product, setProduct] = useState(null)
   const [loadingProduct, setLoadingProduct] = useState(true)
   const initiatedCheckoutRef = useRef(false)
+
+  // Payment method toggle & receipt states
+  const [paymentMethod, setPaymentMethod] = useState('paystack')
+  const [bankAccounts, setBankAccounts] = useState([])
+  const [receiptUrl, setReceiptUrl] = useState('')
+  const [uploadingReceipt, setUploadingReceipt] = useState(false)
+  const [receiptName, setReceiptName] = useState('')
 
   // Form fields — persisted to localStorage so they survive page refreshes
   const [form, setForm] = useState(() => ({
@@ -142,6 +177,21 @@ export default function PaymentPage() {
     checkReferral()
   }, [])
 
+  // Load bank transfer accounts configured by admin
+  useEffect(() => {
+    async function fetchBankSettings() {
+      try {
+        const { data } = await supabase.from('settings').select('*').eq('id', 'bank_config').maybeSingle()
+        if (data?.value?.accounts) {
+          setBankAccounts(data.value.accounts)
+        }
+      } catch (err) {
+        console.warn('[PaymentPage] Failed to fetch bank settings:', err)
+      }
+    }
+    fetchBankSettings()
+  }, [])
+
   // Derived attributes
   const isEbook = product ? product.type === 'ebook' : false
   const isPhysical = product ? product.type === 'physical' : false
@@ -197,9 +247,9 @@ export default function PaymentPage() {
         }
         
         if (!activeProduct) {
-          // Fallback to latest published course
+          // Fallback to latest published product
           const { data: fb } = await supabase.from('products').select('*')
-            .eq('type', 'course').eq('is_published', true)
+            .eq('is_published', true)
             .order('created_at', { ascending: false }).limit(1).maybeSingle()
           if (fb) activeProduct = fb
         }
@@ -380,6 +430,46 @@ export default function PaymentPage() {
     }
   }
 
+  const handleReceiptUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingReceipt(true)
+    setReceiptName(file.name)
+
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `receipt-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      
+      const { data, error } = await supabase.storage
+        .from('payment-receipts')
+        .upload(fileName, file)
+
+      if (error) {
+        console.warn('[PaymentPage] bucket upload failed, using base64 fallback:', error.message)
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setReceiptUrl(reader.result)
+          setUploadingReceipt(false)
+        }
+        reader.readAsDataURL(file)
+      } else if (data) {
+        const { data: { publicUrl } } = supabase.storage
+          .from('payment-receipts')
+          .getPublicUrl(fileName)
+        setReceiptUrl(publicUrl)
+        setUploadingReceipt(false)
+      }
+    } catch (err) {
+      console.error('[PaymentPage] receipt upload error:', err)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setReceiptUrl(reader.result)
+        setUploadingReceipt(false)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const pay = async () => {
     if (!validate()) return
     if (!psReady || !window.PaystackPop) {
@@ -425,6 +515,138 @@ export default function PaymentPage() {
       }
     } catch (err) {
       setErrors({ email: 'Could not set up account. Please try again.' }); setLoading(false); return
+    }
+
+    if (paymentMethod === 'bank_transfer') {
+      if (!receiptUrl) {
+        alert('Please upload your bank payment receipt first.')
+        setLoading(false)
+        return
+      }
+
+      const ref = `bank_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+      const affId = affiliateData?.id || null
+      const affCode = affiliateData?.affiliate_code || null
+
+      try {
+        const { orderId, error: orderErr } = await createPendingOrder({
+          reference: ref, name, email, phone,
+          productId: product?.id || null,
+          amount: discountedPrice,
+          affiliateCode: affCode,
+          affiliateId: affId,
+          shippingName: isPhysical ? name : null,
+          shippingPhone: isPhysical ? phone : null,
+          shippingStreet: isPhysical ? form.shipping_street.trim() : null,
+          shippingCity: isPhysical ? form.shipping_city.trim() : null,
+          shippingState: isPhysical ? form.shipping_state.trim() : null,
+          shippingCountry: isPhysical ? form.shipping_country : null,
+          shippingPostalCode: isPhysical ? form.shipping_postal_code.trim() : null,
+          shippingNotes: isPhysical ? form.shipping_notes.trim() : null,
+          paymentMethod: 'bank_transfer',
+          bankReceiptUrl: receiptUrl
+        })
+
+        if (orderErr) {
+          alert('Error placing order: ' + orderErr)
+          setLoading(false)
+          return
+        }
+
+        for (const bump of selectedBumps) {
+          const base = bump.offered_product?.price || 0
+          const bumpPrice = bump.discount_type === 'percentage'
+            ? Math.round(base * (1 - bump.discount_value / 100))
+            : bump.discount_type === 'fixed'
+              ? Math.max(0, base - bump.discount_value)
+              : base
+
+          const bumpIsPhysical = bump.offered_product?.type === 'physical'
+
+          await createPendingOrder({
+            reference: `${ref}-bump-${bump.id}`,
+            name, email, phone,
+            productId: bump.offered_product_id,
+            amount: bumpPrice,
+            affiliateCode: affCode,
+            affiliateId: affId,
+            shippingName: bumpIsPhysical ? name : null,
+            shippingPhone: bumpIsPhysical ? phone : null,
+            shippingStreet: bumpIsPhysical ? form.shipping_street.trim() : null,
+            shippingCity: bumpIsPhysical ? form.shipping_city.trim() : null,
+            shippingState: bumpIsPhysical ? form.shipping_state.trim() : null,
+            shippingCountry: bumpIsPhysical ? form.shipping_country : null,
+            shippingPostalCode: bumpIsPhysical ? form.shipping_postal_code.trim() : null,
+            shippingNotes: bumpIsPhysical ? form.shipping_notes.trim() : null,
+            paymentMethod: 'bank_transfer',
+            bankReceiptUrl: receiptUrl
+          })
+        }
+
+        trackEvent('purchase', {
+          value: finalTotal,
+          currency: 'NGN',
+          content_name: productTitle,
+          product_id: product?.id,
+          email,
+          name,
+          phone,
+          reference: ref
+        })
+
+        localStorage.removeItem('checkout_name')
+        localStorage.removeItem('checkout_email')
+        localStorage.removeItem('checkout_phone')
+        localStorage.removeItem('checkout_shipping_street')
+        localStorage.removeItem('checkout_shipping_city')
+        localStorage.removeItem('checkout_shipping_state')
+        localStorage.removeItem('checkout_shipping_postal_code')
+        localStorage.removeItem('checkout_shipping_notes')
+        localStorage.removeItem('ecom_cart')
+        window.dispatchEvent(new Event('cart_updated'))
+
+        localStorage.setItem('paid_customer', JSON.stringify({
+          name, email, phone, ref,
+          product_id: product?.id,
+          product_type: product?.type,
+          product_title: productTitle,
+          amount: discountedPrice,
+          delivery_fee: deliveryFee,
+          shipping_name: isPhysical ? name : null,
+          shipping_phone: isPhysical ? phone : null,
+          shipping_street: isPhysical ? form.shipping_street.trim() : null,
+          shipping_city: isPhysical ? form.shipping_city.trim() : null,
+          shipping_state: isPhysical ? form.shipping_state.trim() : null,
+          shipping_country: isPhysical ? form.shipping_country : null,
+          shipping_postal_code: isPhysical ? form.shipping_postal_code.trim() : null,
+          shipping_notes: isPhysical ? form.shipping_notes.trim() : null,
+          payment_method: 'bank_transfer'
+        }))
+
+        if (isPhysical && userId) {
+          try {
+            await updateProfileShipping({
+              userId,
+              street: form.shipping_street.trim(),
+              city: form.shipping_city.trim(),
+              state: form.shipping_state.trim(),
+              postalCode: form.shipping_postal_code.trim(),
+              phone: phone,
+            })
+          } catch (err) {
+            console.warn('[PaymentPage] failed saving user default address:', err)
+          }
+        }
+
+        setLoading(false)
+        navigate('/success')
+        return
+      } catch (err) {
+        console.error('[PaymentPage] bank transfer checkout error:', err)
+        alert('An error occurred during order submission. Please try again.')
+        setLoading(false)
+        return
+      }
     }
 
     const ref = `n50k_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
@@ -532,93 +754,74 @@ export default function PaymentPage() {
 
   const handleSuccess = async ({ reference, userId, name, email, phone }) => {
     setLoading(true)
-    // Track purchase event in DB and Meta
-    trackEvent('purchase', {
-      value: finalTotal,
-      currency: 'NGN',
-      content_name: productTitle,
-      product_id: product?.id,
-      email,
-      name,
-      phone,
-      reference
-    })
+    try {
+      trackEvent('purchase', {
+        value: finalTotal,
+        currency: 'NGN',
+        content_name: productTitle,
+        product_id: product?.id,
+        email,
+        name,
+        phone,
+        reference
+      })
 
-    localStorage.setItem('paid_customer', JSON.stringify({
-      name, email, phone, ref: reference,
-      product_id: product?.id,
-      product_type: product?.type,
-      product_title: productTitle,
-      amount: discountedPrice,
-      delivery_fee: deliveryFee,
-      shipping_name: isPhysical ? name : null,
-      shipping_phone: isPhysical ? phone : null,
-      shipping_street: isPhysical ? form.shipping_street.trim() : null,
-      shipping_city: isPhysical ? form.shipping_city.trim() : null,
-      shipping_state: isPhysical ? form.shipping_state.trim() : null,
-      shipping_country: isPhysical ? form.shipping_country : null,
-      shipping_postal_code: isPhysical ? form.shipping_postal_code.trim() : null,
-      shipping_notes: isPhysical ? form.shipping_notes.trim() : null,
-    }))
+      localStorage.setItem('paid_customer', JSON.stringify({
+        name, email, phone, ref: reference,
+        product_id: product?.id,
+        product_type: product?.type,
+        product_title: productTitle,
+        amount: discountedPrice,
+        delivery_fee: deliveryFee,
+        shipping_name: isPhysical ? name : null,
+        shipping_phone: isPhysical ? phone : null,
+        shipping_street: isPhysical ? form.shipping_street.trim() : null,
+        shipping_city: isPhysical ? form.shipping_city.trim() : null,
+        shipping_state: isPhysical ? form.shipping_state.trim() : null,
+        shipping_country: isPhysical ? form.shipping_country : null,
+        shipping_postal_code: isPhysical ? form.shipping_postal_code.trim() : null,
+        shipping_notes: isPhysical ? form.shipping_notes.trim() : null,
+      }))
 
-    await completeOrder({
-      reference,
-      userId,
-      productId: product?.id || null,
-      productType: product?.type || (isEbook ? 'ebook' : 'course'),
-      name,
-      phone,
-    })
+      await completeOrder({
+        reference,
+        userId,
+        productId: product?.id || null,
+        productType: product?.type || (isEbook ? 'ebook' : 'physical'),
+        name,
+        phone,
+      })
 
-    // Clear saved checkout fields and cart on successful payment
-    localStorage.removeItem('checkout_name')
-    localStorage.removeItem('checkout_email')
-    localStorage.removeItem('checkout_phone')
-    localStorage.removeItem('checkout_shipping_street')
-    localStorage.removeItem('checkout_shipping_city')
-    localStorage.removeItem('checkout_shipping_state')
-    localStorage.removeItem('checkout_shipping_postal_code')
-    localStorage.removeItem('checkout_shipping_notes')
-    localStorage.removeItem('ecom_cart')
-    window.dispatchEvent(new Event('cart_updated'))
+      localStorage.removeItem('checkout_name')
+      localStorage.removeItem('checkout_email')
+      localStorage.removeItem('checkout_phone')
+      localStorage.removeItem('checkout_shipping_street')
+      localStorage.removeItem('checkout_shipping_city')
+      localStorage.removeItem('checkout_shipping_state')
+      localStorage.removeItem('checkout_shipping_postal_code')
+      localStorage.removeItem('checkout_shipping_notes')
+      localStorage.removeItem('ecom_cart')
+      window.dispatchEvent(new Event('cart_updated'))
 
-    if (isPhysical && userId) {
-      try {
-        await updateProfileShipping({
-          userId,
-          street: form.shipping_street.trim(),
-          city: form.shipping_city.trim(),
-          state: form.shipping_state.trim(),
-          postalCode: form.shipping_postal_code.trim(),
-          phone: phone,
-        })
-      } catch (err) {
-        console.warn('[PaymentPage] failed saving user default address:', err)
+      if (isPhysical && userId) {
+        try {
+          await updateProfileShipping({
+            userId,
+            street: form.shipping_street.trim(),
+            city: form.shipping_city.trim(),
+            state: form.shipping_state.trim(),
+            postalCode: form.shipping_postal_code.trim(),
+            phone: phone,
+          })
+        } catch (err) {
+          console.warn('[PaymentPage] failed saving user default address:', err)
+        }
       }
-    }
-
-    if (isPhysical) {
-      setLoading(false)
-      navigate('/success')
-      return
-    }
-
-    if (isEbook) {
-      navigate('/success')
-      return
-    }
-
-    let hasSession = false
-    if (userId) {
-      for (let i = 0; i < 5; i++) {
-        const { data } = await supabase.auth.getSession()
-        if (data?.session?.user) { hasSession = true; break }
-        await new Promise(r => setTimeout(r, 500))
-      }
+    } catch (err) {
+      console.error('[PaymentPage] error during handleSuccess:', err)
     }
 
     setLoading(false)
-    navigate(hasSession ? '/dashboard' : '/setup-account')
   }
 
   const displayBonuses = bonuses
@@ -795,7 +998,7 @@ export default function PaymentPage() {
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
           <div style={{ position: 'absolute', width: 160, height: 160, background: 'radial-gradient(circle, rgba(36, 106, 66,0.25) 0%, rgba(36, 106, 66,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', filter: 'blur(24px)', animation: 'ambient-glow 3s ease-in-out infinite' }} />
-          <img src="/logo.png" alt="Amplified Skills" style={{ height: 64, width: 'auto', maxWidth: 220, objectFit: 'contain', marginBottom: 36, filter: 'drop-shadow(0 0 10px rgba(36, 106, 66,0.15))', animation: 'logo-pulse 2.2s ease-in-out infinite' }} />
+          <img src="/logo.png" alt="Amplified Skills" style={{ height: 100, width: 'auto', maxWidth: 280, objectFit: 'contain', marginBottom: 36, filter: 'drop-shadow(0 0 10px rgba(36, 106, 66,0.15))', animation: 'logo-pulse 2.2s ease-in-out infinite' }} />
           <div className="premium-spinner" />
           <p style={{ color: '#94a3b8', marginTop: 16, fontSize: '14px', letterSpacing: '0.5px', position: 'relative', zIndex: 1 }}>Loading checkout...</p>
         </div>
@@ -1621,7 +1824,7 @@ export default function PaymentPage() {
                 <Field 
                   id="email" 
                   label="Email address" 
-                  hint={isEbook ? ' (For downloading delivery)' : ' (For course dashboard access)'} 
+                  hint={isEbook ? ' (For downloading delivery)' : ' (For order updates)'} 
                   type="email" 
                   placeholder="chioma@gmail.com" 
                   val={form.email} 
@@ -1754,19 +1957,9 @@ export default function PaymentPage() {
                               backgroundSize: '16px'
                             }}
                           >
-                            <option value="Nigeria">Nigeria 🇳🇬</option>
-                            <option value="United States">United States 🇺🇸</option>
-                            <option value="United Kingdom">United Kingdom 🇬🇧</option>
-                            <option value="Canada">Canada 🇨🇦</option>
-                            <option value="Netherlands">Netherlands 🇳🇱</option>
-                            <option value="Germany">Germany 🇩🇪</option>
-                            <option value="France">France 🇫🇷</option>
-                            <option value="South Africa">South Africa 🇿🇦</option>
-                            <option value="Ghana">Ghana 🇬🇭</option>
-                            <option value="Kenya">Kenya 🇰🇪</option>
-                            <option value="United Arab Emirates">United Arab Emirates 🇦🇪</option>
-                            <option value="China">China 🇨🇳</option>
-                            <option value="India">India 🇮🇳</option>
+                            {ALL_COUNTRIES.map(c => (
+                              <option key={c} value={c}>{c}</option>
+                            ))}
                           </select>
                           <label className="sp-label" style={{ transform: 'translateY(-9px)', fontSize: '11px', top: '15px', fontWeight: '600' }}>Country</label>
                         </div>
@@ -1794,43 +1987,159 @@ export default function PaymentPage() {
             {/* Payment Section */}
             <div className="sp-form-card">
               <h3 className="sp-section-title">Payment Method</h3>
-              <div className="sp-payment-container">
-                <div className="sp-payment-header">
-                  <div className="sp-payment-header-left">
-                    <input type="radio" checked readOnly style={{ accentColor: '#1a1a1a', cursor: 'pointer' }} />
-                    <span>Secure Paystack Gateway</span>
+              
+              {/* Paystack Option */}
+              <div className="sp-payment-container" style={{ marginBottom: 12, border: paymentMethod === 'paystack' ? '2px solid var(--brand-primary, #123c24)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', margin: 0, width: '100%', boxSizing: 'border-box' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <input 
+                      type="radio" 
+                      name="payment_method"
+                      checked={paymentMethod === 'paystack'} 
+                      onChange={() => setPaymentMethod('paystack')}
+                      style={{ accentColor: '#123c24', cursor: 'pointer', width: 18, height: 18 }} 
+                    />
+                    <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b' }}>Secure Paystack Gateway</span>
                   </div>
-                  <div className="sp-payment-header-right">
-                    <span style={{ fontSize: '11px', color: '#707070' }}>CARDS &bull; BANK TRANSFER &bull; USSD</span>
-                  </div>
-                </div>
+                  <span style={{ fontSize: '11px', color: '#707070', fontWeight: 500 }}>CARDS &bull; TRANSFER &bull; USSD</span>
+                </label>
                 
-                <div className="sp-payment-body">
-                  <p>After clicking "Complete Payment", you will be redirected to the secure Paystack checkout pop-up to authorize your payment using card, transfer, app, or USSD.</p>
-                </div>
+                {paymentMethod === 'paystack' && (
+                  <div className="sp-payment-body" style={{ background: '#f8fafc', padding: 16, borderTop: '1px solid #e2e8f0' }}>
+                    <p style={{ margin: 0, fontSize: '13px', color: '#475569', lineHeight: '1.5' }}>After clicking "Complete Payment", you will be redirected to the secure Paystack checkout pop-up to authorize your payment instantly using your card, bank transfer, or USSD.</p>
+                  </div>
+                )}
+              </div>
 
-                <div className="sp-payment-footer">
-                  {emailExists && !user && (
-                    <p style={{ fontSize: '12.5px', color: '#92400e', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '4px', padding: '10px 12px', marginBottom: 14 }}>
-                      ⚠️ Please fill in your account password above to authorize payment processing.
+              {/* Bank Transfer Option */}
+              <div className="sp-payment-container" style={{ border: paymentMethod === 'bank_transfer' ? '2px solid var(--brand-primary, #123c24)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', margin: 0, width: '100%', boxSizing: 'border-box' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <input 
+                      type="radio" 
+                      name="payment_method"
+                      checked={paymentMethod === 'bank_transfer'} 
+                      onChange={() => setPaymentMethod('bank_transfer')}
+                      style={{ accentColor: '#123c24', cursor: 'pointer', width: 18, height: 18 }} 
+                    />
+                    <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b' }}>Manual Bank Transfer (Direct Upload)</span>
+                  </div>
+                  <span style={{ fontSize: '11px', color: '#707070', fontWeight: 500 }}>BANK UPLOAD &bull; MANUAL REVIEW</span>
+                </label>
+                
+                {paymentMethod === 'bank_transfer' && (
+                  <div className="sp-payment-body" style={{ background: '#f8fafc', padding: 16, borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    <p style={{ margin: 0, fontSize: '13.5px', color: '#475569', lineHeight: '1.5' }}>
+                      Please make a transfer of <strong style={{ color: '#0f172a' }}>₦{finalTotal.toLocaleString()}</strong> to any of the bank accounts listed below, then upload a clear screenshot of your payment receipt.
                     </p>
-                  )}
-                  
-                  <button
-                    type="submit" 
-                    disabled={loading || (emailExists && !user && !loginPassword)}
-                    className="sp-submit-btn"
-                  >
-                    {loading ? (
-                      <>
-                        <span className="sp-spinner" />
-                        <span>Securing Connection...</span>
-                      </>
+
+                    {/* Bank list */}
+                    {bankAccounts.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#fff', border: '1px solid #cbd5e1', borderRadius: 8, padding: '12px 14px' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.4 }}>Our Bank Accounts</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                          {bankAccounts.map((acc, idx) => (
+                            <div key={idx} style={{ paddingBottom: idx < bankAccounts.length - 1 ? 10 : 0, borderBottom: idx < bankAccounts.length - 1 ? '1px dashed #cbd5e1' : 'none' }}>
+                              <div style={{ fontSize: 13.5, fontWeight: 700, color: '#123c24' }}>{acc.bank_name}</div>
+                              <div style={{ fontSize: 13, color: '#334155', marginTop: 2 }}>
+                                Account Number: <strong style={{ color: '#0f172a', fontSize: '13.5px' }}>{acc.account_number}</strong>
+                              </div>
+                              <div style={{ fontSize: 12, color: '#64748b', marginTop: 1 }}>Account Name: {acc.account_name}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     ) : (
-                      <span>Complete Payment — ₦{finalTotal.toLocaleString()}</span>
+                      <div style={{ padding: '12px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 6, color: '#b91c1c', fontSize: 12.5, fontWeight: 500 }}>
+                        ⚠️ Direct bank transfer details are not configured by the admin yet. Please check back later or use Paystack.
+                      </div>
                     )}
-                  </button>
-                </div>
+
+                    {/* File Upload Input */}
+                    {bankAccounts.length > 0 && (
+                      <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 14 }}>
+                        <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#3c4257', marginBottom: 6 }}>Upload Payment Receipt (Screenshot/Receipt Image) *</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <input 
+                            type="file" 
+                            accept="image/*,application/pdf"
+                            onChange={handleReceiptUpload}
+                            id="receipt-uploader"
+                            style={{ display: 'none' }}
+                          />
+                          <button 
+                            type="button" 
+                            onClick={() => document.getElementById('receipt-uploader').click()}
+                            disabled={uploadingReceipt}
+                            style={{ 
+                              padding: '8px 14px', 
+                              background: '#fff', 
+                              border: '1px solid #cbd5e1', 
+                              borderRadius: '6px', 
+                              cursor: 'pointer', 
+                              fontSize: '12.5px', 
+                              fontWeight: 600, 
+                              color: '#1e293b',
+                              transition: 'all 0.15s' 
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                          >
+                            {uploadingReceipt ? 'Uploading...' : 'Choose File'}
+                          </button>
+                          <span style={{ fontSize: '12.5px', color: receiptUrl ? '#16a34a' : '#64748b', fontWeight: receiptUrl ? 600 : 400 }}>
+                            {uploadingReceipt ? 'Uploading receipt...' : receiptUrl ? `✓ Receipt uploaded: ${receiptName || 'File'}` : 'No file selected'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Submit footer area */}
+              <div className="sp-payment-footer" style={{ marginTop: 20 }}>
+                {emailExists && !user && (
+                  <p style={{ fontSize: '12.5px', color: '#92400e', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '4px', padding: '10px 12px', marginBottom: 14 }}>
+                    ⚠️ Please fill in your account password above to authorize payment processing.
+                  </p>
+                )}
+                
+                <button
+                  type="submit" 
+                  disabled={loading || (emailExists && !user && !loginPassword) || (paymentMethod === 'bank_transfer' && !receiptUrl)}
+                  className="sp-submit-btn"
+                  style={{
+                    background: 'var(--brand-primary, #123c24)',
+                    color: '#fff',
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '10px',
+                    fontSize: '15px',
+                    fontWeight: 700,
+                    cursor: (loading || (paymentMethod === 'bank_transfer' && !receiptUrl)) ? 'not-allowed' : 'pointer',
+                    border: 'none',
+                    transition: 'all 0.2s',
+                    opacity: (paymentMethod === 'bank_transfer' && !receiptUrl) ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8
+                  }}
+                >
+                  {loading ? (
+                    <>
+                      <span className="sp-spinner" />
+                      <span>{paymentMethod === 'bank_transfer' ? 'Submitting Receipt...' : 'Securing Connection...'}</span>
+                    </>
+                  ) : (
+                    <span>
+                      {paymentMethod === 'bank_transfer' 
+                        ? `Submit Bank Receipt — ₦${finalTotal.toLocaleString()}`
+                        : `Complete Payment — ₦${finalTotal.toLocaleString()}`}
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
           </form>

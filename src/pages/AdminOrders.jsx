@@ -18,7 +18,7 @@ const STATUS = {
   returned:   { label: 'Returned',   bg: 'rgba(239,68,68,0.1)',    color: '#b91c1c', border: 'rgba(239,68,68,0.25)',   dot: '#ef4444',  icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> },
 }
 
-const PAY_METHODS = { paystack: 'Paystack', manual: 'Manual', bank: 'Bank Transfer', cash: 'Cash' }
+const PAY_METHODS = { paystack: 'Paystack', manual: 'Manual', bank: 'Bank Transfer', bank_transfer: 'Direct Bank Transfer', cash: 'Cash' }
 
 const fmt    = n  => `₦${Number(n || 0).toLocaleString('en-NG')}`
 const fmtD   = d  => d ? new Date(d).toLocaleDateString('en-NG',  { day:'2-digit', month:'short', year:'numeric' }) : '—'
@@ -401,6 +401,51 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
             <DRow label="Order ID"  value={idStr(order.id)} mono />
           </DSection>
 
+          {order.payment_method === 'bank_transfer' && order.bank_receipt_url && (
+            <DSection title="Bank Payment Receipt">
+              <div style={{ marginTop: '8px' }}>
+                <a 
+                  href={order.bank_receipt_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ 
+                    display: 'block', 
+                    padding: '10px', 
+                    background: '#f1f5f9', 
+                    border: '1px solid #cbd5e1', 
+                    borderRadius: '6px', 
+                    color: '#123c24', 
+                    fontWeight: 600, 
+                    fontSize: '12.5px',
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    marginBottom: '10px',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}
+                >
+                  View Uploaded Receipt ↗
+                </a>
+                {(order.bank_receipt_url.startsWith('data:image') || order.bank_receipt_url.match(/\.(jpeg|jpg|gif|png|webp)/i) || !order.bank_receipt_url.includes('.')) && (
+                  <img 
+                    src={order.bank_receipt_url} 
+                    alt="Payment Receipt" 
+                    style={{ 
+                      width: '100%', 
+                      maxHeight: '200px', 
+                      objectFit: 'contain', 
+                      borderRadius: '6px', 
+                      border: '1px solid #cbd5e1',
+                      background: '#f8fafc',
+                      padding: '4px'
+                    }} 
+                  />
+                )}
+              </div>
+            </DSection>
+          )}
+
           {order.shipping_street && (
             <DSection title="Shipping & Fulfillment">
               <DRow label="Recipient Name" value={order.shipping_name || order.customer_name} />
@@ -630,6 +675,9 @@ export default function AdminOrders() {
         supabase.from('orders').select(`
           id, reference, customer_email, customer_name, customer_phone,
           amount, currency, status, payment_method, product_id, created_at,
+          shipping_name, shipping_phone, shipping_street, shipping_city,
+          shipping_state, shipping_country, shipping_postal_code, shipping_notes,
+          shipping_status, tracking_number, delivery_fee, bank_receipt_url,
           products ( id, title, type )
         `).order('created_at', { ascending: false }),
         supabase.from('products').select('id, title, price, type'),
@@ -652,9 +700,9 @@ export default function AdminOrders() {
     showConfirm({
       title: isPaid ? 'Mark as Paid' : isRefund ? 'Process Refund' : `Change to ${newStatus}`,
       message: isPaid
-        ? `Mark order from "${order.customer_name || order.customer_email}" as Paid? Course access will be granted automatically.`
+        ? `Mark order from "${order.customer_name || order.customer_email}" as Paid?`
         : isRefund
-        ? `Refund "${order.customer_name || order.customer_email}"? Their course access will be revoked.`
+        ? `Refund "${order.customer_name || order.customer_email}"?`
         : `Change status to "${newStatus}"?`,
       confirmLabel: isPaid ? 'Mark as Paid' : isRefund ? 'Refund' : 'Confirm',
       variant: isPaid ? 'success' : isRefund ? 'danger' : 'warning',
@@ -667,13 +715,13 @@ export default function AdminOrders() {
           if (isPaid && order.products?.type === 'course' && order.product_id) {
             const { data: profile } = await supabase.from('profiles').select('id').eq('email', order.customer_email).maybeSingle()
             if (profile) await createEnrollment({ userId: profile.id, courseId: order.product_id })
-            showToast(`✅ Paid & course access granted to ${order.customer_email}`)
+            showToast(`✅ Paid & order finalized for ${order.customer_email}`)
           } else if (isRefund && order.products?.type === 'course' && order.product_id) {
             const { data: profile } = await supabase.from('profiles').select('id').eq('email', order.customer_email).maybeSingle()
             if (profile) await supabase.from('enrollments').delete().eq('user_id', profile.id).eq('course_id', order.product_id)
-            showToast('↩ Refund processed & access revoked', 'warning')
+            showToast('↩ Refund processed', 'warning')
           } else {
-            showToast(`Order status updated to ${newStatus}`)
+            showToast(isPaid ? `✅ Order marked as Paid` : `Order status updated to ${newStatus}`)
           }
           await loadData()
           if (selectedOrder?.id === order.id) setSelectedOrder(prev => ({ ...prev, status: newStatus }))

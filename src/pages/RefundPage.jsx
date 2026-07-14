@@ -1,185 +1,107 @@
-import React from 'react';
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function RefundPage() {
-
   return (
-    <div className="policy-page-layout">
-      <div className="policy-container">
+    <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
+      
+      {/* Page Hero Header */}
+      <section style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>
+            Trade Policies
+          </span>
+          <h1 style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }}>
+            Refund & Returns Policy
+          </h1>
+          <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
+            Our standard protocol for crop qualities, order cancellations, and shipping refund claims.
+          </p>
+        </div>
+      </section>
 
-        {/* Title Header */}
-        <header className="policy-header">
-          <span className="policy-badge">Company Policy</span>
-          <h1 className="policy-title">Refund Policy</h1>
-          <p className="policy-meta">Last updated: {new Date().getFullYear()}</p>
-        </header>
-
-        {/* Content Details */}
-        <div className="policy-card">
-          <p className="policy-intro">
-            At <strong>Amplified Skills</strong>, we are committed to providing you with the highest quality training programs, resources, and digital blueprints to build a highly profitable freelance and digital service business.
+      {/* Content Details */}
+      <section style={{ padding: '80px 24px', maxWidth: '850px', margin: '0 auto' }}>
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px',
+          padding: '40px',
+          boxShadow: '0 4px 12px rgba(15, 23, 42, 0.03)'
+        }} className="policy-card">
+          <p style={{ fontSize: '16px', lineHeight: '1.75', color: '#475569', marginTop: 0, marginBottom: '32px' }}>
+            At <strong>MIFAS FARMS LTD</strong>, we take pride in sourcing and packaging export-grade agricultural commodities. Since agriculture deals with raw, natural, and perishable products, we operate on clear, standard commercial refund policies.
           </p>
 
-          <section className="policy-section">
-            <h2 className="section-title">1. No Refund Policy</h2>
-            <p>
-              Due to the nature of digital products (including courses, downloadable blueprints, guides, templates, and video lessons), all sales are final. Once your purchase is complete and your product access or student dashboard account is activated, the product is considered "used."
-            </p>
-            <p className="policy-alert">
-              <strong>We do not offer refunds, returns, or exchanges for any reason.</strong> This is because digital materials cannot be "returned" or deactivated in the same way physical goods can.
-            </p>
-          </section>
-
-          <section className="policy-section">
-            <h2 className="section-title">2. Delivery Guarantee</h2>
-            <p>
-              While we do not offer refunds, we do guarantee successful delivery. If you experience any technical issues accessing your student dashboard, logging in, or retrieving your purchased blueprints, please contact us immediately. We will make sure your access is restored.
-            </p>
-          </section>
-
-          <section className="policy-section">
-            <h2 className="section-title">3. Support & Inquiries</h2>
-            <p>
-              If you have any questions about the content of our blueprints, need help navigating the student area, or have any issues with your payment, please reach out to our dedicated support helpdesk at:
-            </p>
-            <div className="policy-support-box">
-              <strong>Email Support:</strong> <a href="mailto:nprecious.official@gmail.com">nprecious.official@gmail.com</a>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>1. Non-Refundable Dispatched Goods</h2>
+              <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#475569', marginBottom: '12px' }}>
+                Once wholesale or retail orders are packaged, cleared by the Nigerian Agricultural Quarantine Service (NAQS), and loaded into shipping containers, the sale is final. Perishable and raw items (such as Bitter Kola and Kolanuts) cannot be returned, swapped, or refunded after ship dispatch.
+              </p>
+              <div style={{
+                background: '#fef2f2',
+                borderLeft: '4px solid #ef4444',
+                padding: '16px',
+                borderRadius: '0 8px 8px 0',
+                color: '#991b1b',
+                fontSize: '14px',
+                fontWeight: 600
+              }}>
+                Please ensure you review laboratory moisture tests and SGS certificates prior to container booking.
+              </div>
             </div>
-            <p>
-              Our response team is active Monday through Friday, and we aim to respond to all technical queries within 24 hours.
-            </p>
-          </section>
+
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>2. Pre-Dispatch Order Cancellations</h2>
+              <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#475569', margin: 0 }}>
+                For standard retail store checkouts, you may request an order cancellation and receive a full payment gateway refund if you write to us within 2 hours of payment and before local delivery has been dispatched. Bulk contract deposits are governed exclusively by individual signed purchase SLA terms.
+              </p>
+            </div>
+
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 12px' }}>3. Quality Discrepancies Claims</h2>
+              <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#475569', margin: 0 }}>
+                We inspect every batch for standard moisture specs. In the highly unlikely event that your cargo arrives showing moisture deviation or insect damage outside of contract specifications, a formal claim accompanied by an accredited lab test must be submitted within 7 days of cargo arrival at the destination port. Verified claims will be compensated through balance deductions on subsequent shipments or partial product replacement.
+              </p>
+            </div>
+
+          </div>
         </div>
+      </section>
 
-      </div>
+      {/* Call to action */}
+      <section style={{ padding: '60px 24px', background: '#f8fafc', textAlign: 'center', borderTop: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '24px', color: '#0d2e1a', fontWeight: 800, margin: 0 }}>Need to file a quality claim?</h2>
+          <p style={{ fontSize: '14.5px', color: '#64748b', margin: 0 }}>
+            Please submit your destination inspection lab results and photos to our trade claims department.
+          </p>
+          <a href="mailto:support@mifasfarms.com" style={{
+            background: 'var(--brand-primary)',
+            color: '#ffffff',
+            padding: '11px 24px',
+            borderRadius: '6px',
+            fontWeight: 700,
+            textDecoration: 'none',
+            fontSize: '13.5px',
+            transition: 'background-color 0.2s'
+          }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
+             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}>
+            Email Claims Desk
+          </a>
+        </div>
+      </section>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        .policy-page-layout {
-          background-color: #f8fafc;
-          min-height: 100vh;
-          color: #334155;
-          font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
-          padding: 80px 20px;
-          box-sizing: border-box;
-        }
-        .policy-container {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        .back-home-btn {
-          background: none;
-          border: none;
-          color: #64748b;
-          font-size: 14px;
-          fontWeight: 600;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 0;
-          margin-bottom: 32px;
-          transition: color 0.15s ease;
-        }
-        .back-home-btn:hover {
-          color: #2563eb;
-        }
-        .policy-header {
-          margin-bottom: 40px;
-        }
-        .policy-badge {
-          display: inline-block;
-          background: rgba(37, 99, 235, 0.06);
-          color: #2563eb;
-          border: 1px solid rgba(37, 99, 235, 0.15);
-          padding: 5px 12px;
-          border-radius: 50px;
-          font-size: 11px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-bottom: 12px;
-        }
-        .policy-title {
-          font-size: 38px;
-          font-weight: 850;
-          color: #0f172a;
-          margin: 0 0 8px;
-          letter-spacing: -0.8px;
-        }
-        .policy-meta {
-          font-size: 13.5px;
-          color: #64748b;
-          margin: 0;
-        }
-        .policy-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 40px;
-          box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04);
-        }
-        .policy-intro {
-          font-size: 16px;
-          line-height: 1.7;
-          color: #475569;
-          margin-top: 0;
-          margin-bottom: 32px;
-        }
-        .policy-section {
-          margin-bottom: 32px;
-          border-top: 1px solid #f1f5f9;
-          padding-top: 28px;
-        }
-        .policy-section:last-of-type {
-          margin-bottom: 0;
-        }
-        .section-title {
-          font-size: 20px;
-          font-weight: 800;
-          color: #0f172a;
-          margin: 0 0 16px;
-        }
-        .policy-section p {
-          font-size: 15px;
-          line-height: 1.7;
-          color: #475569;
-          margin: 0 0 16px;
-        }
-        .policy-section p:last-child {
-          margin-bottom: 0;
-        }
-        .policy-alert {
-          background: #fef2f2;
-          border-left: 4px solid #ef4444;
-          padding: 16px;
-          border-radius: 0 12px 12px 0;
-          color: #991b1b !important;
-          margin-top: 20px;
-        }
-        .policy-support-box {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          padding: 16px 20px;
-          font-size: 15px;
-          margin: 16px 0;
-        }
-        .policy-support-box a {
-          color: #2563eb;
-          text-decoration: none;
-          font-weight: 700;
-        }
-        .policy-support-box a:hover {
-          text-decoration: underline;
-        }
+      <style>{`
         @media (max-width: 600px) {
           .policy-card {
-            padding: 24px;
-          }
-          .policy-title {
-            font-size: 30px;
+            padding: 24px !important;
           }
         }
-      `}} />
+      `}</style>
+
     </div>
-  );
+  )
 }

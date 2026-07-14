@@ -85,14 +85,14 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="business-contact-layout">
+        <div className="business-contact-layout" style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
             {/* Top section with gradient hero */}
-            <section className="contact-hero">
-                <div className="contact-container text-center">
-                    <span className="contact-badge">Support Portal</span>
-                    <h1 className="hero-title">Get in Touch</h1>
-                    <p className="hero-subtitle">
-                        We are committed to providing top-notch support to our students and future entrepreneurs. Reach out anytime.
+            <section className="contact-hero" style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+                <div className="contact-container text-center" style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <span className="contact-badge" style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>Trade Support</span>
+                    <h1 className="hero-title" style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)', color: '#ffffff' }}>Get in Touch</h1>
+                    <p className="hero-subtitle" style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
+                        We coordinate phytosanitary reviews, customs logistics, and container cargo shipments. Reach out to our Enugu compliance team.
                     </p>
                 </div>
             </section>
@@ -116,15 +116,15 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="card-title">Email Support</h3>
-                                        <p className="card-tagline">Order inquiries & access help</p>
+                                        <p className="card-tagline">Quotation inquiries & invoices</p>
                                     </div>
                                 </div>
                                 <p className="card-desc">
-                                    Experiencing billing issues or need help accessing your course content? Drop us an email. We typically respond within 24 hours.
+                                    Experiencing order issues, need invoice records, or custom phytosanitary export documentation? Drop us an email.
                                 </p>
                                 <div className="card-action-bar">
-                                    <a href="mailto:nprecious.official@gmail.com" className="action-btn email-btn">
-                                        nprecious.official@gmail.com
+                                    <a href="mailto:mifasfarmservices@gmail.com" className="action-btn email-btn">
+                                        mifasfarmservices@gmail.com
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M5 12h14M12 5l7 7-7 7"/>
                                         </svg>
@@ -146,10 +146,10 @@ export default function ContactPage() {
                                     </div>
                                 </div>
                                 <p className="card-desc">
-                                    Have urgent setup issues or want to chat with a representative before buying? Connect with us on our WhatsApp helpdesk.
+                                    Have direct questions about local shipping or need a quick consultation? Chat with a MIFAS FARMS trade agent.
                                 </p>
                                 <div className="card-action-bar">
-                                    <a href="https://wa.me/2347041418304?text=Hi%20Amplified%20Skills%20Support,%20I%20have%20an%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
+                                    <a href="https://wa.me/2349014070492?text=Hi%20MIFAS%20FARMS%20Support,%20I%20have%20an%20export%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
                                         Chat on WhatsApp
                                         <span className="live-indicator">
                                             <span className="live-dot"></span>

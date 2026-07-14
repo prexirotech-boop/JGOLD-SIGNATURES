@@ -11,14 +11,15 @@ export default function ProductDetailsPage() {
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [wishlistAdded, setWishlistAdded] = useState(false)
-  const [reviewsAvg, setReviewsAvg] = useState(4.9)
-  const [reviewsCount, setReviewsCount] = useState(12)
+  const [reviewsAvg, setReviewsAvg] = useState(0)
+  const [reviewsCount, setReviewsCount] = useState(0)
+  const [reviews, setReviews] = useState([])
+  const [relatedProducts, setRelatedProducts] = useState([])
   const [activeImage, setActiveImage] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [selectedAttributes, setSelectedAttributes] = useState({})
   const [selectedVariant, setSelectedVariant] = useState(null)
   const [addedToCartToast, setAddedToCartToast] = useState(false)
-  const [activeTab, setActiveTab] = useState('description')
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -53,22 +54,40 @@ export default function ProductDetailsPage() {
         setSelectedAttributes(initial)
       }
 
-      // Fetch reviews and wishlist concurrently
+      // Fetch reviews, wishlist and related products concurrently
       const promises = [
-        supabase.from('reviews').select('rating').eq('course_id', prod.id),
-        user ? supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', prod.id).maybeSingle() : Promise.resolve({ data: null })
+        supabase
+          .from('reviews')
+          .select('id, rating, review_text, created_at, profiles(full_name, avatar_url)')
+          .eq('course_id', prod.id)
+          .eq('is_approved', true)
+          .order('created_at', { ascending: false }),
+        user ? supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', prod.id).maybeSingle() : Promise.resolve({ data: null }),
+        supabase
+          .from('products')
+          .select('*')
+          .eq('is_published', true)
+          .neq('id', prod.id)
+          .limit(4)
       ]
 
-      const [revsRes, wlRes] = await Promise.all(promises)
+      const [revsRes, wlRes, relatedRes] = await Promise.all(promises)
       
-      const revs = revsRes.data
-      if (revs && revs.length > 0) {
+      const revs = revsRes.data || []
+      setReviews(revs)
+      if (revs.length > 0) {
         const sum = revs.reduce((acc, r) => acc + r.rating, 0)
         setReviewsAvg(sum / revs.length)
         setReviewsCount(revs.length)
+      } else {
+        setReviewsAvg(0)
+        setReviewsCount(0)
       }
 
       setWishlistAdded(!!wlRes.data)
+      if (relatedRes.data) {
+        setRelatedProducts(relatedRes.data)
+      }
       setLoading(false)
     }
 
@@ -160,10 +179,23 @@ export default function ProductDetailsPage() {
     navigate(`/checkout?product=${product.id}${variantQuery}`)
   }
 
+  const renderStars = (rating) => {
+    const starsAvg = rating || 4.8
+    return (
+      <div style={{ display: 'flex', gap: '2px' }}>
+        {[...Array(5)].map((_, i) => (
+          <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill={i < Math.floor(starsAvg) ? '#f59e0b' : 'none'} stroke="#f59e0b" strokeWidth="1.5">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        ))}
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', fontFamily: "var(--font)", zIndex: 9999 }}>
-        <img src="/logo.png" alt="MIFAS FARMS" style={{ height: 60, width: 'auto', marginBottom: 24 }} />
+        <img src="/logo.png" alt="MIFAS FARMS" style={{ height: 100, width: 'auto', marginBottom: 24 }} />
         <div style={{ width: '40px', height: '40px', border: '3px solid #f1f5f9', borderTopColor: 'var(--brand-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <p style={{ color: '#64748b', marginTop: 16, fontSize: '14px' }}>Loading product details...</p>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -189,8 +221,6 @@ export default function ProductDetailsPage() {
     ? Math.round((1 - finalPrice / finalComparePrice) * 100)
     : null
 
-  const features = Array.isArray(product.features) ? product.features : []
-
   return (
     <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b', padding: '40px 24px' }}>
       
@@ -208,21 +238,24 @@ export default function ProductDetailsPage() {
         
         {/* Left Column: Media Gallery */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* WooCommerce Square aspect-ratio container */}
           <div style={{
+            position: 'relative',
+            width: '100%',
+            aspectRatio: '1/1',
+            borderRadius: '12px',
             border: '1px solid #e2e8f0',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            height: '400px',
             background: '#f8fafc',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
             boxShadow: '0 4px 12px rgba(0,0,0,0.01)'
           }}>
             <img 
               src={activeImage} 
               alt={product.title} 
-              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '16px' }}
               onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.padding = '40px' }}
             />
           </div>
@@ -257,56 +290,37 @@ export default function ProductDetailsPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div>
-            {/* Stock Tag */}
-            <span style={{
-              display: 'inline-block',
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontSize: '11.5px',
-              fontWeight: 800,
-              background: isOutOfStock ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)',
-              color: isOutOfStock ? '#ef4444' : '#10b981',
-              border: isOutOfStock ? '1px solid rgba(239,68,68,0.2)' : '1px solid rgba(16,185,129,0.2)',
-              marginBottom: '12px'
-            }}>
-              {isOutOfStock ? '🔴 Out of Stock' : '🟢 In Stock'}
-            </span>
-
             <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 8px', fontFamily: 'var(--font-heading)', lineHeight: '1.2' }}>
               {product.title.replace(/\s+slug$/i, '')}
             </h1>
             
-            {/* Reviews Summary */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ display: 'flex', gap: '2px' }}>
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill={i < Math.floor(reviewsAvg) ? '#f59e0b' : 'none'} stroke="#f59e0b" strokeWidth="1.5">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                ))}
+            {/* Reviews Summary - Hidden if reviews count is 0 */}
+            {reviewsCount > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                {renderStars(reviewsAvg)}
+                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>{reviewsAvg.toFixed(1)} ({reviewsCount} customer reviews)</span>
               </div>
-              <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>{reviewsAvg.toFixed(1)} ({reviewsCount} customer reviews)</span>
-            </div>
+            )}
           </div>
 
           {/* Pricing Panel */}
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', background: '#f8fafc', padding: '16px', borderRadius: '6px' }}>
-            <span style={{ fontSize: '24px', fontWeight: 800, color: '#0d2e1a' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <span style={{ fontSize: '26px', fontWeight: 800, color: '#0d2e1a' }}>
               ₦{finalPrice?.toLocaleString()}
             </span>
             {finalComparePrice && (
-              <span style={{ fontSize: '16px', color: '#94a3b8', textDecoration: 'line-through' }}>
+              <span style={{ fontSize: '17px', color: '#94a3b8', textDecoration: 'line-through' }}>
                 ₦{finalComparePrice?.toLocaleString()}
               </span>
             )}
             {discountPercent && (
-              <span style={{ fontSize: '12px', fontWeight: 800, color: '#16a34a', background: 'rgba(22,163,74,0.1)', padding: '2px 8px', borderRadius: '4px', marginLeft: '6px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 800, color: '#16a34a', background: 'rgba(22,163,74,0.1)', padding: '4px 10px', borderRadius: '4px', marginLeft: '6px' }}>
                 {discountPercent}% OFF
               </span>
             )}
           </div>
 
-          <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+          <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>
             {product.short_description || (product.description ? product.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : '')}
           </p>
 
@@ -318,21 +332,22 @@ export default function ProductDetailsPage() {
                   <span style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px' }}>
                     Select {attr.name}
                   </span>
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {attr.options?.map(opt => (
                       <button
                         key={opt}
                         onClick={() => setSelectedAttributes({ ...selectedAttributes, [attr.name]: opt })}
                         style={{
                           padding: '8px 16px',
-                          borderRadius: '4px',
+                          borderRadius: '6px',
                           fontSize: '13px',
                           fontWeight: 700,
                           cursor: 'pointer',
                           border: selectedAttributes[attr.name] === opt ? '2px solid var(--brand-primary)' : '1px solid #cbd5e1',
                           background: selectedAttributes[attr.name] === opt ? 'rgba(18,60,36,0.04)' : '#ffffff',
                           color: selectedAttributes[attr.name] === opt ? 'var(--brand-primary)' : '#1f2937',
-                          transition: 'all 0.1s ease'
+                          transition: 'all 0.1s ease',
+                          boxShadow: selectedAttributes[attr.name] === opt ? '0 2px 4px rgba(18,60,36,0.06)' : 'none'
                         }}
                       >
                         {opt}
@@ -345,14 +360,14 @@ export default function ProductDetailsPage() {
           )}
 
           {/* ─── QUANTITY AND BUY CONTROLS ─── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Quantity</span>
-                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '4px', height: '38px', overflow: 'hidden' }}>
-                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} style={{ width: '32px', height: '100%', border: 'none', background: '#f8fafc', cursor: 'pointer', fontWeight: 800 }}>-</button>
-                  <span style={{ width: '40px', textAlign: 'center', fontSize: '13px', fontWeight: 700 }}>{quantity}</span>
-                  <button onClick={() => setQuantity(q => q + 1)} style={{ width: '32px', height: '100%', border: 'none', background: '#f8fafc', cursor: 'pointer', fontWeight: 800 }}>+</button>
+                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', height: '40px', overflow: 'hidden' }}>
+                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} style={{ width: '36px', height: '100%', border: 'none', background: '#f8fafc', cursor: 'pointer', fontWeight: 800, fontSize: '16px', color: '#64748b' }}>-</button>
+                  <span style={{ width: '44px', textAlign: 'center', fontSize: '14px', fontWeight: 700 }}>{quantity}</span>
+                  <button onClick={() => setQuantity(q => q + 1)} style={{ width: '36px', height: '100%', border: 'none', background: '#f8fafc', cursor: 'pointer', fontWeight: 800, fontSize: '16px', color: '#64748b' }}>+</button>
                 </div>
               </div>
 
@@ -362,19 +377,22 @@ export default function ProductDetailsPage() {
                 <button
                   onClick={toggleWishlist}
                   style={{
-                    height: '38px',
+                    height: '40px',
                     padding: '0 16px',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     border: '1px solid #cbd5e1',
                     background: '#ffffff',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontSize: '12.5px',
+                    fontSize: '13px',
                     fontWeight: 700,
-                    color: wishlistAdded ? '#ef4444' : '#475569'
+                    color: wishlistAdded ? '#ef4444' : '#475569',
+                    transition: 'all 0.15s ease'
                   }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = wishlistAdded ? '#ef4444' : 'var(--brand-primary)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = '#cbd5e1'}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill={wishlistAdded ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                   {wishlistAdded ? 'Wishlisted' : 'Add to Wishlist'}
@@ -389,46 +407,44 @@ export default function ProductDetailsPage() {
                 disabled={isOutOfStock}
                 style={{
                   background: 'transparent',
-                  color: 'var(--brand-primary)',
-                  border: '2px solid var(--brand-primary)',
-                  height: '44px',
-                  borderRadius: '4px',
+                  color: isOutOfStock ? '#cbd5e1' : 'var(--brand-primary)',
+                  border: isOutOfStock ? '2px solid #e2e8f0' : '2px solid var(--brand-primary)',
+                  height: '46px',
+                  borderRadius: '6px',
                   fontWeight: 700,
-                  fontSize: '13.5px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s ease',
-                  opacity: isOutOfStock ? 0.5 : 1
+                  fontSize: '14px',
+                  cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={e => { if(!isOutOfStock) e.currentTarget.style.background = 'rgba(18,60,36,0.04)' }}
                 onMouseLeave={e => { if(!isOutOfStock) e.currentTarget.style.background = 'transparent' }}
               >
-                Add to Cart
+                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
               </button>
               <button
                 onClick={handleBuyNow}
                 disabled={isOutOfStock}
                 style={{
-                  background: 'var(--brand-primary)',
-                  color: '#ffffff',
+                  background: isOutOfStock ? '#f1f5f9' : 'var(--brand-primary)',
+                  color: isOutOfStock ? '#94a3b8' : '#ffffff',
                   border: 'none',
-                  height: '44px',
-                  borderRadius: '4px',
+                  height: '46px',
+                  borderRadius: '6px',
                   fontWeight: 700,
-                  fontSize: '13.5px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s ease',
-                  opacity: isOutOfStock ? 0.5 : 1
+                  fontSize: '14px',
+                  cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={e => { if(!isOutOfStock) e.currentTarget.style.background = 'var(--brand-hover)' }}
                 onMouseLeave={e => { if(!isOutOfStock) e.currentTarget.style.background = 'var(--brand-primary)' }}
               >
-                Buy Now <span>→</span>
+                {isOutOfStock ? 'Out of Stock' : 'Buy Now →'}
               </button>
             </div>
           </div>
 
           {/* Product Meta Data list */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
             <span><strong>Weight (kg):</strong> {selectedVariant?.weight || product.weight || 'N/A'}</span>
             <span><strong>Category:</strong> {product.type === 'physical' ? 'Agricultural Exports' : 'Resources'}</span>
             <span><strong>SKU:</strong> MIFAS-{product.id.substring(0, 8).toUpperCase()}</span>
@@ -448,12 +464,12 @@ export default function ProductDetailsPage() {
           background: '#0d2e1a',
           color: '#ffffff',
           padding: '12px 24px',
-          borderRadius: '6px',
+          borderRadius: '8px',
           boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          fontSize: '13.5px',
+          fontSize: '14px',
           fontWeight: 700,
           animation: 'slideUp 0.3s ease'
         }}>
@@ -468,75 +484,233 @@ export default function ProductDetailsPage() {
         </div>
       )}
 
-      {/* ─── BELOW THE FOLD TABS ─── */}
+      {/* ─── BELOW THE FOLD Stacked Sections (Replacing Tabs) ─── */}
+      
+      {/* ─── DESCRIPTION SECTION ─── */}
+      {product.description && product.description !== 'No description provided.' && (
+        <section style={{ maxWidth: '1200px', margin: '48px auto 0', borderTop: '1px solid #e2e8f0', paddingTop: '32px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', marginBottom: '16px', fontFamily: 'var(--font-heading)' }}>
+            Product Description
+          </h2>
+          <div 
+            style={{ lineHeight: '1.7', fontSize: '14.5px', color: '#475569' }} 
+            dangerouslySetInnerHTML={{ __html: product.description }} 
+          />
+        </section>
+      )}
+
+      {/* ─── SPECIFICATIONS SECTION ─── */}
       <section style={{ maxWidth: '1200px', margin: '48px auto 0', borderTop: '1px solid #e2e8f0', paddingTop: '32px' }}>
-        <div style={{ display: 'flex', gap: '24px', borderBottom: '1px solid #cbd5e1', marginBottom: '20px' }}>
-          {[
-            { id: 'description', label: 'Description' },
-            { id: 'specifications', label: 'Additional Information' },
-            { id: 'reviews', label: 'Reviews' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                background: 'none',
-                border: 'none',
-                paddingBottom: '12px',
-                fontSize: '14px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                color: activeTab === tab.id ? 'var(--brand-primary)' : '#64748b',
-                borderBottom: activeTab === tab.id ? '3px solid var(--brand-primary)' : '3px solid transparent',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ minHeight: '120px', lineHeight: '1.7', fontSize: '14px', color: '#334155' }}>
-          {activeTab === 'description' && (
-            <div dangerouslySetInnerHTML={{ __html: product.description || 'No description provided.' }} />
-          )}
-
-          {activeTab === 'specifications' && (
-            <table style={{ width: '100%', borderCollapse: 'collapse', maxWidth: '500px' }}>
-              <tbody>
-                <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <td style={{ padding: '8px 0', fontWeight: 700, color: '#0d2e1a', width: '140px' }}>Weight</td>
-                  <td style={{ padding: '8px 0' }}>{selectedVariant?.weight || product.weight || 'N/A'} kg</td>
-                </tr>
-                <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <td style={{ padding: '8px 0', fontWeight: 700, color: '#0d2e1a' }}>Packaging</td>
-                  <td style={{ padding: '8px 0' }}>Export grade bulk sacks / drums</td>
-                </tr>
-                <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <td style={{ padding: '8px 0', fontWeight: 700, color: '#0d2e1a' }}>Origin</td>
-                  <td style={{ padding: '8px 0' }}>Nigeria</td>
-                </tr>
-              </tbody>
-            </table>
-          )}
-
-          {activeTab === 'reviews' && (
-            <div>
-              <p style={{ fontWeight: 700, color: '#0d2e1a', margin: '0 0 10px' }}>Average Rating: {reviewsAvg.toFixed(1)} / 5.0</p>
-              <p style={{ margin: 0, color: '#64748b' }}>Reviews are imported directly from verified export purchase bills.</p>
-            </div>
-          )}
-        </div>
+        <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', marginBottom: '16px', fontFamily: 'var(--font-heading)' }}>
+          Specifications & Additional Information
+        </h2>
+        <table style={{ width: '100%', borderCollapse: 'collapse', maxWidth: '600px', fontSize: '14px' }}>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a', width: '160px' }}>Weight</td>
+              <td style={{ padding: '12px 0', color: '#475569' }}>{selectedVariant?.weight || product.weight || 'N/A'} kg</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a' }}>Packaging</td>
+              <td style={{ padding: '12px 0', color: '#475569' }}>Export grade bulk sacks / drums</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '12px 0', fontWeight: 700, color: '#0d2e1a' }}>Origin</td>
+              <td style={{ padding: '12px 0', color: '#475569' }}>Nigeria</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
-      <style>{`
+      {/* ─── REVIEWS SECTION (Hidden if reviews count is 0) ─── */}
+      {reviews.length > 0 && (
+        <section style={{ maxWidth: '1200px', margin: '48px auto 0', borderTop: '1px solid #e2e8f0', paddingTop: '32px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d2e1a', marginBottom: '24px', fontFamily: 'var(--font-heading)' }}>
+            Customer Reviews ({reviewsCount})
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {reviews.map((rev) => (
+              <div key={rev.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '20px', background: '#ffffff', boxShadow: '0 2px 4px rgba(0,0,0,0.01)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: 'rgba(36, 106, 66, 0.08)',
+                      color: 'var(--brand-primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: '14px'
+                    }}>
+                      {(rev.profiles?.full_name || 'A')[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '14.5px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                        {rev.profiles?.full_name || 'Verified Buyer'}
+                      </h4>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                        {new Date(rev.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                      </span>
+                    </div>
+                  </div>
+                  {renderStars(rev.rating)}
+                </div>
+                <p style={{ fontSize: '14px', color: '#475569', margin: 0, lineHeight: '1.6' }}>
+                  {rev.review_text || 'No comment text submitted.'}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── RELATED PRODUCTS SECTION ─── */}
+      {relatedProducts.length > 0 && (
+        <section style={{ maxWidth: '1200px', margin: '64px auto 0', borderTop: '1px solid #e2e8f0', paddingTop: '40px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0d2e1a', margin: 0, fontFamily: 'var(--font-heading)' }}>
+              Related Products
+            </h2>
+            <Link to="/products" style={{ color: 'var(--brand-primary)', fontSize: '13px', fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              View All Products
+              <span style={{ fontSize: '11px' }}>→</span>
+            </Link>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '24px' }}>
+            {relatedProducts.map(prod => {
+              // Resolve related product price & discount
+              let displayPrice = prod.price
+              let displayOldPrice = prod.old_price
+              const hasVariants = prod.variations?.variants && prod.variations.variants.length > 0
+              if (hasVariants) {
+                const prices = prod.variations.variants.map(v => v.price).filter(p => p !== undefined && p !== null)
+                if (prices.length > 0) {
+                  displayPrice = Math.min(...prices)
+                  const cheapestVariant = prod.variations.variants.find(v => v.price === displayPrice)
+                  displayOldPrice = cheapestVariant?.compare_price || null
+                }
+              }
+
+              const discount = displayOldPrice && displayPrice
+                ? Math.round((1 - displayPrice / displayOldPrice) * 100)
+                : null
+
+              return (
+                <div 
+                  key={prod.id} 
+                  style={{
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '10px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.01)',
+                    transition: 'all 0.2s ease',
+                    height: '100%'
+                  }}
+                  className="product-card-hover"
+                >
+                  {/* Discount Badge */}
+                  {discount && (
+                    <span style={{
+                      position: 'absolute',
+                      top: '12px',
+                      left: '12px',
+                      background: '#16a34a',
+                      color: '#ffffff',
+                      fontSize: '10.5px',
+                      fontWeight: 800,
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      zIndex: 5
+                    }}>
+                      {discount}% OFF
+                    </span>
+                  )}
+
+                  {/* Product Image Frame (WooCommerce 1:1) */}
+                  <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', width: '100%', aspectRatio: '1/1', overflow: 'hidden', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                    <img 
+                      src={prod.cover_image || '/logo.png'} 
+                      alt={prod.title} 
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px' }}
+                      onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.padding = '30px' }}
+                    />
+                  </Link>
+
+                  {/* Card details */}
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, justifyContent: 'space-between' }}>
+                    <div>
+                      <Link to={`/product/${prod.slug || prod.id}`} style={{ textDecoration: 'none' }}>
+                        <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px', lineHeight: '1.3' }}>
+                          {prod.title.replace(/\s+slug$/i, '')}
+                        </h3>
+                      </Link>
+                      <p style={{ fontSize: '12.5px', color: '#64748b', lineHeight: '1.4', margin: 0 }}>
+                        {prod.short_description || (prod.description ? prod.description.replace(/<[^>]*>/g, '').substring(0, 80) + '...' : '')}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '16px', fontWeight: 800, color: '#0d2e1a' }}>
+                          {hasVariants ? 'From ' : ''}₦{displayPrice?.toLocaleString()}
+                        </span>
+                        {displayOldPrice && (
+                          <span style={{ fontSize: '12.5px', color: '#94a3b8', textDecoration: 'line-through' }}>
+                            ₦{displayOldPrice?.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+
+                      <Link to={`/product/${prod.slug || prod.id}`} style={{ textDecoration: 'none' }}>
+                        <button style={{
+                          width: '100%',
+                          height: '36px',
+                          background: 'rgba(18,60,36,0.04)',
+                          color: 'var(--brand-primary)',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '12.5px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary)'; e.currentTarget.style.color = '#ffffff' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(18,60,36,0.04)'; e.currentTarget.style.color = 'var(--brand-primary)' }}
+                        >
+                          View Details
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Media query overrides */}
+      <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 1024px) {
           .product-details-grid {
             grid-template-columns: 1fr !important;
             gap: 32px !important;
           }
         }
-      `}</style>
+        .product-card-hover:hover {
+          transform: translateY(-4px);
+          border-color: var(--brand-primary) !important;
+          box-shadow: 0 12px 20px -8px rgba(18, 60, 36, 0.08) !important;
+        }
+      `}} />
 
     </div>
   )

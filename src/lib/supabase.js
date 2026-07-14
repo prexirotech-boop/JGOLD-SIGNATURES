@@ -41,6 +41,8 @@ export async function createPendingOrder({
   shippingNotes,
   shippingCountry,
   deliveryFee = 0,
+  paymentMethod = 'paystack',
+  bankReceiptUrl = null,
 }) {
   try {
     const cleanEmail = (email || '').trim().toLowerCase()
@@ -55,7 +57,7 @@ export async function createPendingOrder({
         product_id: productId || null,
         amount: amount || 0,
         status: 'pending',
-        payment_method: 'paystack',
+        payment_method: paymentMethod,
         currency: 'NGN',
         affiliate_code: affiliateCode || null,
         affiliate_id: affiliateId || null,
@@ -69,6 +71,7 @@ export async function createPendingOrder({
         shipping_notes: shippingNotes || null,
         shipping_status: shippingStreet ? 'pending' : null,
         delivery_fee: deliveryFee,
+        bank_receipt_url: bankReceiptUrl,
       })
       .select('id, product_id')
       .single()

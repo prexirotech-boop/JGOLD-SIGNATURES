@@ -854,13 +854,13 @@ function AdminProducts({ featureFlags }) {
         const filePath = `products/${fileName}`
 
         const { error: uploadError } = await supabase.storage
-          .from('course-assets')
+          .from('products')
           .upload(filePath, file)
 
         if (uploadError) throw uploadError
 
         const { data: { publicUrl } } = supabase.storage
-          .from('course-assets')
+          .from('products')
           .getPublicUrl(filePath)
 
         uploadedUrls.push(publicUrl)
@@ -874,7 +874,7 @@ function AdminProducts({ featureFlags }) {
         cover_image: cover
       })
     } catch (err) {
-      alert(`Upload error: ${err.message}`)
+      alert(`Upload error: ${err.message}\n\nPlease make sure you have:\n1. Created a public bucket named "products" in your Supabase storage dashboard.\n2. Added a Storage Policy (RLS) for the "products" bucket that allows INSERT and SELECT actions (either for Authenticated users or Anonymous/Public access depending on your needs).`)
     } finally {
       setUploading(false)
     }
@@ -1613,25 +1613,25 @@ function AdminProducts({ featureFlags }) {
                       ))}
 
                       {/* Add new attribute trigger */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: 10, marginTop: 10 }}>
+                      <div style={{ display: 'flex', flexDirection: windowWidth < 600 ? 'column' : 'row', gap: 10, marginTop: 10 }}>
                         <input 
                           type="text" 
                           placeholder="e.g. Weight" 
                           value={newAttrName} 
                           onChange={e => setNewAttrName(e.target.value)} 
-                          style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                          style={{ flex: 1, padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12, minWidth: '100px' }}
                         />
                         <input 
                           type="text" 
                           placeholder="Options (comma separated: 1kg, 5kg)" 
                           value={newAttrOptions} 
                           onChange={e => setNewAttrOptions(e.target.value)} 
-                          style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
+                          style={{ flex: 2, padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12, minWidth: '150px' }}
                         />
                         <button 
                           type="button" 
                           onClick={handleAddAttribute}
-                          style={{ background: '#1e40af', color: '#ffffff', border: 'none', borderRadius: 4, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                          style={{ background: '#1e40af', color: '#ffffff', border: 'none', borderRadius: 4, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                         >
                           + Add
                         </button>
@@ -1659,7 +1659,7 @@ function AdminProducts({ featureFlags }) {
                             <div key={v.id} style={{ background: '#ffffff', border: '1px solid #dbeafe', borderRadius: 6, padding: 12, marginBottom: 10 }}>
                               <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--g800)', marginBottom: 8 }}>Variation: {comboName}</div>
                               
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 8 }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 500 ? '1fr' : '1fr 1fr', gap: 10, marginBottom: 8 }}>
                                 <div>
                                   <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Price (NGN) *</label>
                                   <input 
@@ -1681,7 +1681,7 @@ function AdminProducts({ featureFlags }) {
                                 </div>
                               </div>
 
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 8 }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 500 ? '1fr' : '1fr 1fr', gap: 10, marginBottom: 8 }}>
                                 <div>
                                   <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Stock Qty</label>
                                   <input 
@@ -2070,8 +2070,8 @@ export default function AdminDashboard() {
       flexDirection: 'column', 
       height: '100%', 
       padding: '20px 0 0 0', 
-      background: '#0F172A', 
-      borderRight: '1px solid #1E293B',
+      background: '#0d2e1a', 
+      borderRight: '1px solid #123c24',
       color: '#fff',
       transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
@@ -2119,9 +2119,9 @@ export default function AdminDashboard() {
                   style={{
                     width: '100%',
                     border: 'none',
-                    background: isParentActive ? '#1E293B' : 'transparent',
+                    background: isParentActive ? '#143e26' : 'transparent',
                     padding: '10px 14px',
-                    color: isParentActive ? '#fff' : '#94a3b8',
+                    color: isParentActive ? '#fff' : '#a7bdae',
                     cursor: 'pointer',
                     fontWeight: 500,
                     borderRadius: 6,
@@ -2164,10 +2164,10 @@ export default function AdminDashboard() {
                   title={sidebarCollapsed ? t.name : undefined}
                   style={{
                     padding: '10px 14px',
-                    color: location.pathname === t.path ? '#fff' : '#94a3b8',
+                    color: location.pathname === t.path ? '#fff' : '#a7bdae',
                     textDecoration: 'none',
                     fontWeight: 500,
-                    background: location.pathname === t.path ? '#1E293B' : 'transparent',
+                    background: location.pathname === t.path ? '#143e26' : 'transparent',
                     borderRadius: 6,
                     display: 'flex',
                     alignItems: 'center',
@@ -2191,7 +2191,7 @@ export default function AdminDashboard() {
                   flexDirection: 'column', 
                   gap: 2, 
                   marginLeft: 26, 
-                  borderLeft: '1px solid #334155', 
+                  borderLeft: '1px solid #1a4d30', 
                   paddingLeft: 12,
                   marginTop: 2,
                   marginBottom: 4
@@ -2204,7 +2204,7 @@ export default function AdminDashboard() {
                         to={sub.path}
                         style={{
                           padding: '6px 12px',
-                          color: isSubActive ? '#fff' : '#94a3b8',
+                          color: isSubActive ? '#fff' : '#a7bdae',
                           textDecoration: 'none',
                           fontSize: 12.5,
                           fontWeight: 500,
@@ -2227,11 +2227,11 @@ export default function AdminDashboard() {
       {/* Bottom Profile Details */}
       <div style={{ 
         padding: '16px', 
-        borderTop: '1px solid #1E293B', 
+        borderTop: '1px solid #123c24', 
         display: 'flex', 
         flexDirection: 'column', 
         gap: 16,
-        background: '#0B0F19' 
+        background: '#07190e' 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
           <img 
@@ -2244,7 +2244,7 @@ export default function AdminDashboard() {
               <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {profile?.full_name || 'Admin'}
               </div>
-              <div style={{ fontSize: 10.5, color: '#94a3b8', fontWeight: 500 }}>Super Admin</div>
+              <div style={{ fontSize: 10.5, color: '#a7bdae', fontWeight: 500 }}>Super Admin</div>
             </div>
           )}
         </div>
