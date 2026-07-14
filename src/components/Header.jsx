@@ -31,11 +31,19 @@ export default function Header() {
         setCartItems(items)
       } catch (e) {}
     }
+
+    const openDrawer = () => {
+      syncCart()
+      setShowCartDrawer(true)
+    }
+
     window.addEventListener('cart_updated', syncCart)
     window.addEventListener('storage', syncCart)
+    window.addEventListener('open_cart_drawer', openDrawer)
     return () => {
       window.removeEventListener('cart_updated', syncCart)
       window.removeEventListener('storage', syncCart)
+      window.removeEventListener('open_cart_drawer', openDrawer)
     }
   }, [])
 

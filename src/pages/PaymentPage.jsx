@@ -822,6 +822,7 @@ export default function PaymentPage() {
     }
 
     setLoading(false)
+    navigate('/success')
   }
 
   const displayBonuses = bonuses

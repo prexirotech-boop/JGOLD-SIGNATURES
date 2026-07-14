@@ -702,10 +702,6 @@ export default function HomePage() {
           .products-section-title {
             font-size: 24px !important;
           }
-          .section-header-flex {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-          }
         }
         @media (max-width: 480px) {
           .products-grid {

@@ -68,7 +68,7 @@ export default function ProductDetailsPage() {
           .select('*')
           .eq('is_published', true)
           .neq('id', prod.id)
-          .limit(4)
+          .limit(5)
       ]
 
       const [revsRes, wlRes, relatedRes] = await Promise.all(promises)
@@ -165,6 +165,7 @@ export default function ProductDetailsPage() {
 
       localStorage.setItem(cartKey, JSON.stringify(cart))
       window.dispatchEvent(new Event('cart_updated'))
+      window.dispatchEvent(new Event('open_cart_drawer'))
       
       setAddedToCartToast(true)
       setTimeout(() => setAddedToCartToast(false), 3000)
