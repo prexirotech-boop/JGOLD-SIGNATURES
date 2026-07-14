@@ -204,7 +204,8 @@ export default function PaymentPage() {
   const checkoutQuantity = (() => {
     try {
       const cart = JSON.parse(localStorage.getItem('ecom_cart')) || []
-      const item = cart.find(x => x.id === product?.id && x.variant_id === (product?.variant_id || null))
+      const activeVariantId = product?.variant_id ?? null
+      const item = cart.find(x => x.id === product?.id && x.variant_id === activeVariantId)
       return item?.quantity || 1
     } catch (e) {
       return 1
@@ -305,22 +306,29 @@ export default function PaymentPage() {
 
           setProduct(activeProduct)
           
-          // Auto-add checkout product to cart if not present
+          // Auto-add checkout product to cart ONLY if genuinely not present.
+          // FIX: use ?? null so activeProduct.variant_id (undefined for non-variant products)
+          // compares correctly against cart item's variant_id (null). Previously null !== undefined
+          // always triggered an overwrite, destroying the user's selected quantity.
           try {
             const cartKey = 'ecom_cart'
             let cart = JSON.parse(localStorage.getItem(cartKey)) || []
-            if (!cart.some(item => item.id === activeProduct.id && item.variant_id === activeProduct.variant_id)) {
-              // Filter out items with same base product but no variant or different variant if we want to update it
+            const activeVariantId = activeProduct.variant_id ?? null
+            if (!cart.some(item => item.id === activeProduct.id && item.variant_id === activeVariantId)) {
               cart = cart.filter(item => item.id !== activeProduct.id)
               cart.push({
                 id: activeProduct.id,
-                variant_id: activeProduct.variant_id || null,
+                variant_id: activeVariantId,
                 title: activeProduct.title,
                 price: activeProduct.price,
                 old_price: activeProduct.old_price,
                 cover_image: activeProduct.cover_image,
                 type: activeProduct.type,
-                slug: activeProduct.slug
+                slug: activeProduct.slug,
+                quantity: 1,
+                delivery_fee: activeProduct.delivery_fee || 0,
+                free_delivery: activeProduct.free_delivery || false,
+                shipping_charge_per_item: activeProduct.shipping_charge_per_item || false
               })
               localStorage.setItem(cartKey, JSON.stringify(cart))
               window.dispatchEvent(new Event('cart_updated'))

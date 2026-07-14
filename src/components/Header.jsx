@@ -69,10 +69,18 @@ export default function Header() {
 
   const cartSubtotal = cartItems.reduce((acc, item) => acc + ((parseInt(item.price) || 0) * (item.quantity || 1)), 0)
 
-  // Sum delivery fees: each item contributes its delivery_fee (0 if free_delivery or no fee)
+  // Sum delivery fees — use live product data as source of truth so old cart items also show correct shipping
   const cartShipping = cartItems.reduce((acc, item) => {
-    if (item.free_delivery) return acc
-    return acc + ((parseFloat(item.delivery_fee) || 0) * (item.quantity || 1))
+    // Look up live product data first, fall back to what's on the cart item
+    const liveProduct = products.find(p => p.id === item.id)
+    const isFreeDelivery = liveProduct ? (liveProduct.free_delivery || false) : (item.free_delivery || false)
+    if (isFreeDelivery) return acc
+    const fee = liveProduct
+      ? (parseFloat(liveProduct.delivery_fee) || 0)
+      : (parseFloat(item.delivery_fee) || 0)
+    const chargePerItem = liveProduct ? (liveProduct.shipping_charge_per_item || false) : false
+    const qty = chargePerItem ? (item.quantity || 1) : 1
+    return acc + fee * qty
   }, 0)
 
   const handleProceedToCheckout = () => {
@@ -90,7 +98,7 @@ export default function Header() {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('id, title, slug, price, cover_image, type')
+          .select('id, title, slug, price, cover_image, type, delivery_fee, free_delivery, shipping_charge_per_item')
           .eq('is_published', true)
         if (!error && data) {
           setProducts(data)
