@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { sendWelcomeEmail } from '../lib/emailService'
 
 const EyeOpenIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -72,8 +73,12 @@ export default function RegisterPage() {
       } else {
         // If auto-confirm is enabled, data.session will be populated and the user is logged in.
         if (data?.session) {
+          // Send welcome email (non-blocking)
+          sendWelcomeEmail({ name: fullName, email })
           navigate('/dashboard')
         } else {
+          // Still send welcome email (they'll confirm email)
+          sendWelcomeEmail({ name: fullName, email })
           setSuccessMsg('Registration successful! Please check your email for a verification link or log in if auto-confirmed.')
         }
       }

@@ -6,6 +6,7 @@ import { supabase, createPendingOrder, completeOrder, updateProfileShipping } fr
 import { trackEvent } from '../lib/analytics'
 import OrderBump from '../components/OrderBump'
 import { useAffiliate } from '../hooks/useAffiliate'
+import { sendOrderConfirmed, sendBankTransferPending } from '../lib/emailService'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHOPIFY-STYLE FIELD COMPONENT
@@ -610,6 +611,7 @@ export default function PaymentPage() {
           product_id: product?.id,
           product_type: product?.type,
           product_title: productTitle,
+          cover_image: product?.cover_image || null,
           amount: discountedPrice,
           delivery_fee: 0,
           shipping_name: isPhysical ? name : null,
@@ -639,6 +641,17 @@ export default function PaymentPage() {
         }
 
         setLoading(false)
+        // Send bank transfer pending email (non-blocking)
+        sendBankTransferPending({
+          name,
+          email,
+          phone,
+          ref,
+          product_title: productTitle,
+          product_type: product?.type,
+          product_image: product?.cover_image,
+          amount: discountedPrice,
+        })
         navigate('/success')
         return
       } catch (err) {
@@ -771,6 +784,7 @@ export default function PaymentPage() {
         product_id: product?.id,
         product_type: product?.type,
         product_title: productTitle,
+        cover_image: product?.cover_image || null,
         amount: discountedPrice,
         delivery_fee: 0,
         shipping_name: isPhysical ? name : null,
@@ -822,6 +836,21 @@ export default function PaymentPage() {
     }
 
     setLoading(false)
+    // Send order confirmation email (non-blocking)
+    sendOrderConfirmed({
+      name,
+      email,
+      phone,
+      ref: reference,
+      product_title: productTitle,
+      product_type: product?.type,
+      product_image: product?.cover_image,
+      amount: discountedPrice,
+      payment_method: 'paystack',
+      shipping_street: isPhysical ? form.shipping_street : undefined,
+      shipping_city: isPhysical ? form.shipping_city : undefined,
+      shipping_state: isPhysical ? form.shipping_state : undefined,
+    })
     navigate('/success')
   }
 

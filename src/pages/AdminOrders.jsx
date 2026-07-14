@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase, createEnrollment } from '../lib/supabase'
+import { sendPaymentVerified, sendOrderShipped, sendOrderDelivered } from '../lib/emailService'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
@@ -725,6 +726,23 @@ export default function AdminOrders() {
           }
           await loadData()
           if (selectedOrder?.id === order.id) setSelectedOrder(prev => ({ ...prev, status: newStatus }))
+
+          // ── Send transactional email based on new status
+          const emailData = {
+            name: order.customer_name || 'Customer',
+            email: order.customer_email,
+            ref: order.reference,
+            product_title: order.products?.title,
+            product_type: order.products?.type,
+            product_image: order.products?.cover_image,
+            amount: order.amount,
+            shipping_street: order.shipping_street,
+            shipping_city: order.shipping_city,
+            shipping_state: order.shipping_state,
+          }
+          if (newStatus === 'paid') sendPaymentVerified(emailData)
+          else if (newStatus === 'shipped') sendOrderShipped(emailData)
+          else if (newStatus === 'delivered') sendOrderDelivered(emailData)
         } catch (err) {
           showToast('Failed to update order status', 'error')
         }
