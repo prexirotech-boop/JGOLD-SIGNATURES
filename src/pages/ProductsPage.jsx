@@ -297,8 +297,9 @@ export default function ProductsPage() {
                   <Link to={`/product/${product.slug || product.id}`} style={{ display: 'block', height: '140px', overflow: 'hidden', background: '#f8fafc' }}>
                     <img 
                       src={product.cover_image || '/logo.png'} 
-                      alt={product.title.replace(/\s+slug$/i, '')} 
+                      alt={`${product.title.replace(/\s+slug$/i, '')} - Export-grade agro product from MIFAS Store`} 
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      loading="lazy"
                       onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.padding = '20px' }}
                     />
                   </Link>

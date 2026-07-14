@@ -153,6 +153,41 @@ export async function trackEvent(eventName, metadata = {}) {
 
       window.fbq('track', metaEventName, payload)
     }
+
+    // 4. Dispatch event to Google Analytics (gtag)
+    if (window.gtag) {
+      if (eventName === 'page_view') {
+        window.gtag('config', 'G-ZSGH14H1YK', {
+          page_path: path,
+          page_title: document.title
+        })
+      } else {
+        const gaEventMap = {
+          webinar_signup: 'generate_lead',
+          initiate_checkout: 'begin_checkout',
+          payment_attempt: 'add_payment_info',
+          purchase: 'purchase'
+        }
+        const gaEventName = gaEventMap[eventName] || eventName
+        const payload = {
+          value: metadata.value !== undefined ? metadata.value : (metadata.amount !== undefined ? metadata.amount : undefined),
+          currency: metadata.currency || 'NGN',
+          content_name: metadata.content_name || metadata.product_title,
+          content_type: metadata.content_type || metadata.product_type
+        }
+        
+        if (gaEventName === 'purchase') {
+          payload.transaction_id = metadata.ref || metadata.reference || ''
+          payload.items = [{
+            item_name: metadata.product_title || metadata.content_name || 'Product',
+            price: metadata.value !== undefined ? metadata.value : (metadata.amount !== undefined ? metadata.amount : 0),
+            quantity: 1
+          }]
+        }
+        
+        window.gtag('event', gaEventName, payload)
+      }
+    }
   } catch (err) {
     console.error('[Analytics] Error tracking event:', err)
   }

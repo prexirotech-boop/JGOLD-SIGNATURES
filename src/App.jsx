@@ -52,6 +52,61 @@ function ScrollToTop() {
   return null;
 }
 
+const ROUTE_SEO = {
+  '/': {
+    title: 'MIFAS FARMS — Premium Organic Agro-Exports & Logistics',
+    description: 'MIFAS FARMS offers premium organic agricultural products, agro-exports, and farm produce logistics. Order top quality agricultural exports directly from our storefront.'
+  },
+  '/about': {
+    title: 'About Us — MIFAS FARMS Premium Agricultural Exports',
+    description: 'Learn about MIFAS FARMS, our mission, sustainable agricultural practices, and how we deliver premium export-grade produce from Nigeria to the world.'
+  },
+  '/products': {
+    title: 'Shop Export-Grade Agricultural Products — MIFAS Store',
+    description: 'Browse and purchase top-quality agricultural products including cashew nuts, ginger, chili pepper, and cocoa beans directly from our export-grade store.'
+  },
+  '/contact': {
+    title: 'Contact Us — MIFAS FARMS Customer Support',
+    description: 'Get in touch with MIFAS FARMS. Contact our sales and logistics team for inquiries about agricultural export rates, shipping, and bulk orders.'
+  },
+  '/blog': {
+    title: 'Agro-Export & Farming Insights Blog — MIFAS FARMS',
+    description: 'Stay updated with the latest trends, insights, guides, and farming techniques in the Nigerian agro-export and agricultural logistics sector.'
+  },
+  '/faq': {
+    title: 'Frequently Asked Questions — MIFAS FARMS Support',
+    description: 'Find answers to common questions about MIFAS FARMS product ordering, quality standards, shipping logistics, payment options, and refund policy.'
+  },
+  '/affiliate': {
+    title: 'Affiliate Partnership Program — MIFAS FARMS',
+    description: 'Join the MIFAS FARMS affiliate program. Earn generous commissions by referring buyers to our export-grade agricultural store.'
+  },
+  '/quality': {
+    title: 'Premium Export Standards & Quality Assurance — MIFAS FARMS',
+    description: 'MIFAS Agricultural Exports operates under strict international quality guidelines, ensuring all shipments meet phytosanitary and export grade certifications.'
+  },
+  '/export': {
+    title: 'Global Agro-Export & Trade Services — MIFAS FARMS',
+    description: 'MIFAS Agricultural Exports specializes in sourcing, processing, packaging, and shipping premium Nigerian agricultural commodities globally.'
+  },
+  '/gallery': {
+    title: 'MIFAS FARMS — Photo Gallery & Operations',
+    description: 'Take a virtual tour of MIFAS FARMS. Explore our farms, processing facilities, quality inspection processes, and logistics operations in Nigeria.'
+  },
+  '/terms': {
+    title: 'Terms of Service — MIFAS FARMS',
+    description: 'Read the terms and conditions governing the use of MIFAS FARMS website, storefront, ordering system, and agro-export services.'
+  },
+  '/privacy': {
+    title: 'Privacy Policy — MIFAS FARMS',
+    description: 'Review our privacy policy to understand how MIFAS FARMS collects, uses, protects, and handles your personal and transactional information.'
+  },
+  '/refund': {
+    title: 'Refund & Cancellation Policy — MIFAS FARMS',
+    description: 'Understand the terms, conditions, and procedures for refunds, returns, or order cancellations at MIFAS FARMS Store.'
+  }
+}
+
 function AppLayout() {
   const location = useLocation()
 
@@ -94,9 +149,27 @@ function AppLayout() {
     loadFlags()
   }, [])
 
-  // Track PageView on location changes for Facebook Pixel & DB Analytics
+  // Track PageView and apply dynamic SEO Meta tags on location changes
   useEffect(() => {
     trackEvent('page_view')
+
+    const path = location.pathname
+    // Skip dynamic updates for dynamic routes like product details (handled inside page component)
+    if (!path.startsWith('/product/') && !path.startsWith('/admin') && !path.startsWith('/lms')) {
+      const seo = ROUTE_SEO[path] || ROUTE_SEO['/']
+      document.title = seo.title
+      
+      const metaDesc = document.querySelector('meta[name="description"]')
+      if (metaDesc) {
+        metaDesc.setAttribute('content', seo.description)
+      }
+      
+      const ogTitle = document.querySelector('meta[property="og:title"]')
+      if (ogTitle) ogTitle.setAttribute('content', seo.title)
+      
+      const ogDesc = document.querySelector('meta[property="og:description"]')
+      if (ogDesc) ogDesc.setAttribute('content', seo.description)
+    }
   }, [location])
 
   // Hide global Header and Footer on admin, dashboard, course, account, and auth paths

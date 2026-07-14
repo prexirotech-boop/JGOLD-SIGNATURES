@@ -43,6 +43,17 @@ export default function ProductDetailsPage() {
       setProduct(prod)
       setActiveImage(prod.cover_image || '/logo.png')
 
+      // SEO Dynamic title and description injection
+      document.title = `${prod.title.replace(/\s+slug$/i, '')} — Buy Online | MIFAS Store`
+      const metaDesc = document.querySelector('meta[name="description"]')
+      if (metaDesc) {
+        metaDesc.setAttribute('content', prod.description || `Buy ${prod.title} at MIFAS Agricultural Exports. Premium quality export-grade produce from Nigeria.`)
+      }
+      const ogTitle = document.querySelector('meta[property="og:title"]')
+      if (ogTitle) ogTitle.setAttribute('content', `${prod.title.replace(/\s+slug$/i, '')} — Buy Online | MIFAS Store`)
+      const ogDesc = document.querySelector('meta[property="og:description"]')
+      if (ogDesc) ogDesc.setAttribute('content', prod.description || `Buy ${prod.title} at MIFAS Agricultural Exports.`)
+
       // Pre-select first options of variations if available
       if (prod.variations?.attributes && prod.variations.attributes.length > 0) {
         const initial = {}
@@ -259,7 +270,7 @@ export default function ProductDetailsPage() {
           }}>
             <img 
               src={activeImage} 
-              alt={product.title} 
+              alt={`${product.title.replace(/\s+slug$/i, '')} - Premium agricultural export grade product`} 
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.objectFit = 'contain'; e.currentTarget.style.padding = '40px' }}
             />
@@ -284,7 +295,7 @@ export default function ProductDetailsPage() {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  <img src={img} alt="Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={img} alt={`${product.title.replace(/\s+slug$/i, '')} product image thumbnail`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </button>
               ))}
             </div>
@@ -659,8 +670,9 @@ export default function ProductDetailsPage() {
                   <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', height: '160px', overflow: 'hidden', background: '#f8fafc' }}>
                     <img 
                       src={prod.cover_image || '/logo.png'} 
-                      alt={prod.title} 
+                      alt={`${prod.title.replace(/\s+slug$/i, '')} related product`} 
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      loading="lazy"
                       onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.objectFit = 'contain'; e.currentTarget.style.padding = '20px' }}
                     />
                   </Link>

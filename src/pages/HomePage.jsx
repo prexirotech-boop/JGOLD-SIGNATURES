@@ -44,10 +44,10 @@ export default function HomePage() {
         
         {/* Leaf image overlays for decoration */}
         <div style={{ position: 'absolute', top: '-15px', left: '-15px', opacity: 0.25, zIndex: 1, pointerEvents: 'none' }} className="hero-leaf-tl">
-          <img src="/leaf.png" alt="botanical leaf decoration" style={{ width: '100px', height: 'auto', transform: 'rotate(-25deg) scaleX(-1)' }} />
+          <img src="/leaf.png" alt="botanical leaf decoration for MIFAS Agricultural Exports" style={{ width: '100px', height: 'auto', transform: 'rotate(-25deg) scaleX(-1)' }} />
         </div>
         <div style={{ position: 'absolute', bottom: '0px', left: '-25px', opacity: 0.35, zIndex: 1, pointerEvents: 'none' }} className="hero-leaf-bl">
-          <img src="/leaf.png" alt="botanical leaf decoration" style={{ width: '140px', height: 'auto', transform: 'rotate(15deg)' }} />
+          <img src="/leaf.png" alt="botanical leaf decoration for MIFAS Agricultural Exports" style={{ width: '140px', height: 'auto', transform: 'rotate(15deg)' }} />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', alignItems: 'center', width: '100%' }} className="hero-grid">
@@ -121,7 +121,7 @@ export default function HomePage() {
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', background: '#ffffff' }} className="hero-image-col">
             <img 
               src="/mifas_hero_image.png" 
-              alt="Nigerian premium agricultural products collage" 
+              alt="MIFAS Agricultural Exports premium products collage including cashew nuts, ginger, chili, and cocoa beans" 
               style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
             />
           </div>
@@ -246,7 +246,7 @@ export default function HomePage() {
           {/* Left Crop Image (Circle) */}
           <div style={{ display: 'flex', justifyContent: 'center' }} className="about-left-circle-col">
             <div style={{ width: '220px', height: '220px', borderRadius: '50%', overflow: 'hidden', border: '5px solid #246a42', boxShadow: '0 8px 24px rgba(36,106,66,0.12)', transition: 'transform 0.3s ease' }} className="about-circle-container">
-              <img src="/about_left.png" alt="Kolanuts basket" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src="/about_left.png" alt="Export-grade Nigerian Kolanuts basket - MIFAS FARMS" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
             </div>
           </div>
 
@@ -285,7 +285,7 @@ export default function HomePage() {
           {/* Right Crop Image (Circle) */}
           <div style={{ display: 'flex', justifyContent: 'center' }} className="about-right-circle-col">
             <div style={{ width: '220px', height: '220px', borderRadius: '50%', overflow: 'hidden', border: '5px solid #246a42', boxShadow: '0 8px 24px rgba(36,106,66,0.12)', transition: 'transform 0.3s ease' }} className="about-circle-container">
-              <img src="/about_right.png" alt="Shea butter nuts" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src="/about_right.png" alt="Raw Shea butter nuts raw materials - MIFAS FARMS" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
             </div>
           </div>
 
@@ -428,8 +428,9 @@ export default function HomePage() {
                   <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', height: '160px', overflow: 'hidden', background: '#f8fafc' }}>
                     <img
                       src={prod.cover_image || '/logo.png'}
-                      alt={prod.title.replace(/\s+slug$/i, '')}
+                      alt={`${prod.title.replace(/\s+slug$/i, '')} - Premium agricultural export grade product`}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      loading="lazy"
                       onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.objectFit = 'contain'; e.currentTarget.style.padding = '20px' }}
                     />
                   </Link>
