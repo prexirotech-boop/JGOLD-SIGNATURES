@@ -671,7 +671,6 @@ export default function PaymentPage() {
         }
 
         setLoading(false)
-        // Send bank transfer pending email (non-blocking)
         sendBankTransferPending({
           name,
           email,
@@ -681,6 +680,12 @@ export default function PaymentPage() {
           product_type: product?.type,
           product_image: product?.cover_image,
           amount: finalTotal,
+          bank_name: bankAccounts[0]?.bank_name,
+          account_number: bankAccounts[0]?.account_number,
+          account_name: bankAccounts[0]?.account_name,
+          shipping_street: isPhysical ? form.shipping_street : undefined,
+          shipping_city: isPhysical ? form.shipping_city : undefined,
+          shipping_state: isPhysical ? form.shipping_state : undefined,
         })
         navigate('/success')
         return
