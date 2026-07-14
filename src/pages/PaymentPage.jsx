@@ -218,7 +218,10 @@ export default function PaymentPage() {
     return sum + base
   }, 0)
 
-  const finalTotal = discountedPrice + bumpsTotal
+  // Delivery fee: 0 if product has free_delivery flag OR no fee set
+  const deliveryFee = product?.free_delivery ? 0 : (parseFloat(product?.delivery_fee) || 0)
+
+  const finalTotal = discountedPrice + bumpsTotal + deliveryFee
 
   // Load product from database and sync with cart
   useEffect(() => {
@@ -662,7 +665,7 @@ export default function PaymentPage() {
       }
     }
 
-    const ref = `n50k_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+    const ref = `MIFAS_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
     const affId = affiliateData?.id || null
     const affCode = affiliateData?.affiliate_code || null
 
@@ -785,8 +788,8 @@ export default function PaymentPage() {
         product_type: product?.type,
         product_title: productTitle,
         cover_image: product?.cover_image || null,
-        amount: discountedPrice,
-        delivery_fee: 0,
+        amount: finalTotal,
+        delivery_fee: deliveryFee,
         shipping_name: isPhysical ? name : null,
         shipping_phone: isPhysical ? phone : null,
         shipping_street: isPhysical ? form.shipping_street.trim() : null,
@@ -999,6 +1002,12 @@ export default function PaymentPage() {
             <span className="calc-value">₦{bumpsTotal.toLocaleString()}</span>
           </div>
         )}
+        <div className="shopify-calc-row" style={{ color: deliveryFee === 0 ? '#16a34a' : 'inherit' }}>
+          <span>Shipping</span>
+          <span className="calc-value" style={{ fontWeight: deliveryFee === 0 ? 700 : 600 }}>
+            {deliveryFee === 0 ? '🚚 Free' : `₦${deliveryFee.toLocaleString()}`}
+          </span>
+        </div>
 
         
         <div className="shopify-total-row">
@@ -1009,6 +1018,7 @@ export default function PaymentPage() {
           </div>
         </div>
       </div>
+
 
       {/* Safe SSL Guarantee Box */}
       <div className="shopify-guarantee-box">

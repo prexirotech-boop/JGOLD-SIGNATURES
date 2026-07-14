@@ -160,7 +160,9 @@ export default function ProductDetailsPage() {
         cover_image: finalImage,
         type: product.type,
         slug: product.slug,
-        quantity: quantity
+        quantity: quantity,
+        delivery_fee: product.delivery_fee || 0,
+        free_delivery: product.free_delivery || false
       })
 
       localStorage.setItem(cartKey, JSON.stringify(cart))

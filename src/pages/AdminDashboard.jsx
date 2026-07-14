@@ -760,7 +760,9 @@ function AdminProducts({ featureFlags }) {
     weight: '',
     category: '',
     packaging: '',
-    origin: ''
+    origin: '',
+    delivery_fee: '',
+    free_delivery: false
   })
 
   const [uploading, setUploading] = useState(false)
@@ -808,7 +810,9 @@ function AdminProducts({ featureFlags }) {
       weight: '',
       category: '',
       packaging: '',
-      origin: ''
+      origin: '',
+      delivery_fee: '',
+      free_delivery: false
     })
     setShowModal(true)
   }
@@ -834,7 +838,9 @@ function AdminProducts({ featureFlags }) {
       weight: p.weight !== null && p.weight !== undefined ? p.weight : '',
       category: p.meta_title || '',
       packaging: p.packaging || '',
-      origin: p.origin || ''
+      origin: p.origin || '',
+      delivery_fee: p.delivery_fee !== null && p.delivery_fee !== undefined ? p.delivery_fee : '',
+      free_delivery: p.free_delivery || false
     })
     setShowModal(true)
   }
@@ -1011,7 +1017,9 @@ function AdminProducts({ featureFlags }) {
       weight: productForm.type === 'physical' && productForm.weight !== '' ? parseFloat(productForm.weight) : null,
       meta_title: productForm.category ? productForm.category.trim() : null,
       packaging: productForm.packaging ? productForm.packaging.trim() : null,
-      origin: productForm.origin ? productForm.origin.trim() : null
+      origin: productForm.origin ? productForm.origin.trim() : null,
+      free_delivery: productForm.free_delivery || false,
+      delivery_fee: productForm.free_delivery ? 0 : (productForm.delivery_fee !== '' ? parseFloat(productForm.delivery_fee) : 0)
     }
 
     try {
@@ -1066,7 +1074,9 @@ function AdminProducts({ featureFlags }) {
         weight: product.weight,
         meta_title: product.meta_title || null,
         packaging: product.packaging || null,
-        origin: product.origin || null
+        origin: product.origin || null,
+        free_delivery: product.free_delivery || false,
+        delivery_fee: product.delivery_fee || 0
       }
 
       const { data, error } = await supabase
@@ -1700,8 +1710,47 @@ function AdminProducts({ featureFlags }) {
                         style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
                       />
                     </div>
+
+                    {/* Delivery Settings */}
+                    <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 14 }}>
+                      <label style={{ display: 'block', fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#3c4257' }}>
+                        🚚 Delivery / Shipping
+                      </label>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                        <input
+                          type="checkbox"
+                          id="free_delivery"
+                          checked={productForm.free_delivery || false}
+                          onChange={e => setProductForm({ ...productForm, free_delivery: e.target.checked, delivery_fee: e.target.checked ? '' : productForm.delivery_fee })}
+                          style={{ width: 15, height: 15, accentColor: '#16a34a' }}
+                        />
+                        <label htmlFor="free_delivery" style={{ fontSize: 13, fontWeight: 700, color: '#16a34a', cursor: 'pointer' }}>
+                          ✅ Free Delivery (no shipping charge)
+                        </label>
+                      </div>
+                      {!productForm.free_delivery && (
+                        <div>
+                          <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>
+                            Delivery Fee (₦) <span style={{ color: '#94a3b8', fontWeight: 400 }}>— leave 0 for free</span>
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="100"
+                            value={productForm.delivery_fee}
+                            onChange={e => setProductForm({ ...productForm, delivery_fee: e.target.value })}
+                            placeholder="e.g. 2500"
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }}
+                          />
+                          <p style={{ margin: '4px 0 0', fontSize: 11, color: '#94a3b8' }}>
+                            This fee is added to the product price at checkout and shown in the cart.
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </>
                 )}
+
 
                 {/* Variable Product Toggle checkbox */}
                 {productForm.type === 'physical' && (

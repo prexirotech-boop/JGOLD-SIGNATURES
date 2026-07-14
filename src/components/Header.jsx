@@ -47,12 +47,33 @@ export default function Header() {
     }
   }, [])
 
-  const handleRemoveFromCart = (itemId) => {
-    const updated = cartItems.filter(item => item.id !== itemId)
+  const handleRemoveFromCart = (itemId, variantId = undefined) => {
+    const updated = cartItems.filter(item => !(item.id === itemId && item.variant_id === (variantId ?? item.variant_id)))
     localStorage.setItem('ecom_cart', JSON.stringify(updated))
     setCartItems(updated)
     window.dispatchEvent(new Event('cart_updated'))
   }
+
+  const handleUpdateQty = (itemId, variantId, delta) => {
+    const updated = cartItems.map(item => {
+      if (item.id === itemId && item.variant_id === variantId) {
+        const newQty = Math.max(1, (item.quantity || 1) + delta)
+        return { ...item, quantity: newQty }
+      }
+      return item
+    })
+    localStorage.setItem('ecom_cart', JSON.stringify(updated))
+    setCartItems(updated)
+    window.dispatchEvent(new Event('cart_updated'))
+  }
+
+  const cartSubtotal = cartItems.reduce((acc, item) => acc + ((parseInt(item.price) || 0) * (item.quantity || 1)), 0)
+
+  // Sum delivery fees: each item contributes its delivery_fee (0 if free_delivery or no fee)
+  const cartShipping = cartItems.reduce((acc, item) => {
+    if (item.free_delivery) return acc
+    return acc + ((parseFloat(item.delivery_fee) || 0) * (item.quantity || 1))
+  }, 0)
 
   const handleProceedToCheckout = () => {
     setShowCartDrawer(false)
@@ -62,8 +83,6 @@ export default function Header() {
       navigate('/checkout')
     }
   }
-
-  const cartSubtotal = cartItems.reduce((acc, item) => acc + (parseInt(item.price) || 0), 0)
 
   // Fetch all published products on mount for autocomplete search
   useEffect(() => {
@@ -398,7 +417,7 @@ export default function Header() {
             ) : (
               <div className="cart-items-list">
                 {cartItems.map(item => (
-                  <div key={item.id} className="cart-item-card">
+                  <div key={`${item.id}-${item.variant_id}`} className="cart-item-card">
                     <img 
                       src={item.cover_image} 
                       alt={item.title} 
@@ -409,7 +428,7 @@ export default function Header() {
                       <h4 className="cart-item-title">{item.title.replace(/\s+slug$/i, '')}</h4>
                       <div className="cart-item-price-row">
                         <span className="cart-item-price">
-                          {item.price ? `₦${Number(item.price).toLocaleString()}` : 'Free'}
+                          {item.price ? `₦${(Number(item.price) * (item.quantity || 1)).toLocaleString()}` : 'Free'}
                         </span>
                         {item.old_price && (
                           <span className="cart-item-old-price">
@@ -417,9 +436,22 @@ export default function Header() {
                           </span>
                         )}
                       </div>
+                      {/* Quantity Controls */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                        <button
+                          onClick={() => handleUpdateQty(item.id, item.variant_id, -1)}
+                          style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#374151', flexShrink: 0 }}
+                        >−</button>
+                        <span style={{ minWidth: '20px', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{item.quantity || 1}</span>
+                        <button
+                          onClick={() => handleUpdateQty(item.id, item.variant_id, 1)}
+                          style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#374151', flexShrink: 0 }}
+                        >+</button>
+                        <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '2px' }}>@ ₦{Number(item.price).toLocaleString()} each</span>
+                      </div>
                     </div>
                     <button 
-                      onClick={() => handleRemoveFromCart(item.id)} 
+                      onClick={() => handleRemoveFromCart(item.id, item.variant_id)} 
                       className="cart-item-remove-btn"
                       title="Remove item"
                     >
@@ -433,10 +465,22 @@ export default function Header() {
           
           {cartItems.length > 0 && (
             <div className="cart-drawer-footer">
-              <div className="cart-total-row">
+              <div className="cart-total-row" style={{ marginBottom: 4 }}>
                 <span>Subtotal</span>
                 <span className="cart-total-price">₦{cartSubtotal.toLocaleString()}</span>
               </div>
+              <div className="cart-total-row" style={{ marginBottom: 8, fontSize: 13, color: cartShipping === 0 ? '#16a34a' : '#475569' }}>
+                <span>Shipping</span>
+                <span style={{ fontWeight: 700 }}>{cartShipping === 0 ? 'Free' : `₦${cartShipping.toLocaleString()}`}</span>
+              </div>
+              {cartShipping > 0 && (
+                <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: 8, marginBottom: 8 }}>
+                  <div className="cart-total-row" style={{ fontSize: 14, fontWeight: 800 }}>
+                    <span>Total</span>
+                    <span style={{ color: 'var(--brand-primary)' }}>₦{(cartSubtotal + cartShipping).toLocaleString()}</span>
+                  </div>
+                </div>
+              )}
               <button onClick={handleProceedToCheckout} className="cart-checkout-btn">
                 Complete Payment
               </button>
