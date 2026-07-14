@@ -206,10 +206,12 @@ export default function ProductDetailsPage() {
   if (!product) return null
 
   // Images list (Cover image + optional uploader images list)
-  const imagesList = [
+  // Deduplicate: avoid showing cover_image twice if it also appears in product.images
+  const rawImages = [
     product.cover_image,
     ...(Array.isArray(product.images) ? product.images : [])
   ].filter(Boolean)
+  const imagesList = rawImages.filter((img, idx) => rawImages.indexOf(img) === idx)
 
   const finalPrice = selectedVariant ? selectedVariant.price : product.price
   const finalComparePrice = selectedVariant ? selectedVariant.compare_price : product.old_price
@@ -255,8 +257,8 @@ export default function ProductDetailsPage() {
             <img 
               src={activeImage} 
               alt={product.title} 
-              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '16px' }}
-              onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.padding = '40px' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.objectFit = 'contain'; e.currentTarget.style.padding = '40px' }}
             />
           </div>
 
@@ -321,7 +323,11 @@ export default function ProductDetailsPage() {
           </div>
 
           <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-            {product.short_description || (product.description ? product.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : '')}
+            {product.short_description
+              ? product.short_description
+              : product.description
+                ? product.description.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().substring(0, 180) + '...'
+                : ''}
           </p>
 
           {/* ─── ATTRIBUTES SELECTORS (WooCommerce-Style) ─── */}
@@ -446,7 +452,7 @@ export default function ProductDetailsPage() {
           {/* Product Meta Data list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
             <span><strong>Weight (kg):</strong> {selectedVariant?.weight || product.weight || 'N/A'}</span>
-            <span><strong>Category:</strong> {product.type === 'physical' ? 'Agricultural Exports' : 'Resources'}</span>
+            <span><strong>Category:</strong> {product.meta_title || (product.type === 'physical' ? 'Agricultural Exports' : 'Resources')}</span>
             <span><strong>SKU:</strong> MIFAS-{product.id.substring(0, 8).toUpperCase()}</span>
           </div>
 
@@ -580,7 +586,7 @@ export default function ProductDetailsPage() {
             </Link>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
             {relatedProducts.map(prod => {
               // Resolve related product price & discount
               let displayPrice = prod.price
@@ -599,20 +605,22 @@ export default function ProductDetailsPage() {
                 ? Math.round((1 - displayPrice / displayOldPrice) * 100)
                 : null
 
+              const shortDesc = prod.short_description
+                || (prod.description ? prod.description.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().substring(0, 80) + '...' : '')
+
               return (
                 <div 
                   key={prod.id} 
                   style={{
                     background: '#ffffff',
                     border: '1px solid #e2e8f0',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.01)',
-                    transition: 'all 0.2s ease',
-                    height: '100%'
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)',
+                    transition: 'all 0.2s ease'
                   }}
                   className="product-card-hover"
                 >
@@ -620,13 +628,13 @@ export default function ProductDetailsPage() {
                   {discount && (
                     <span style={{
                       position: 'absolute',
-                      top: '12px',
-                      left: '12px',
+                      top: '10px',
+                      left: '10px',
                       background: '#16a34a',
                       color: '#ffffff',
-                      fontSize: '10.5px',
+                      fontSize: '10px',
                       fontWeight: 800,
-                      padding: '3px 8px',
+                      padding: '2px 8px',
                       borderRadius: '4px',
                       zIndex: 5
                     }}>
@@ -634,59 +642,54 @@ export default function ProductDetailsPage() {
                     </span>
                   )}
 
-                  {/* Product Image Frame (WooCommerce 1:1) */}
-                  <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', width: '100%', aspectRatio: '1/1', overflow: 'hidden', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                  {/* Product Image — fixed height, object-fit: cover */}
+                  <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', height: '160px', overflow: 'hidden', background: '#f8fafc' }}>
                     <img 
                       src={prod.cover_image || '/logo.png'} 
                       alt={prod.title} 
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px' }}
-                      onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.padding = '30px' }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.objectFit = 'contain'; e.currentTarget.style.padding = '20px' }}
                     />
                   </Link>
 
                   {/* Card details */}
-                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, justifyContent: 'space-between' }}>
+                  <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', gap: '14px' }}>
                     <div>
                       <Link to={`/product/${prod.slug || prod.id}`} style={{ textDecoration: 'none' }}>
-                        <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px', lineHeight: '1.3' }}>
+                        <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px', lineHeight: '1.3' }}>
                           {prod.title.replace(/\s+slug$/i, '')}
                         </h3>
                       </Link>
-                      <p style={{ fontSize: '12.5px', color: '#64748b', lineHeight: '1.4', margin: 0 }}>
-                        {prod.short_description || (prod.description ? prod.description.replace(/<[^>]*>/g, '').substring(0, 80) + '...' : '')}
+                      <p style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.5', margin: 0 }}>
+                        {shortDesc}
                       </p>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '16px', fontWeight: 800, color: '#0d2e1a' }}>
+                        <span style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a' }}>
                           {hasVariants ? 'From ' : ''}₦{displayPrice?.toLocaleString()}
                         </span>
                         {displayOldPrice && (
-                          <span style={{ fontSize: '12.5px', color: '#94a3b8', textDecoration: 'line-through' }}>
+                          <span style={{ fontSize: '12px', color: '#94a3b8', textDecoration: 'line-through' }}>
                             ₦{displayOldPrice?.toLocaleString()}
                           </span>
                         )}
                       </div>
 
-                      <Link to={`/product/${prod.slug || prod.id}`} style={{ textDecoration: 'none' }}>
-                        <button style={{
-                          width: '100%',
-                          height: '36px',
-                          background: 'rgba(18,60,36,0.04)',
-                          color: 'var(--brand-primary)',
-                          border: 'none',
-                          borderRadius: '6px',
-                          fontSize: '12.5px',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease'
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary)'; e.currentTarget.style.color = '#ffffff' }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(18,60,36,0.04)'; e.currentTarget.style.color = 'var(--brand-primary)' }}
-                        >
-                          View Details
-                        </button>
+                      <Link to={`/product/${prod.slug || prod.id}`} style={{
+                        background: 'var(--brand-primary)',
+                        color: '#ffffff',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        textAlign: 'center',
+                        display: 'block',
+                        transition: 'background-color 0.15s ease'
+                      }} className="card-btn-hover">
+                        Buy Now →
                       </Link>
                     </div>
                   </div>
@@ -708,7 +711,10 @@ export default function ProductDetailsPage() {
         .product-card-hover:hover {
           transform: translateY(-4px);
           border-color: var(--brand-primary) !important;
-          box-shadow: 0 12px 20px -8px rgba(18, 60, 36, 0.08) !important;
+          box-shadow: 0 12px 24px rgba(18,60,36,0.06), 0 4px 8px rgba(18,60,36,0.02) !important;
+        }
+        .product-card-hover:hover .card-btn-hover {
+          background-color: var(--brand-hover) !important;
         }
       `}} />
 

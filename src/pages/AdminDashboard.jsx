@@ -757,7 +757,8 @@ function AdminProducts({ featureFlags }) {
     is_published: false,
     is_free: false,
     stock_quantity: '',
-    weight: ''
+    weight: '',
+    category: ''
   })
 
   const [uploading, setUploading] = useState(false)
@@ -802,7 +803,8 @@ function AdminProducts({ featureFlags }) {
       is_published: false,
       is_free: false,
       stock_quantity: '',
-      weight: ''
+      weight: '',
+      category: ''
     })
     setShowModal(true)
   }
@@ -825,7 +827,8 @@ function AdminProducts({ featureFlags }) {
       is_published: p.is_published || false,
       is_free: p.is_free || false,
       stock_quantity: p.stock_quantity !== null && p.stock_quantity !== undefined ? p.stock_quantity : '',
-      weight: p.weight !== null && p.weight !== undefined ? p.weight : ''
+      weight: p.weight !== null && p.weight !== undefined ? p.weight : '',
+      category: p.meta_title || ''
     })
     setShowModal(true)
   }
@@ -999,7 +1002,8 @@ function AdminProducts({ featureFlags }) {
       is_published: productForm.is_published,
       is_free: isFree,
       stock_quantity: productForm.type === 'physical' && productForm.stock_quantity !== '' ? parseInt(productForm.stock_quantity, 10) : null,
-      weight: productForm.type === 'physical' && productForm.weight !== '' ? parseFloat(productForm.weight) : null
+      weight: productForm.type === 'physical' && productForm.weight !== '' ? parseFloat(productForm.weight) : null,
+      meta_title: productForm.category ? productForm.category.trim() : null
     }
 
     try {
@@ -1605,17 +1609,7 @@ function AdminProducts({ featureFlags }) {
                     </div>
                   )}
 
-                  {/* Fallback Cover URL Link Input */}
-                  <div style={{ marginTop: 12 }}>
-                    <label style={{ display: 'block', fontWeight: 500, fontSize: 11, marginBottom: 4, color: '#64748b' }}>Featured Cover Image URL (Manual Override)</label>
-                    <input 
-                      type="url" 
-                      value={productForm.cover_image} 
-                      onChange={e => setProductForm({ ...productForm, cover_image: e.target.value })} 
-                      style={{ width: '100%', padding: '6px 10px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }} 
-                      placeholder="https://..."
-                    />
-                  </div>
+
                 </div>
 
                 {/* Simple Product Fields (Hidden if variable) */}
@@ -1659,6 +1653,18 @@ function AdminProducts({ featureFlags }) {
                         />
                       </div>
                     )}
+
+                    {/* Category Field */}
+                    <div>
+                      <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Category Label</label>
+                      <input 
+                        type="text" 
+                        value={productForm.category || ''} 
+                        onChange={e => setProductForm({ ...productForm, category: e.target.value })} 
+                        placeholder="e.g. Agricultural Exports, Spices, Nuts..." 
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
+                      />
+                    </div>
                   </>
                 )}
 

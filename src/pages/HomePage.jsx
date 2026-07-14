@@ -2,7 +2,42 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
+function getShortDesc(product) {
+  if (!product) return ''
+  if (product.short_description) return product.short_description
+  const desc = product.description || ''
+  if (!desc) return ''
+  if (desc.includes('<')) {
+    const plainText = desc.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    return plainText.length > 100 ? plainText.substring(0, 100) + '...' : plainText
+  }
+  return desc.length > 100 ? desc.substring(0, 100) + '...' : desc
+}
+
 export default function HomePage() {
+  const [featuredProducts, setFeaturedProducts] = useState([])
+  const [productsLoading, setProductsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadFeaturedProducts() {
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select('id, title, slug, cover_image, price, old_price, short_description, description, variations, type')
+          .eq('is_published', true)
+          .eq('type', 'physical')
+          .order('created_at', { ascending: false })
+          .limit(8)
+        if (data) setFeaturedProducts(data)
+      } catch (err) {
+        console.error('[HomePage] Failed to load products:', err)
+      } finally {
+        setProductsLoading(false)
+      }
+    }
+    loadFeaturedProducts()
+  }, [])
+
   return (
     <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
       
@@ -334,83 +369,117 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '24px' }} className="products-grid">
-          {[
-            {
-              title: 'Bitter Kola',
-              sub: 'Export-grade Garcinia kola in bulk and retail packaging.',
-              img: '/prod_bitter_kola.png',
-              path: '/products?category=bitter-kola'
-            },
-            {
-              title: 'Kolanuts',
-              sub: 'Cola nitida & Cola acuminata. Fresh and export quality.',
-              img: '/prod_kolanuts.png',
-              path: '/products?category=kolanuts'
-            },
-            {
-              title: 'Palm Oil',
-              sub: 'Premium quality crude palm oil available in various packaging.',
-              img: '/prod_palm_oil.png',
-              path: '/products?category=palm-oil'
-            },
-            {
-              title: 'Shea Butter',
-              sub: 'Premium unrefined shea butter for food and cosmetic use.',
-              img: '/prod_shea_butter.png',
-              path: '/products?category=shea-butter'
-            },
-            {
-              title: 'Other Products',
-              sub: 'Hibiscus Flower, Aidan Fruit, Alligator Pepper, Uziza Seeds and more.',
-              img: '/prod_other.png',
-              path: '/products'
-            }
-          ].map((prod, idx) => (
-            <div key={idx} style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-              transition: 'all 0.2s ease'
-            }} className="product-card-hover">
-              
-              <div style={{ height: '180px', overflow: 'hidden', background: '#f8fafc' }}>
-                <img 
-                  src={prod.img} 
-                  alt={prod.title} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-
-              <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', gap: '16px' }}>
-                <div>
-                  <h3 style={{ fontSize: '16.5px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px' }}>
-                    {prod.title}
-                  </h3>
-                  <p style={{ fontSize: '12.5px', color: '#475569', lineHeight: '1.5', margin: 0 }}>
-                    {prod.sub}
-                  </p>
+        {productsLoading ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }} className="products-grid">
+            {[1, 2, 3, 4].map(n => (
+              <div key={n} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ height: '140px', background: '#f1f5f9', animation: 'pulse 1.5s infinite' }} />
+                <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ height: '16px', background: '#f1f5f9', width: '70%', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+                  <div style={{ height: '12px', background: '#f1f5f9', width: '50%', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
                 </div>
-                <Link to={prod.path} style={{
-                  color: 'var(--brand-primary)',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }} className="card-link-hover">
-                  Learn More <span>→</span>
-                </Link>
               </div>
+            ))}
+          </div>
+        ) : featuredProducts.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '48px 0', color: '#64748b' }}>
+            <p style={{ margin: 0 }}>Products coming soon. Check back shortly!</p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="products-grid">
+            {featuredProducts.map(prod => {
+              let displayPrice = prod.price
+              let displayOldPrice = prod.old_price
+              const hasVariants = prod.variations?.variants && prod.variations.variants.length > 0
+              if (hasVariants) {
+                const prices = prod.variations.variants.map(v => v.price).filter(Boolean)
+                if (prices.length > 0) {
+                  displayPrice = Math.min(...prices)
+                  const cheapestVariant = prod.variations.variants.find(v => v.price === displayPrice)
+                  displayOldPrice = cheapestVariant?.compare_price || null
+                }
+              }
+              const discount = displayOldPrice && displayPrice
+                ? Math.round((1 - displayPrice / displayOldPrice) * 100)
+                : null
 
-            </div>
-          ))}
-        </div>
+              return (
+                <div key={prod.id} style={{
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  position: 'relative',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)',
+                  transition: 'all 0.2s ease'
+                }} className="product-card-hover">
+
+                  {/* Discount badge */}
+                  {discount && (
+                    <span style={{
+                      position: 'absolute', top: '10px', left: '10px',
+                      background: '#16a34a', color: '#fff',
+                      fontSize: '10px', fontWeight: 800,
+                      padding: '2px 8px', borderRadius: '4px', zIndex: 5
+                    }}>{discount}% OFF</span>
+                  )}
+
+                  {/* Card Image */}
+                  <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', height: '160px', overflow: 'hidden', background: '#f8fafc' }}>
+                    <img
+                      src={prod.cover_image || '/logo.png'}
+                      alt={prod.title.replace(/\s+slug$/i, '')}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.objectFit = 'contain'; e.currentTarget.style.padding = '20px' }}
+                    />
+                  </Link>
+
+                  {/* Card Content */}
+                  <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', gap: '14px' }}>
+                    <div>
+                      <Link to={`/product/${prod.slug || prod.id}`} style={{ textDecoration: 'none' }}>
+                        <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px', lineHeight: '1.3' }}>
+                          {prod.title.replace(/\s+slug$/i, '')}
+                        </h3>
+                      </Link>
+                      <p style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.5', margin: 0 }}>
+                        {getShortDesc(prod)}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a' }}>
+                          {hasVariants ? 'From ' : ''}₦{displayPrice?.toLocaleString()}
+                        </span>
+                        {displayOldPrice && (
+                          <span style={{ fontSize: '12px', color: '#94a3b8', textDecoration: 'line-through' }}>
+                            ₦{displayOldPrice?.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                      <Link to={`/product/${prod.slug || prod.id}`} style={{
+                        background: 'var(--brand-primary)',
+                        color: '#ffffff',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        textAlign: 'center',
+                        display: 'block',
+                        transition: 'background-color 0.15s ease'
+                      }} className="card-btn-hover">
+                        Buy Now →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       {/* ─── STATS & CALL TO ACTION SECTION (Green Background) ─── */}
@@ -422,7 +491,7 @@ export default function HomePage() {
             {[
               { 
                 val: '100%', 
-                label: 'NATURAL Products', 
+                label: 'Natural Products', 
                 icon: (
                   <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 22 2c0 5-1.5 9-6.1 14.8A7 7 0 0 1 11 20z" />
@@ -432,7 +501,7 @@ export default function HomePage() {
               },
               { 
                 val: '20+', 
-                label: 'COUNTRIES We Export To', 
+                label: 'Countries We Export To', 
                 icon: (
                   <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"/>
@@ -443,7 +512,7 @@ export default function HomePage() {
               },
               { 
                 val: '500+', 
-                label: 'SATISFIED Customers', 
+                label: 'Satisfied Customers', 
                 icon: (
                   <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -491,7 +560,7 @@ export default function HomePage() {
                   {stat.icon}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px' }}>{stat.val}</div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px', lineHeight: '1.2' }}>{stat.val}</div>
                   <div style={{ fontSize: '11px', color: '#d1f4df', lineHeight: '1.3', fontWeight: 600 }}>{stat.label}</div>
                 </div>
               </div>
@@ -547,8 +616,15 @@ export default function HomePage() {
           box-shadow: 0 12px 24px rgba(18,60,36,0.06) !important;
           border-color: var(--brand-primary) !important;
         }
+        .product-card-hover:hover .card-btn-hover {
+          background-color: var(--brand-hover) !important;
+        }
         .card-link-hover:hover {
           text-decoration: underline !important;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
         }
         @media (max-width: 1200px) {
           .products-grid {

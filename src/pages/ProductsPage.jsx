@@ -268,7 +268,7 @@ export default function ProductsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="products-grid">
             {filtered.map(product => {
               const isWishlisted = wishlistedIds.includes(product.id)
-              const ratingInfo = reviewsMap[product.id] || { rating: 5.0, count: 12 }
+              const ratingInfo = reviewsMap[product.id] || null
               
               // Handle starting price display for variable products
               let displayPrice = product.price
@@ -340,14 +340,18 @@ export default function ProductsPage() {
                         </h3>
                       </Link>
                       
-                      {/* Review rating layout */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
-                        <StarRating rating={ratingInfo.rating} />
-                        <span style={{ fontSize: '11px', color: '#94a3b8' }}>({ratingInfo.count})</span>
-                      </div>
+                      {/* Review rating — only if real reviews exist */}
+                      {ratingInfo && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
+                          <StarRating rating={ratingInfo.rating} />
+                          <span style={{ fontSize: '11px', color: '#94a3b8' }}>({ratingInfo.count})</span>
+                        </div>
+                      )}
 
                       <p style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.5', margin: 0 }}>
-                        {product.short_description || getShortDesc(product)}
+                        {product.short_description
+                          ? product.short_description.substring(0, 100)
+                          : getShortDesc(product).substring(0, 100)}
                       </p>
                     </div>
 
