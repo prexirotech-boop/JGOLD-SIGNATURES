@@ -139,13 +139,13 @@ export default function ForgotPasswordPage() {
         }
         .auth-input::placeholder { color: #94a3b8; }
         .auth-submit {
-          background: #2563eb; color: #ffffff; font-weight: 600; font-size: 15px;
+          background: var(--brand-primary, #123c24); color: #ffffff; font-weight: 600; font-size: 15px;
           padding: 12px; border: none; border-radius: 8px; cursor: pointer;
           transition: background-color 0.2s, transform 0.1s;
           margin-top: 8px;
           width: 100%;
         }
-        .auth-submit:hover:not(:disabled) { background: #1d4ed8; }
+        .auth-submit:hover:not(:disabled) { background: var(--brand-hover, #246a42); }
         .auth-submit:active:not(:disabled) { transform: scale(0.98); }
         .auth-submit:disabled { opacity: 0.7; cursor: not-allowed; }
         .auth-error {
