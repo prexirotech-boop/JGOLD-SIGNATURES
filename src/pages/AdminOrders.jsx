@@ -765,6 +765,8 @@ export default function AdminOrders() {
             shipping_street: order.shipping_street,
             shipping_city: order.shipping_city,
             shipping_state: order.shipping_state,
+            payment_method: order.payment_method,
+            tracking_number: order.tracking_number,
           }
           if (newStatus === 'paid') sendPaymentVerified(emailData)
           else if (newStatus === 'shipped') sendOrderShipped(emailData)

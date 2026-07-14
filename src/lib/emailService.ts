@@ -75,7 +75,7 @@ export async function sendBankTransferPending(data: {
   shipping_state?: string
 }) {
   await Promise.all([
-    trigger('bank_transfer', data.email, data),
+    trigger('bank_transfer', data.email, { ...data, payment_method: 'bank_transfer' }),
     trigger('admin_new_order', 'admin', { ...data, payment_method: 'bank_transfer' }),
   ])
 }
@@ -91,8 +91,9 @@ export async function sendPaymentVerified(data: {
   product_type?: string
   product_image?: string
   amount: number
+  payment_method?: string
 }) {
-  await trigger('payment_verified', data.email, data)
+  await trigger('payment_verified', data.email, { ...data, payment_method: data.payment_method || 'bank_transfer' })
 }
 
 /**
