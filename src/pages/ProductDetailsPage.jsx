@@ -3,11 +3,13 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { CONFIG } from '../lib/config'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function ProductDetailsPage() {
   const { productId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { formatPrice } = useCurrency()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [wishlistAdded, setWishlistAdded] = useState(false)
@@ -322,11 +324,11 @@ export default function ProductDetailsPage() {
           {/* Pricing Panel */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '26px', fontWeight: 800, color: '#0d2e1a' }}>
-              ₦{finalPrice?.toLocaleString()}
+              {formatPrice(finalPrice)}
             </span>
             {finalComparePrice && (
               <span style={{ fontSize: '17px', color: '#94a3b8', textDecoration: 'line-through' }}>
-                ₦{finalComparePrice?.toLocaleString()}
+                {formatPrice(finalComparePrice)}
               </span>
             )}
             {discountPercent && (
@@ -693,11 +695,11 @@ export default function ProductDetailsPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a' }}>
-                          {hasVariants ? 'From ' : ''}₦{displayPrice?.toLocaleString()}
+                          {hasVariants ? 'From ' : ''}{formatPrice(displayPrice)}
                         </span>
                         {displayOldPrice && (
                           <span style={{ fontSize: '12px', color: '#94a3b8', textDecoration: 'line-through' }}>
-                            ₦{displayOldPrice?.toLocaleString()}
+                            {formatPrice(displayOldPrice)}
                           </span>
                         )}
                       </div>

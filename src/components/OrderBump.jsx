@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function OrderBump({ triggerProductId, onBumpsChange, currentTotal }) {
   return null; // Order bumps disabled for now
   const [offers, setOffers] = useState([])
   const [selectedBumps, setSelectedBumps] = useState({})
   const [loading, setLoading] = useState(true)
+  const { formatPrice } = useCurrency()
 
   useEffect(() => {
     async function loadOffers() {
@@ -63,7 +65,7 @@ export default function OrderBump({ triggerProductId, onBumpsChange, currentTota
   }
 
   function formatNGN(amount) {
-    return `₦${amount.toLocaleString()}`
+    return formatPrice(amount)
   }
 
   if (loading || offers.length === 0) return null
@@ -87,7 +89,7 @@ export default function OrderBump({ triggerProductId, onBumpsChange, currentTota
 
         const discountLabel = offer.discount_type === 'percentage' 
           ? `${offer.discount_value}%` 
-          : `₦${offer.discount_value.toLocaleString()}`
+          : formatPrice(offer.discount_value)
 
         return (
           <div

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { CONFIG } from '../lib/config'
+import { useCurrency } from '../context/CurrencyContext'
 
 export function getShortDesc(product) {
   if (!product) return ''
@@ -26,8 +27,9 @@ export function getShortDesc(product) {
 }
 
 export default function ProductsPage() {
-  const { user } = useAuth()
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const { formatPrice } = useCurrency()
   const [searchParams] = useSearchParams()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -331,11 +333,11 @@ export default function ProductsPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a' }}>
-                          {hasVariants ? 'From ' : ''}₦{displayPrice?.toLocaleString()}
+                          {hasVariants ? 'From ' : ''}{formatPrice(displayPrice)}
                         </span>
                         {displayOldPrice && (
                           <span style={{ fontSize: '12px', color: '#94a3b8', textDecoration: 'line-through' }}>
-                            ₦{displayOldPrice?.toLocaleString()}
+                            {formatPrice(displayOldPrice)}
                           </span>
                         )}
                       </div>

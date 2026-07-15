@@ -36,6 +36,12 @@ export default function AdminSettings() {
   const [stripeSecretKey, setStripeSecretKey] = useState('')
   const [resendApiKey, setResendApiKey] = useState('')
 
+  // Multi-Currency settings
+  const [enableMultiCurrency, setEnableMultiCurrency] = useState(false)
+  const [usdRate, setUsdRate] = useState(1500)
+  const [eurRate, setEurRate] = useState(1650)
+  const [gbpRate, setGbpRate] = useState(1950)
+
   // Bank Account settings
   const [bankAccounts, setBankAccounts] = useState([])
   const [newBankName, setNewBankName] = useState('')
@@ -75,6 +81,15 @@ export default function AdminSettings() {
             setStripePublicKey(payConfig.value.stripe_public_key || '')
             setStripeSecretKey(payConfig.value.stripe_secret_key || '')
             setResendApiKey(payConfig.value.resend_api_key || '')
+          }
+          const currencyConfig = data.find(s => s.id === 'currency_config')
+          if (currencyConfig?.value) {
+            setEnableMultiCurrency(!!currencyConfig.value.enable_multi_currency)
+            if (currencyConfig.value.rates) {
+              setUsdRate(currencyConfig.value.rates.USD || 1500)
+              setEurRate(currencyConfig.value.rates.EUR || 1650)
+              setGbpRate(currencyConfig.value.rates.GBP || 1950)
+            }
           }
           const bankConfig = data.find(s => s.id === 'bank_config')
           if (bankConfig?.value?.accounts) {
@@ -203,8 +218,26 @@ export default function AdminSettings() {
           updated_at: new Date().toISOString()
         })
 
+      // 3. Update currency_config
+      const { error: err3 } = await supabase
+        .from('settings')
+        .upsert({
+          id: 'currency_config',
+          value: {
+            enable_multi_currency: enableMultiCurrency,
+            rates: {
+              NGN: 1,
+              USD: Number(usdRate) || 1500,
+              EUR: Number(eurRate) || 1650,
+              GBP: Number(gbpRate) || 1950
+            }
+          },
+          updated_at: new Date().toISOString()
+        })
+
       if (err1) throw err1
       if (err2) throw err2
+      if (err3) throw err3
 
       // Save in localStorage for immediate sync in frontend header
       localStorage.setItem('brandName', brandName.trim())
@@ -529,6 +562,56 @@ export default function AdminSettings() {
                   <label htmlFor="enableUpsells" style={{ fontSize: 13, fontWeight: 500, color: '#3c4257', cursor: 'pointer', userSelect: 'none' }}>Enable Upsell Offers</label>
                 </div>
               </div>
+              
+              <div style={{ borderTop: '1px solid #e2e8f0', margin: '12px 0 6px 0', paddingTop: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Multi-Currency & Exchange Rates</span>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '8px 0 14px 0' }}>
+                <input 
+                  type="checkbox" 
+                  id="enableMultiCurrency" 
+                  checked={enableMultiCurrency} 
+                  onChange={e => setEnableMultiCurrency(e.target.checked)} 
+                  style={{ width: 16, height: 16, cursor: 'pointer' }}
+                />
+                <label htmlFor="enableMultiCurrency" style={{ fontSize: 13, fontWeight: 500, color: '#3c4257', cursor: 'pointer', userSelect: 'none' }}>Enable Geolocation Multi-Currency (USD, EUR, GBP)</label>
+              </div>
+
+              {enableMultiCurrency && (
+                <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr 1fr 1fr' : '1fr', gap: 16, marginBottom: 14 }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>USD Rate (1 USD in NGN)</label>
+                    <input 
+                      type="number" 
+                      value={usdRate} 
+                      onChange={e => setUsdRate(e.target.value)} 
+                      placeholder="e.g. 1500"
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>EUR Rate (1 EUR in NGN)</label>
+                    <input 
+                      type="number" 
+                      value={eurRate} 
+                      onChange={e => setEurRate(e.target.value)} 
+                      placeholder="e.g. 1650"
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>GBP Rate (1 GBP in NGN)</label>
+                    <input 
+                      type="number" 
+                      value={gbpRate} 
+                      onChange={e => setGbpRate(e.target.value)} 
+                      placeholder="e.g. 1950"
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                    />
+                  </div>
+                </div>
+              )}
 
               <button type="submit" style={{ alignSelf: 'flex-start', background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13.5, marginTop: 8, transition: 'all 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 Save Configurations

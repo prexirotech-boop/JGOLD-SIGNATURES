@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import UserMenu from './UserMenu'
 import { supabase } from '../lib/supabase'
 import { CONFIG } from '../lib/config'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function Header() {
   const navigate = useNavigate()
@@ -17,6 +18,7 @@ export default function Header() {
 
   const [cartItems, setCartItems] = useState([])
   const [showCartDrawer, setShowCartDrawer] = useState(false)
+  const { currency, isEnabled: isCurrencyEnabled, setCurrency, formatPrice } = useCurrency()
 
   // Initialize and synchronize cart items from localStorage
   useEffect(() => {
@@ -223,7 +225,7 @@ export default function Header() {
                           {product.type === 'course' ? 'Course' : product.type === 'ebook' ? 'E-Book' : 'Physical'}
                         </span>
                         <span className="search-item-price">
-                          {product.price ? `₦${Number(product.price).toLocaleString()}` : 'Free'}
+                          {product.price ? formatPrice(product.price) : 'Free'}
                         </span>
                       </div>
                     </div>
@@ -283,6 +285,33 @@ export default function Header() {
           >
             Get a Quote <span style={{ fontSize: '14px', fontWeight: 'bold' }}>→</span>
           </Link>
+
+          {/* Currency Dropdown Selector */}
+          {isCurrencyEnabled && (
+            <div style={{ marginRight: '8px', display: 'flex', alignItems: 'center' }}>
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  padding: '5px 8px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: '#334155',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <option value="NGN">NGN (₦)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+              </select>
+            </div>
+          )}
 
           {/* Cart Toggle Button */}
           <button 
@@ -441,11 +470,11 @@ export default function Header() {
                       <h4 className="cart-item-title">{item.title.replace(/\s+slug$/i, '')}</h4>
                       <div className="cart-item-price-row">
                         <span className="cart-item-price">
-                          {item.price ? `₦${(Number(item.price) * (item.quantity || 1)).toLocaleString()}` : 'Free'}
+                          {item.price ? formatPrice(Number(item.price) * (item.quantity || 1)) : 'Free'}
                         </span>
                         {item.old_price && (
                           <span className="cart-item-old-price">
-                            ₦{Number(item.old_price).toLocaleString()}
+                            {formatPrice(item.old_price)}
                           </span>
                         )}
                       </div>
@@ -460,7 +489,7 @@ export default function Header() {
                           onClick={() => handleUpdateQty(item.id, item.variant_id, 1)}
                           style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#374151', flexShrink: 0 }}
                         >+</button>
-                        <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '2px' }}>@ ₦{Number(item.price).toLocaleString()} each</span>
+                        <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '2px' }}>@ {formatPrice(item.price)} each</span>
                       </div>
                     </div>
                     <button 
@@ -480,7 +509,7 @@ export default function Header() {
             <div className="cart-drawer-footer">
               <div className="cart-total-row" style={{ marginBottom: 4 }}>
                 <span>Subtotal</span>
-                <span className="cart-total-price">₦{cartSubtotal.toLocaleString()}</span>
+                <span className="cart-total-price">{formatPrice(cartSubtotal)}</span>
               </div>
               <div className="cart-total-row" style={{ marginBottom: 8, fontSize: 13, color: '#475569' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -490,14 +519,14 @@ export default function Header() {
                 <span style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 3 }}>
                   {cartShipping === 0
                     ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Free</>
-                    : `₦${cartShipping.toLocaleString()}`}
+                    : formatPrice(cartShipping)}
                 </span>
               </div>
               {cartShipping > 0 && (
                 <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: 8, marginBottom: 8 }}>
                   <div className="cart-total-row" style={{ fontSize: 14, fontWeight: 800 }}>
                     <span>Total</span>
-                    <span style={{ color: 'var(--brand-primary)' }}>₦{(cartSubtotal + cartShipping).toLocaleString()}</span>
+                    <span style={{ color: 'var(--brand-primary)' }}>{formatPrice(cartSubtotal + cartShipping)}</span>
                   </div>
                 </div>
               )}
