@@ -1782,7 +1782,7 @@ function AdminProducts({ featureFlags }) {
                       style={{ width: 15, height: 15 }}
                     />
                     <label htmlFor="toggle-variable" style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand-primary, #123c24)' }}>
-                      This is a Variable Product (Configure WooCommerce attributes & pricing)
+                      This is a Variable Product (Configure variations, attributes & pricing)
                     </label>
                   </div>
                 )}
