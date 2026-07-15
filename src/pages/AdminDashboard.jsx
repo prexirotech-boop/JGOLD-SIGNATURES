@@ -1462,7 +1462,7 @@ function AdminProducts({ featureFlags }) {
                       value={productForm.is_free ? '0' : productForm.price} 
                       onChange={e => setProductForm({ ...productForm, price: e.target.value })} 
                       style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13, backgroundColor: productForm.is_free ? '#f1f5f9' : '#fff' }} 
-                      required={!productForm.is_free} 
+                      required={!productForm.is_free && !isVariable} 
                       disabled={productForm.is_free}
                     />
                   </div>

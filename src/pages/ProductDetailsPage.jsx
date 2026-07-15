@@ -232,8 +232,8 @@ export default function ProductDetailsPage() {
   const finalPrice = selectedVariant ? selectedVariant.price : product.price
   const finalComparePrice = selectedVariant ? selectedVariant.compare_price : product.old_price
   const isOutOfStock = selectedVariant
-    ? (selectedVariant.stock !== null && selectedVariant.stock <= 0)
-    : (product.stock_quantity !== null && product.stock_quantity <= 0)
+    ? (selectedVariant.stock !== null && selectedVariant.stock !== undefined && selectedVariant.stock !== '' && Number(selectedVariant.stock) <= 0)
+    : (product.stock_quantity !== null && product.stock_quantity !== undefined && product.stock_quantity !== '' && Number(product.stock_quantity) <= 0)
 
   const discountPercent = finalComparePrice && finalPrice
     ? Math.round((1 - finalPrice / finalComparePrice) * 100)
