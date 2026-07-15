@@ -859,6 +859,19 @@ function AdminProducts({ featureFlags }) {
     }
   }
 
+  const handleTogglePublish = async (p) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ is_published: !p.is_published })
+        .eq('id', p.id)
+      if (error) throw error
+      loadProducts()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
   // File Upload Handlers (uploads to course-assets)
   const handleMediaFilesUpload = async (e) => {
     const files = Array.from(e.target.files)
@@ -1012,7 +1025,12 @@ function AdminProducts({ featureFlags }) {
       old_price: isFree ? null : (productForm.compare_price ? parseInt(productForm.compare_price) : null),
       cover_image: (productForm.cover_image || '').trim() || (productForm.images && productForm.images[0]) || '/logo.png',
       images: productForm.images || [],
-      variations: isVariable ? (productForm.variations || { attributes: [], variants: [] }) : { attributes: [], variants: [] },
+      variations: isVariable 
+        ? {
+            attributes: productForm.variations?.attributes || [],
+            variants: (productForm.variations?.variants || []).filter(v => v.price !== '' && v.price !== undefined && v.price !== null)
+          }
+        : { attributes: [], variants: [] },
       features: productForm.features.split('\n').map(f => f.trim()).filter(Boolean),
       is_published: productForm.is_published,
       is_free: isFree,
@@ -1274,6 +1292,12 @@ function AdminProducts({ featureFlags }) {
                     </button>
                   )}
                   <button 
+                    onClick={() => handleTogglePublish(p)}
+                    style={{ background: 'none', border: 'none', color: p.is_published ? '#ea580c' : '#16a34a', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
+                  >
+                    {p.is_published ? 'Unpublish' : 'Publish'}
+                  </button>
+                  <button 
                     onClick={() => handleDuplicateProduct(p)}
                     style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
                   >
@@ -1339,6 +1363,12 @@ function AdminProducts({ featureFlags }) {
                               Curriculum
                             </button>
                           )}
+                          <button 
+                            onClick={() => handleTogglePublish(p)}
+                            style={{ background: 'none', border: 'none', color: p.is_published ? '#ea580c' : '#16a34a', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
+                          >
+                            {p.is_published ? 'Unpublish' : 'Publish'}
+                          </button>
                           <button 
                             onClick={() => handleDuplicateProduct(p)}
                             style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
@@ -1860,13 +1890,12 @@ function AdminProducts({ featureFlags }) {
                               
                               <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 500 ? '1fr' : '1fr 1fr', gap: 10, marginBottom: 8 }}>
                                 <div>
-                                  <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Price (NGN) *</label>
+                                  <label style={{ display: 'block', fontSize: 10.5, color: '#64748b', marginBottom: 2 }}>Price (NGN)</label>
                                   <input 
                                     type="number" 
                                     value={v.price} 
                                     onChange={e => handleUpdateVariantField(vIdx, 'price', e.target.value ? parseInt(e.target.value) : '')} 
                                     style={{ width: '100%', padding: '4px 8px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 12 }}
-                                    required
                                   />
                                 </div>
                                 <div>

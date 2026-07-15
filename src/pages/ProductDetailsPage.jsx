@@ -231,6 +231,8 @@ export default function ProductDetailsPage() {
 
   const finalPrice = selectedVariant ? selectedVariant.price : product.price
   const finalComparePrice = selectedVariant ? selectedVariant.compare_price : product.old_price
+  const hasAttributes = product?.variations?.attributes && product.variations.attributes.length > 0
+  const isUnavailable = hasAttributes && !selectedVariant
   const isOutOfStock = selectedVariant
     ? (selectedVariant.stock !== null && selectedVariant.stock !== undefined && selectedVariant.stock !== '' && Number(selectedVariant.stock) <= 0)
     : (product.stock_quantity !== null && product.stock_quantity !== undefined && product.stock_quantity !== '' && Number(product.stock_quantity) <= 0)
@@ -324,7 +326,7 @@ export default function ProductDetailsPage() {
           {/* Pricing Panel */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '26px', fontWeight: 800, color: '#0d2e1a' }}>
-              {formatPrice(finalPrice)}
+              {isUnavailable ? 'Unavailable' : formatPrice(finalPrice)}
             </span>
             {finalComparePrice && (
               <span style={{ fontSize: '17px', color: '#94a3b8', textDecoration: 'line-through' }}>
@@ -426,41 +428,41 @@ export default function ProductDetailsPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginTop: '6px' }}>
               <button
                 onClick={handleAddToCart}
-                disabled={isOutOfStock}
+                disabled={isOutOfStock || isUnavailable}
                 style={{
                   background: 'transparent',
-                  color: isOutOfStock ? '#cbd5e1' : 'var(--brand-primary)',
-                  border: isOutOfStock ? '2px solid #e2e8f0' : '2px solid var(--brand-primary)',
+                  color: (isOutOfStock || isUnavailable) ? '#cbd5e1' : 'var(--brand-primary)',
+                  border: (isOutOfStock || isUnavailable) ? '2px solid #e2e8f0' : '2px solid var(--brand-primary)',
                   height: '46px',
                   borderRadius: '6px',
                   fontWeight: 700,
                   fontSize: '14px',
-                  cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                  cursor: (isOutOfStock || isUnavailable) ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease'
                 }}
-                onMouseEnter={e => { if(!isOutOfStock) e.currentTarget.style.background = 'rgba(18,60,36,0.04)' }}
-                onMouseLeave={e => { if(!isOutOfStock) e.currentTarget.style.background = 'transparent' }}
+                onMouseEnter={e => { if(!isOutOfStock && !isUnavailable) e.currentTarget.style.background = 'rgba(18,60,36,0.04)' }}
+                onMouseLeave={e => { if(!isOutOfStock && !isUnavailable) e.currentTarget.style.background = 'transparent' }}
               >
-                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                {isUnavailable ? 'Unavailable' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
               </button>
               <button
                 onClick={handleBuyNow}
-                disabled={isOutOfStock}
+                disabled={isOutOfStock || isUnavailable}
                 style={{
-                  background: isOutOfStock ? '#f1f5f9' : 'var(--brand-primary)',
-                  color: isOutOfStock ? '#94a3b8' : '#ffffff',
+                  background: (isOutOfStock || isUnavailable) ? '#f1f5f9' : 'var(--brand-primary)',
+                  color: (isOutOfStock || isUnavailable) ? '#94a3b8' : '#ffffff',
                   border: 'none',
                   height: '46px',
                   borderRadius: '6px',
                   fontWeight: 700,
                   fontSize: '14px',
-                  cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                  cursor: (isOutOfStock || isUnavailable) ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease'
                 }}
-                onMouseEnter={e => { if(!isOutOfStock) e.currentTarget.style.background = 'var(--brand-hover)' }}
-                onMouseLeave={e => { if(!isOutOfStock) e.currentTarget.style.background = 'var(--brand-primary)' }}
+                onMouseEnter={e => { if(!isOutOfStock && !isUnavailable) e.currentTarget.style.background = 'var(--brand-hover)' }}
+                onMouseLeave={e => { if(!isOutOfStock && !isUnavailable) e.currentTarget.style.background = 'var(--brand-primary)' }}
               >
-                {isOutOfStock ? 'Out of Stock' : 'Buy Now →'}
+                {isUnavailable ? 'Unavailable' : isOutOfStock ? 'Out of Stock' : 'Buy Now →'}
               </button>
             </div>
           </div>
