@@ -507,7 +507,7 @@ function emailAdminNewOrder(d: Record<string, string>) {
 
       <div style="text-align:center;margin-bottom:40px;">
         ${ctaButton("View in Admin Dashboard →", `${STORE_URL}/admin/orders`)}
-        ${isPending ? `<p style="margin:12px 0 0;font-size:13px;color:${BRAND.gold};font-weight:600;">⚠️ This order requires payment receipt review before processing.</p>` : ""}
+        ${isPending ? '<p style="margin:12px 0 0;font-size:13px;color:' + BRAND.gold + ';font-weight:600;">⚠️ This order requires payment receipt review before processing.</p>' : ''}
       </div>
     </td>
   </tr>`
