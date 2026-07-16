@@ -535,11 +535,11 @@ function emailCodOrder(d: Record<string, string>) {
         <p style="margin:0;font-size:13.5px;color:#166534;line-height:1.5;">Please inspect the package upon arrival and pay the delivery driver the total amount of <strong>₦${Number(d.amount || 0).toLocaleString()}</strong>. Standard shipping terms apply.</p>
       </div>
 
-      ${shippingBlock(d)}
+      ${orderMeta(d)}
     </td>
   </tr>
   `
-  return layout(content, d)
+  return baseTemplate(content, `Order Received (Cash on Delivery) — MIFAS Store`)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
