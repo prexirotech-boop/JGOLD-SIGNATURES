@@ -514,6 +514,34 @@ function emailAdminNewOrder(d: Record<string, string>) {
   return baseTemplate(content, `New MIFAS order from ${d.name}`)
 }
 
+// 8. CASH ON DELIVERY PENDING
+function emailCodOrder(d: Record<string, string>) {
+  const content = `
+  <tr>
+    <td style="padding:40px 40px 0;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="display:inline-flex;width:64px;height:64px;border-radius:50%;background:#e0f2fe;margin-bottom:16px;align-items:center;justify-content:center;">
+          <span style="font-size:32px;">📦</span>
+        </div>
+        <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${BRAND.primary};">Order Received!</h1>
+        ${statusBadge("Cash on Delivery — Pending Dispatch", BRAND.primary, "#f0fdf4")}
+        <p style="margin:16px 0 0;font-size:15px;color:${BRAND.textMid};">Hi ${d.name?.split(" ")[0] || "there"}, your Cash on Delivery order has been received and is pending dispatch. Please prepare the cash or card transfer upon delivery.</p>
+      </div>
+
+      ${productBlock(d)}
+
+      <div style="background:#f0fdf4;border-radius:12px;padding:24px;margin-bottom:24px;border:1px solid #bbf7d0;">
+        <p style="margin:0 0 8px;font-size:14px;font-weight:800;color:${BRAND.primary};text-transform:uppercase;letter-spacing:0.5px;">ℹ️ Cash on Delivery Terms</p>
+        <p style="margin:0;font-size:13.5px;color:#166534;line-height:1.5;">Please inspect the package upon arrival and pay the delivery driver the total amount of <strong>₦${Number(d.amount || 0).toLocaleString()}</strong>. Standard shipping terms apply.</p>
+      </div>
+
+      ${shippingBlock(d)}
+    </td>
+  </tr>
+  `
+  return layout(content, d)
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // ROUTE HANDLER
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -541,7 +569,7 @@ serve(async (req: Request) => {
       })
     }
 
-    type EmailType = "order_confirmed" | "bank_transfer" | "payment_verified" | "order_shipped" | "order_delivered" | "welcome" | "admin_new_order"
+    type EmailType = "order_confirmed" | "bank_transfer" | "payment_verified" | "order_shipped" | "order_delivered" | "welcome" | "admin_new_order" | "cod_order_placed"
 
     const emails: Record<EmailType, { subject: string; html: (d: Record<string, string>) => string }> = {
       order_confirmed:  { subject: "✅ Order Confirmed — MIFAS Agricultural Exports",       html: emailOrderConfirmed },
@@ -551,6 +579,7 @@ serve(async (req: Request) => {
       order_delivered:  { subject: "🌿 Delivered! How Was Your MIFAS Experience?",            html: emailOrderDelivered },
       welcome:          { subject: "🌱 Welcome to MIFAS — Your Account is Ready",             html: emailWelcome },
       admin_new_order:  { subject: `🔔 New Order${data.name ? ` from ${data.name}` : ""} — MIFAS Store`, html: emailAdminNewOrder },
+      cod_order_placed: { subject: "📦 Order Received (Cash on Delivery) — MIFAS Store",     html: emailCodOrder },
     }
 
     const emailConfig = emails[type as EmailType]

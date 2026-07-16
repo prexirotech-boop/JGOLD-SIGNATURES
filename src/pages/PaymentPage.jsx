@@ -7,7 +7,7 @@ import { trackEvent } from '../lib/analytics'
 import { useCurrency } from '../context/CurrencyContext'
 import OrderBump from '../components/OrderBump'
 import { useAffiliate } from '../hooks/useAffiliate'
-import { sendOrderConfirmed, sendBankTransferPending } from '../lib/emailService'
+import { sendOrderConfirmed, sendBankTransferPending, sendCodOrderPlaced } from '../lib/emailService'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHOPIFY-STYLE FIELD COMPONENT
@@ -113,6 +113,7 @@ export default function PaymentPage() {
 
   // Payment method toggle & receipt states
   const [paymentMethod, setPaymentMethod] = useState('paystack')
+  const [enableCod, setEnableCod] = useState(false)
   const [bankAccounts, setBankAccounts] = useState([])
   const [receiptUrl, setReceiptUrl] = useState('')
   const [uploadingReceipt, setUploadingReceipt] = useState(false)
@@ -180,7 +181,6 @@ export default function PaymentPage() {
     checkReferral()
   }, [])
 
-  // Load bank transfer accounts configured by admin
   useEffect(() => {
     async function fetchBankSettings() {
       try {
@@ -192,7 +192,18 @@ export default function PaymentPage() {
         console.warn('[PaymentPage] Failed to fetch bank settings:', err)
       }
     }
+    async function fetchPaymentSettings() {
+      try {
+        const { data } = await supabase.from('settings').select('*').eq('id', 'payment_config').maybeSingle()
+        if (data?.value) {
+          setEnableCod(!!data.value.enable_cod)
+        }
+      } catch (err) {
+        console.warn('[PaymentPage] Failed to fetch payment config:', err)
+      }
+    }
     fetchBankSettings()
+    fetchPaymentSettings()
   }, [])
 
   // Derived attributes
@@ -546,6 +557,148 @@ export default function PaymentPage() {
       }
     } catch (err) {
       setErrors({ email: 'Could not set up account. Please try again.' }); setLoading(false); return
+    }
+
+    if (paymentMethod === 'cod') {
+      const ref = `cod_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+      const affId = affiliateData?.id || null
+      const affCode = affiliateData?.affiliate_code || null
+
+      try {
+        const { orderId, error: orderErr } = await createPendingOrder({
+          reference: ref, name, email, phone,
+          productId: product?.id || null,
+          amount: checkoutSubtotal,
+          deliveryFee: deliveryFee,
+          quantity: checkoutQuantity,
+          affiliateCode: affCode,
+          affiliateId: affId,
+          shippingName: isPhysical ? name : null,
+          shippingPhone: isPhysical ? phone : null,
+          shippingStreet: isPhysical ? form.shipping_street.trim() : null,
+          shippingCity: isPhysical ? form.shipping_city.trim() : null,
+          shippingState: isPhysical ? form.shipping_state.trim() : null,
+          shippingCountry: isPhysical ? form.shipping_country : null,
+          shippingPostalCode: isPhysical ? form.shipping_postal_code.trim() : null,
+          shippingNotes: isPhysical ? form.shipping_notes.trim() : null,
+          paymentMethod: 'cod',
+          bankReceiptUrl: null
+        })
+
+        if (orderErr) {
+          alert('Error placing order: ' + orderErr)
+          setLoading(false)
+          return
+        }
+
+        for (const bump of selectedBumps) {
+          const base = bump.offered_product?.price || 0
+          const bumpPrice = bump.discount_type === 'percentage'
+            ? Math.round(base * (1 - bump.discount_value / 100))
+            : bump.discount_type === 'fixed'
+              ? Math.max(0, base - bump.discount_value)
+              : base
+
+          const bumpIsPhysical = bump.offered_product?.type === 'physical'
+
+          await createPendingOrder({
+            reference: `${ref}-bump-${bump.id}`,
+            name, email, phone,
+            productId: bump.offered_product_id,
+            amount: bumpPrice,
+            affiliateCode: affCode,
+            affiliateId: affId,
+            shippingName: bumpIsPhysical ? name : null,
+            shippingPhone: bumpIsPhysical ? phone : null,
+            shippingStreet: bumpIsPhysical ? form.shipping_street.trim() : null,
+            shippingCity: bumpIsPhysical ? form.shipping_city.trim() : null,
+            shippingState: bumpIsPhysical ? form.shipping_state.trim() : null,
+            shippingCountry: bumpIsPhysical ? form.shipping_country : null,
+            shippingPostalCode: bumpIsPhysical ? form.shipping_postal_code.trim() : null,
+            shippingNotes: bumpIsPhysical ? form.shipping_notes.trim() : null,
+            paymentMethod: 'cod',
+            bankReceiptUrl: null
+          })
+        }
+
+        trackEvent('purchase', {
+          value: finalTotal,
+          currency: 'NGN',
+          content_name: productTitle,
+          product_id: product?.id,
+          email,
+          name,
+          phone,
+          reference: ref
+        })
+
+        localStorage.removeItem('checkout_name')
+        localStorage.removeItem('checkout_email')
+        localStorage.removeItem('checkout_phone')
+        localStorage.removeItem('checkout_shipping_street')
+        localStorage.removeItem('checkout_shipping_city')
+        localStorage.removeItem('checkout_shipping_state')
+        localStorage.removeItem('checkout_shipping_postal_code')
+        localStorage.removeItem('checkout_shipping_notes')
+        localStorage.removeItem('ecom_cart')
+        window.dispatchEvent(new Event('cart_updated'))
+
+        localStorage.setItem('paid_customer', JSON.stringify({
+          name, email, phone, ref,
+          product_id: product?.id,
+          product_type: product?.type,
+          product_title: productTitle,
+          cover_image: product?.cover_image || null,
+          amount: discountedPrice,
+          delivery_fee: 0,
+          shipping_name: isPhysical ? name : null,
+          shipping_phone: isPhysical ? phone : null,
+          shipping_street: isPhysical ? form.shipping_street.trim() : null,
+          shipping_city: isPhysical ? form.shipping_city.trim() : null,
+          shipping_state: isPhysical ? form.shipping_state.trim() : null,
+          shipping_country: isPhysical ? form.shipping_country : null,
+          shipping_postal_code: isPhysical ? form.shipping_postal_code.trim() : null,
+          shipping_notes: isPhysical ? form.shipping_notes.trim() : null,
+          payment_method: 'cod'
+        }))
+
+        if (isPhysical && userId) {
+          try {
+            await updateProfileShipping({
+              userId,
+              street: form.shipping_street.trim(),
+              city: form.shipping_city.trim(),
+              state: form.shipping_state.trim(),
+              postalCode: form.shipping_postal_code.trim(),
+              phone: phone,
+            })
+          } catch (err) {
+            console.warn('[PaymentPage] failed saving user default address:', err)
+          }
+        }
+
+        setLoading(false)
+        sendCodOrderPlaced({
+          name,
+          email,
+          phone,
+          ref,
+          product_title: productTitle,
+          product_type: product?.type,
+          product_image: product?.cover_image,
+          amount: finalTotal,
+          shipping_street: isPhysical ? form.shipping_street : undefined,
+          shipping_city: isPhysical ? form.shipping_city : undefined,
+          shipping_state: isPhysical ? form.shipping_state : undefined,
+        })
+        navigate('/success')
+        return
+      } catch (err) {
+        console.error('[PaymentPage] COD checkout error:', err)
+        alert('An error occurred during order submission. Please try again.')
+        setLoading(false)
+        return
+      }
     }
 
     if (paymentMethod === 'bank_transfer') {
@@ -2192,6 +2345,31 @@ export default function PaymentPage() {
                 )}
               </div>
 
+              {/* Cash on Delivery Option */}
+              {enableCod && isPhysical && (
+                <div className="sp-payment-container" style={{ marginTop: 12, border: paymentMethod === 'cod' ? '2px solid var(--brand-primary, #123c24)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', margin: 0, width: '100%', boxSizing: 'border-box' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <input 
+                        type="radio" 
+                        name="payment_method"
+                        checked={paymentMethod === 'cod'} 
+                        onChange={() => setPaymentMethod('cod')}
+                        style={{ accentColor: '#123c24', cursor: 'pointer', width: 18, height: 18 }} 
+                      />
+                      <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b' }}>Cash on Delivery (COD)</span>
+                    </div>
+                    <span style={{ fontSize: '11px', color: '#707070', fontWeight: 500 }}>PAY UPON DELIVERY</span>
+                  </label>
+                  
+                  {paymentMethod === 'cod' && (
+                    <div className="sp-payment-body" style={{ background: '#f8fafc', padding: 16, borderTop: '1px solid #e2e8f0' }}>
+                      <p style={{ margin: 0, fontSize: '13px', color: '#475569', lineHeight: '1.5' }}>Pay cash or perform a local mobile transfer directly to the dispatcher upon receiving and confirming your items. Please ensure you enter a valid delivery address above.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Submit footer area */}
               <div className="sp-payment-footer" style={{ marginTop: 20 }}>
                 {emailExists && !user && (
@@ -2225,13 +2403,15 @@ export default function PaymentPage() {
                   {loading ? (
                     <>
                       <span className="sp-spinner" />
-                      <span>{paymentMethod === 'bank_transfer' ? 'Submitting Receipt...' : 'Securing Connection...'}</span>
+                      <span>{paymentMethod === 'bank_transfer' ? 'Submitting Receipt...' : paymentMethod === 'cod' ? 'Placing Order...' : 'Securing Connection...'}</span>
                     </>
                   ) : (
                     <span>
                       {paymentMethod === 'bank_transfer' 
                         ? `Submit Bank Receipt — ${formatPrice(finalTotal)} (₦${finalTotal.toLocaleString()})`
-                        : `Complete Payment — ${formatPrice(finalTotal)}`}
+                        : paymentMethod === 'cod'
+                          ? `Place Order (Cash on Delivery) — ${formatPrice(finalTotal)} (₦${finalTotal.toLocaleString()})`
+                          : `Complete Payment — ${formatPrice(finalTotal)}`}
                     </span>
                   )}
                 </button>

@@ -81,6 +81,28 @@ export async function sendBankTransferPending(data: {
 }
 
 /**
+ * Sent when a Cash on Delivery order is placed.
+ */
+export async function sendCodOrderPlaced(data: {
+  name: string
+  email: string
+  phone?: string
+  ref: string
+  product_title?: string
+  product_type?: string
+  product_image?: string
+  amount: number
+  shipping_street?: string
+  shipping_city?: string
+  shipping_state?: string
+}) {
+  await Promise.all([
+    trigger('cod_order_placed', data.email, { ...data, payment_method: 'cod' }),
+    trigger('admin_new_order', 'admin', { ...data, payment_method: 'cod' }),
+  ])
+}
+
+/**
  * Sent when admin approves/verifies a bank transfer.
  */
 export async function sendPaymentVerified(data: {

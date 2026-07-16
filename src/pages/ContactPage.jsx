@@ -149,7 +149,7 @@ export default function ContactPage() {
                                     Have direct questions about local shipping or need a quick consultation? Chat with a MIFAS FARMS trade agent.
                                 </p>
                                 <div className="card-action-bar">
-                                    <a href="https://wa.me/2349014070492?text=Hi%20MIFAS%20FARMS%20Support,%20I%20have%20an%20export%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
+                                    <a href="https://wa.me/2348083258714?text=Hi%20MIFAS%20FARMS%20Support,%20I%20have%20an%20export%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
                                         Chat on WhatsApp
                                         <span className="live-indicator">
                                             <span className="live-dot"></span>

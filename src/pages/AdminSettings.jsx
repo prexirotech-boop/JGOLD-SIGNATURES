@@ -35,6 +35,7 @@ export default function AdminSettings() {
   const [stripePublicKey, setStripePublicKey] = useState('')
   const [stripeSecretKey, setStripeSecretKey] = useState('')
   const [resendApiKey, setResendApiKey] = useState('')
+  const [enableCod, setEnableCod] = useState(false)
 
   // Multi-Currency settings
   const [enableMultiCurrency, setEnableMultiCurrency] = useState(false)
@@ -81,6 +82,7 @@ export default function AdminSettings() {
             setStripePublicKey(payConfig.value.stripe_public_key || '')
             setStripeSecretKey(payConfig.value.stripe_secret_key || '')
             setResendApiKey(payConfig.value.resend_api_key || '')
+            setEnableCod(!!payConfig.value.enable_cod)
           }
           const currencyConfig = data.find(s => s.id === 'currency_config')
           if (currencyConfig?.value) {
@@ -213,7 +215,8 @@ export default function AdminSettings() {
             paystack_secret_key: paystackSecretKey.trim(),
             stripe_public_key: stripePublicKey.trim(),
             stripe_secret_key: stripeSecretKey.trim(),
-            resend_api_key: resendApiKey.trim()
+            resend_api_key: resendApiKey.trim(),
+            enable_cod: enableCod
           },
           updated_at: new Date().toISOString()
         })
@@ -518,6 +521,20 @@ export default function AdminSettings() {
               </div>
 
               <div style={{ borderTop: '1px solid #e2e8f0', margin: '12px 0 6px 0', paddingTop: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cash on Delivery</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '8px 0 14px 0' }}>
+                <input 
+                  type="checkbox" 
+                  id="enableCod" 
+                  checked={enableCod} 
+                  onChange={e => setEnableCod(e.target.checked)} 
+                  style={{ width: 16, height: 16, cursor: 'pointer' }}
+                />
+                <label htmlFor="enableCod" style={{ fontSize: 13, fontWeight: 500, color: '#3c4257', cursor: 'pointer', userSelect: 'none' }}>Enable Cash on Delivery (COD) Payment Option</label>
+              </div>
+
+              <div style={{ borderTop: '1px solid #e2e8f0', margin: '12px 0 6px 0', paddingTop: 12 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Feature Toggles</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr', gap: 16, margin: '6px 0 12px 0' }}>
@@ -613,8 +630,8 @@ export default function AdminSettings() {
                 </div>
               )}
 
-              <button type="submit" style={{ alignSelf: 'flex-start', background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13.5, marginTop: 8, transition: 'all 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                Save Configurations
+              <button type="submit" disabled={loading} style={{ alignSelf: 'flex-start', background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 6, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 13.5, marginTop: 8, transition: 'all 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                {loading ? 'Saving...' : 'Save Configurations'}
               </button>
             </form>
           </div>
