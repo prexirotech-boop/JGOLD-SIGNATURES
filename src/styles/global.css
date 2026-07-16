@@ -30,11 +30,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Brand (Forest Green MIFAS FARMS Organic Theme) */
-  --g900: #0a2214; --g800: #123c24; --g700: #1b5333;
-  --g600: #246a42; --g500: #338854; --g400: #5cb57c;
-  --g200: #a3e2bb; --g100: #d1f4df; --g50:  #f0fdf4;
-  --gold: #f59e0b; --gold-d: #b45309; --gold-l: #fef3c7;
+  /* Brand (Premium Gold & Luxury Charcoal JGOLD SIGNATURES Theme) */
+  --g900: #0f0d0a; --g800: #1c1813; --g700: #332b21;
+  --g600: #5c4e3c; --g500: #af9063; --g400: #c5a880;
+  --g200: #e3d5c1; --g100: #f4eee3; --g50:  #faf8f5;
+  --gold: #dfb26c; --gold-d: #966f33; --gold-l: #fcf8f0;
   --red:  #dc2626; --red-l: #fef2f2;
   /* Neutrals */
   --w: #FFFFFF; --k: #0A0A0A;

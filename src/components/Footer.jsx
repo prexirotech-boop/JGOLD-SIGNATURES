@@ -22,12 +22,12 @@ export default function Footer() {
 
   return (
     <footer style={{
-      background: '#0d2e1a', // Solid dark forest green brand color
+      background: '#0f0d0a', // Solid dark charcoal luxury brand color
       fontFamily: 'var(--font)',
       position: 'relative',
       overflow: 'hidden',
       color: '#ffffff',
-      borderTop: '4px solid #1b5333'
+      borderTop: '4px solid #c5a880' // Gold accent border
     }}>
 
       {/* Main Footer Container */}
@@ -47,30 +47,30 @@ export default function Footer() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <img
-                src="/logo.png"
-                alt="MIFAS FARMS LTD"
+                src="/logo.webp"
+                alt="JGOLD SIGNATURES"
                 onClick={scrollToTop}
                 style={{
                   height: '80px',
                   width: 'auto',
                   objectFit: 'contain',
                   cursor: 'pointer',
-                  filter: 'brightness(0) invert(1)' // Render as clean white on dark background
+                  filter: 'none' // Webp logo color is preserved or matches gold background
                 }}
               />
               <div>
-                <strong style={{ display: 'block', fontSize: '16px', fontWeight: 800, letterSpacing: '0.5px' }}>MIFAS FARMS LTD</strong>
-                <span style={{ fontSize: '11px', color: '#a3e2bb', fontWeight: 600 }}>Exporting Nigerian Farm Treasures</span>
+                <strong style={{ display: 'block', fontSize: '16px', fontWeight: 800, letterSpacing: '0.5px' }}>JGOLD SIGNATURES</strong>
+                <span style={{ fontSize: '11px', color: '#c5a880', fontWeight: 600 }}>Luxury Meets Style</span>
               </div>
             </div>
 
             <p style={{
               fontSize: '13px',
-              color: '#d1f4df',
+              color: '#f4eee3',
               lineHeight: 1.6,
               margin: 0
             }}>
-              We source, process, package, and export premium-grade agricultural commodities from Nigeria to premium markets globally.
+              Welcome to JGOLD, where luxury meets style. Our curated collection of exquisite shoes and elegant clothing accessories is designed to empower men to express their unique style with confidence and grace.
             </p>
 
             {/* Social Icons */}
@@ -91,7 +91,7 @@ export default function Footer() {
                      display: 'flex',
                      alignItems: 'center',
                      justifyContent: 'center',
-                     color: '#d1f4df',
+                     color: '#f4eee3',
                      textDecoration: 'none',
                      transition: 'all 0.2s ease'
                    }}
@@ -107,7 +107,7 @@ export default function Footer() {
             <h4 style={{
               fontSize: '12px',
               fontWeight: 700,
-              color: '#a3e2bb',
+              color: '#c5a880',
               textTransform: 'uppercase',
               letterSpacing: '1px',
               marginBottom: 16
@@ -117,13 +117,12 @@ export default function Footer() {
                 { label: 'About Us', path: '/about' },
                 { label: 'Products', path: '/products' },
                 { label: 'Quality', path: '/quality' },
-                { label: 'Export', path: '/export' },
                 { label: 'FAQs', path: '/faq' },
                 { label: 'Contact', path: '/contact' },
               ].map(({ label, path }) => (
                 <Link key={label} to={path} onClick={scrollToTop} className="footer-nav-link"
                   style={{
-                    color: '#e2f8eb',
+                    color: '#e3d5c1',
                     fontSize: '13.5px',
                     textDecoration: 'none',
                     display: 'inline-flex',
@@ -142,22 +141,21 @@ export default function Footer() {
             <h4 style={{
               fontSize: '12px',
               fontWeight: 700,
-              color: '#a3e2bb',
+              color: '#c5a880',
               textTransform: 'uppercase',
               letterSpacing: '1px',
               marginBottom: 16
-            }}>Products</h4>
+            }}>Collection</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                { label: 'Bitter Kola', path: '/products?category=bitter-kola' },
-                { label: 'Kolanuts', path: '/products?category=kolanuts' },
-                { label: 'Palm Oil', path: '/products?category=palm-oil' },
-                { label: 'Shea Butter', path: '/products?category=shea-butter' },
-                { label: 'Other Products', path: '/products' },
+                { label: 'Exquisite Shoes', path: '/products?category=shoes' },
+                { label: 'Men\'s Apparel', path: '/products?category=apparel' },
+                { label: 'Elegant Accessories', path: '/products?category=accessories' },
+                { label: 'New Arrivals', path: '/products' },
               ].map(({ label, path }) => (
                 <Link key={label} to={path} onClick={scrollToTop} className="footer-nav-link"
                   style={{
-                    color: '#e2f8eb',
+                    color: '#e3d5c1',
                     fontSize: '13.5px',
                     textDecoration: 'none',
                     display: 'inline-flex',
@@ -176,28 +174,31 @@ export default function Footer() {
             <h4 style={{
               fontSize: '12px',
               fontWeight: 700,
-              color: '#a3e2bb',
+              color: '#c5a880',
               textTransform: 'uppercase',
               letterSpacing: '1px',
               marginBottom: 4
             }}>Contact Us</h4>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: '#e2f8eb' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: '#e3d5c1' }}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginTop: 2, flexShrink: 0 }}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span>+234 901 407 0492</span>
+                <span>+234 705 929 7121<br/>+234 803 971 4352</span>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginTop: 2, flexShrink: 0 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span style={{ wordBreak: 'break-all' }}>mifasfarmservices@gmail.com</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ wordBreak: 'break-all' }}>admin@jgoldsignatures.com.ng</span>
+                  <span style={{ wordBreak: 'break-all' }}>ebonyjuliet15@yahoo.com</span>
+                </div>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginTop: 2, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                <span>mifasfarmsexport.com</span>
+                <span>jgoldsignatures.com.ng</span>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginTop: 2, flexShrink: 0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>49B Heliu Estate, Maryland, Enugu, Nigeria</span>
+                <span>Shop 2F08 Update plaza, second floor Mandelas, Lagos State, Nigeria</span>
               </div>
             </div>
           </div>
@@ -210,16 +211,16 @@ export default function Footer() {
               height: 56,
               borderRadius: '50%',
               background: 'rgba(255,255,255,0.04)',
-              border: '1.5px dashed #a3e2bb',
+              border: '1.5px dashed #c5a880',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#a3e2bb'
+              color: '#c5a880'
             }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
             </div>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>Proudly Nigerian,</div>
-            <div style={{ fontSize: '11.5px', color: '#a3e2bb', fontWeight: 600 }}>Trusted Globally.</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>Luxury & Style,</div>
+            <div style={{ fontSize: '11.5px', color: '#c5a880', fontWeight: 600 }}>Crafted for You.</div>
           </div>
 
         </div>
@@ -235,8 +236,8 @@ export default function Footer() {
           flexWrap: 'wrap',
           gap: 16
         }}>
-          <p style={{ fontSize: '12.5px', color: '#a3e2bb', margin: 0 }}>
-            &copy; {year} <strong style={{ color: '#ffffff', fontWeight: 700 }}>MIFAS FARMS LTD</strong>. All Rights Reserved.
+          <p style={{ fontSize: '12.5px', color: '#c5a880', margin: 0 }}>
+            &copy; {year} <strong style={{ color: '#ffffff', fontWeight: 700 }}>JGOLD SIGNATURES</strong>. All Rights Reserved.
           </p>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Terms of Service', 'Privacy Policy', 'Refund Policy'].map(txt => {
@@ -245,7 +246,7 @@ export default function Footer() {
                 <Link key={txt} to={path} onClick={scrollToTop} className="footer-bottom-link"
                   style={{
                     fontSize: '12.5px',
-                    color: '#a3e2bb',
+                    color: '#c5a880',
                     textDecoration: 'none',
                     transition: 'color 0.2s'
                   }}
@@ -262,7 +263,7 @@ export default function Footer() {
       <style>{`
         .footer-social-link:hover {
           background: var(--brand-primary) !important;
-          border-color: #a3e2bb !important;
+          border-color: #c5a880 !important;
           color: #ffffff !important;
           transform: translateY(-2px);
         }

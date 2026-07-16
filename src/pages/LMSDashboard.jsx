@@ -184,7 +184,7 @@ function PurchaseHistoryTab({ user, profile }) {
       return;
     }
 
-    const brandName = localStorage.getItem('brandName') || 'MIFAS FARMS';
+    const brandName = localStorage.getItem('brandName') || 'JGOLD SIGNATURES';
     const cleanBrandName = brandName.replace(/["']/g, "");
 
     const htmlContent = `

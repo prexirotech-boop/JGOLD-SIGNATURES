@@ -700,7 +700,7 @@ export default function AdminSettings() {
                       type="text" 
                       value={newAccName} 
                       onChange={e => setNewAccName(e.target.value)} 
-                      placeholder="e.g. MIFAS FARMS LTD"
+                      placeholder="e.g. JGOLD SIGNATURES"
                       style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
                     />
                   </div>

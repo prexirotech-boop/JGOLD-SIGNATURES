@@ -179,7 +179,7 @@ export default function Header() {
     <>
       <header className="global-header">
         <Link to={location.pathname.startsWith('/admin') ? '/admin' : '/'} className="brand-link" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-          <img src="/logo.png" alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} style={{ height: 76, width: 'auto', maxWidth: 280, objectFit: 'contain', objectPosition: 'left center', display: 'block', flexShrink: 0 }} />
+          <img src="/logo.webp" alt={localStorage.getItem('brandName') || 'JGOLD SIGNATURES'} style={{ height: 76, width: 'auto', maxWidth: 280, objectFit: 'contain', objectPosition: 'left center', display: 'block', flexShrink: 0 }} />
         </Link>
 
         <div className="header-search-wrapper" ref={dropdownRef} style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
@@ -229,7 +229,7 @@ export default function Header() {
                       src={product.cover_image} 
                       alt={product.title} 
                       className="search-item-thumb" 
-                      onError={e => { e.currentTarget.src = '/logo.png' }}
+                      onError={e => { e.currentTarget.src = '/logo.webp' }}
                     />
                     <div className="search-item-info">
                       <div className="search-item-title">{product.title}</div>
@@ -259,9 +259,6 @@ export default function Header() {
             { label: 'About Us', path: '/about' },
             { label: 'Products', path: '/products' },
             { label: 'Quality', path: '/quality' },
-            { label: 'Export', path: '/export' },
-            { label: 'Gallery', path: '/gallery' },
-            { label: 'Blog', path: '/blog' },
             { label: 'Contact', path: '/contact' }
           ].map(item => (
             <Link
@@ -476,9 +473,6 @@ export default function Header() {
           { label: 'About Us', path: '/about', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg> },
           { label: 'Products', path: '/products', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> },
           { label: 'Quality', path: '/quality', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
-          { label: 'Export', path: '/export', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> },
-          { label: 'Gallery', path: '/gallery', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> },
-          { label: 'Blog', path: '/blog', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg> },
           { label: 'Contact', path: '/contact', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> }
         ].map((item, idx) => {
           const isActive = location.pathname === item.path

@@ -158,16 +158,16 @@ export default function ProductsPage() {
     <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
       
       {/* ─── HERO HEADER (Redesigned matching Gallery Page style) ─── */}
-      <section style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+      <section style={{ background: 'linear-gradient(135deg, #0f0d0a 0%, #1c1813 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <span style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: '#c5a880', textTransform: 'uppercase', letterSpacing: '2px' }}>
             Premium Store Catalog
           </span>
           <h1 style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }}>
-            Shop Premium Products. Nationwide Delivery.
+            Exquisite Men's Shoes & Accessories
           </h1>
-          <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
-            High-quality physical products shipped directly to your door. Secure payment gateway and fast delivery.
+          <p style={{ fontSize: '16px', color: '#f4eee3', lineHeight: '1.6', margin: 0 }}>
+            High-quality luxury footwear and accessories delivered to your door. Secure payments and instant support.
           </p>
         </div>
       </section>
@@ -179,10 +179,9 @@ export default function ProductsPage() {
           <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none', flexShrink: 1, minWidth: 0 }} className="filter-tabs-scroll">
             {[
               { label: 'All Products', value: 'all' },
-              { label: 'Bitter Kola', value: 'bitter-kola' },
-              { label: 'Kolanuts', value: 'kolanuts' },
-              { label: 'Palm Oil', value: 'palm-oil' },
-              { label: 'Shea Butter', value: 'shea-butter' }
+              { label: 'Exquisite Shoes', value: 'shoes' },
+              { label: 'Men\'s Apparel', value: 'apparel' },
+              { label: 'Elegant Accessories', value: 'accessories' }
             ].map(cat => (
               <button
                 key={cat.value}
@@ -299,7 +298,7 @@ export default function ProductsPage() {
                   <Link to={`/product/${product.slug || product.id}`} style={{ display: 'block', height: '140px', overflow: 'hidden', background: '#f8fafc' }}>
                     <img 
                       src={product.cover_image || '/logo.png'} 
-                      alt={`${product.title.replace(/\s+slug$/i, '')} - Export-grade agro product from MIFAS Store`} 
+                      alt={`${product.title.replace(/\s+slug$/i, '')} - Premium product from JGOLD SIGNATURES`} 
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       loading="lazy"
                       onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.padding = '20px' }}

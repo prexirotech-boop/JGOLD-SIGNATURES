@@ -55,56 +55,56 @@ function ScrollToTop() {
 
 const ROUTE_SEO = {
   '/': {
-    title: 'MIFAS FARMS — Premium Organic Agro-Exports & Logistics',
-    description: 'MIFAS FARMS offers premium organic agricultural products, agro-exports, and farm produce logistics. Order top quality agricultural exports directly from our storefront.'
+    title: 'JGOLD SIGNATURES — Premium Men\'s Luxury Shoes & Accessories',
+    description: 'Welcome to JGOLD SIGNATURES, where luxury meets style. Browse our curated collection of exquisite handcrafted men\'s shoes and elegant clothing accessories.'
   },
   '/about': {
-    title: 'About Us — MIFAS FARMS Premium Agricultural Exports',
-    description: 'Learn about MIFAS FARMS, our mission, sustainable agricultural practices, and how we deliver premium export-grade produce from Nigeria to the world.'
+    title: 'About Us — JGOLD SIGNATURES Luxury Brand',
+    description: 'Learn about JGOLD SIGNATURES, our commitment to master craftsmanship, and how we curate premium shoes and clothing accessories for modern gentlemen.'
   },
   '/products': {
-    title: 'Shop Export-Grade Agricultural Products — MIFAS Store',
-    description: 'Browse and purchase top-quality agricultural products including cashew nuts, ginger, chili pepper, and cocoa beans directly from our export-grade store.'
+    title: 'Shop Men\'s Luxury Shoes & Accessories — JGOLD SIGNATURES',
+    description: 'Browse and purchase top-quality leather shoes, dress shoes, and elegant accessories directly from our luxury storefront.'
   },
   '/contact': {
-    title: 'Contact Us — MIFAS FARMS Customer Support',
-    description: 'Get in touch with MIFAS FARMS. Contact our sales and logistics team for inquiries about agricultural export rates, shipping, and bulk orders.'
+    title: 'Contact Us — JGOLD SIGNATURES Customer Support',
+    description: 'Get in touch with JGOLD SIGNATURES. Reach out to our Lagos styling and support team for inquiries, sizing consultation, or order assistance.'
   },
   '/blog': {
-    title: 'Agro-Export & Farming Insights Blog — MIFAS FARMS',
-    description: 'Stay updated with the latest trends, insights, guides, and farming techniques in the Nigerian agro-export and agricultural logistics sector.'
+    title: 'Luxury Fashion & Styling Blog — JGOLD SIGNATURES',
+    description: 'Stay updated with the latest men\'s styling advice, shoe care guides, and fashion trends from JGOLD SIGNATURES.'
   },
   '/faq': {
-    title: 'Frequently Asked Questions — MIFAS FARMS Support',
-    description: 'Find answers to common questions about MIFAS FARMS product ordering, quality standards, shipping logistics, payment options, and refund policy.'
+    title: 'Frequently Asked Questions — JGOLD SIGNATURES',
+    description: 'Find answers to common questions about JGOLD SIGNATURES shoe sizing, shipping rates, payment gateways, and return policies.'
   },
   '/affiliate': {
-    title: 'Affiliate Partnership Program — MIFAS FARMS',
-    description: 'Join the MIFAS FARMS affiliate program. Earn generous commissions by referring buyers to our export-grade agricultural store.'
+    title: 'Affiliate Partnership Program — JGOLD SIGNATURES',
+    description: 'Join the JGOLD SIGNATURES affiliate program. Earn commissions by referring customers to our luxury men\'s clothing and footwear store.'
   },
   '/quality': {
-    title: 'Premium Export Standards & Quality Assurance — MIFAS FARMS',
-    description: 'MIFAS Agricultural Exports operates under strict international quality guidelines, ensuring all shipments meet phytosanitary and export grade certifications.'
+    title: 'Premium Craftsmanship & Quality Assurance — JGOLD SIGNATURES',
+    description: 'JGOLD SIGNATURES operates under strict quality standards, ensuring all footwear and accessories meet international premium grade inspections.'
   },
   '/export': {
-    title: 'Global Agro-Export & Trade Services — MIFAS FARMS',
-    description: 'MIFAS Agricultural Exports specializes in sourcing, processing, packaging, and shipping premium Nigerian agricultural commodities globally.'
+    title: 'Global Delivery & Shipping Services — JGOLD SIGNATURES',
+    description: 'JGOLD SIGNATURES offers premium express shipping for our luxury products to clients globally.'
   },
   '/gallery': {
-    title: 'MIFAS FARMS — Photo Gallery & Operations',
-    description: 'Take a virtual tour of MIFAS FARMS. Explore our farms, processing facilities, quality inspection processes, and logistics operations in Nigeria.'
+    title: 'JGOLD SIGNATURES — Product Gallery & Craftsmanship',
+    description: 'Explore photos of our handcrafted leather shoes, premium apparel, and detailed design processes.'
   },
   '/terms': {
-    title: 'Terms of Service — MIFAS FARMS',
-    description: 'Read the terms and conditions governing the use of MIFAS FARMS website, storefront, ordering system, and agro-export services.'
+    title: 'Terms of Service — JGOLD SIGNATURES',
+    description: 'Read the terms and conditions governing the use of JGOLD SIGNATURES website, ordering systems, and premium commerce services.'
   },
   '/privacy': {
-    title: 'Privacy Policy — MIFAS FARMS',
-    description: 'Review our privacy policy to understand how MIFAS FARMS collects, uses, protects, and handles your personal and transactional information.'
+    title: 'Privacy Policy — JGOLD SIGNATURES',
+    description: 'Review our privacy policy to understand how JGOLD SIGNATURES handles and protects your personal and transactional information.'
   },
   '/refund': {
-    title: 'Refund & Cancellation Policy — MIFAS FARMS',
-    description: 'Understand the terms, conditions, and procedures for refunds, returns, or order cancellations at MIFAS FARMS Store.'
+    title: 'Refund & Exchange Policy — JGOLD SIGNATURES',
+    description: 'Understand the terms and procedures for exchanges, size replacements, and refunds at JGOLD SIGNATURES.'
   }
 }
 

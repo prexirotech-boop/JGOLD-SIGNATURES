@@ -25,32 +25,32 @@ export default function FAQPage() {
   const faqData = [
     {
       category: 'General',
-      question: 'What is MIFAS FARMS and how does it work?',
-      answer: 'MIFAS FARMS LTD is a premium Nigerian agribusiness and export enterprise. We source organic crops (Bitter Kola, Kolanuts, Palm Oil, Shea Butter) directly from farming cooperatives and distribute them to local retail buyers and global wholesale importers.'
+      question: 'What is JGOLD SIGNATURES and how does it work?',
+      answer: 'JGOLD SIGNATURES is a premium men\'s luxury brand specializing in exquisite handcrafted leather shoes and elegant clothing accessories. You can browse our products online, select your size, and make a purchase directly through our secure storefront.'
     },
     {
       category: 'Payments',
       question: 'What payment methods do you support?',
-      answer: 'We support credit/debit card payments, USSD, and instant transfers through Secure Paystack. We also offer direct bank transfers; you just need to upload a screenshot of your transfer receipt during checkout for our manual admin review.'
+      answer: 'We support credit/debit card payments, USSD, and instant transfers through Paystack. We also support direct bank transfers; simply upload a screenshot of your transfer receipt during checkout for our team to verify.'
     },
     {
-      category: 'Products',
-      question: 'Where are your commodities sourced from?',
-      answer: 'All agricultural products are sourced directly from partner farms in agricultural regions in Nigeria. They are sorted, dried, and packaged at our Enugu facility to prevent contamination and safeguard standard quality.'
+      category: 'Sizing',
+      question: 'How do I select the correct shoe size?',
+      answer: 'We utilize standard European (EU) shoe sizes. Sizing chart details are available on product description pages. If you are unsure, feel free to chat with our style support team on WhatsApp (+2348039714352) for expert guidance.'
     },
     {
       category: 'Shipping',
-      question: 'Do you offer international container shipping?',
-      answer: 'Yes! We export globally in container load batches under FOB (Free On Board) or CIF (Cost, Insurance, and Freight) shipping terms, coordinating with leading cargo ocean liners.'
+      question: 'Do you offer nationwide shipping?',
+      answer: 'Yes! We ship nationwide across Nigeria. Delivery inside Lagos takes 1-3 business days, while deliveries to other states take 3-5 business days. International shipping is also available upon request.'
     },
     {
-      category: 'Quality',
-      question: 'Do you provide phytosanitary and lab certificates?',
-      answer: 'Absolutely. Every wholesale shipment includes a Phytosanitary Certificate issued by the Nigerian Agricultural Quarantine Service (NAQS), plus moisture and contamination test reports from accredited laboratory analysts.'
+      category: 'Returns',
+      question: 'What is your exchange and return policy?',
+      answer: 'We accept exchanges for sizing issues within 7 days of delivery. The items must be unworn, undamaged, and returned in their original luxury packaging. Contact our support team to coordinate returns.'
     }
   ]
 
-  const categories = ['All', 'General', 'Payments', 'Products', 'Shipping', 'Quality']
+  const categories = ['All', 'General', 'Payments', 'Sizing', 'Shipping', 'Returns']
 
   const filteredFaqs = faqData.filter(faq => {
     const matchesSearch = 
@@ -72,16 +72,16 @@ export default function FAQPage() {
     <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
       
       {/* Page Hero Header */}
-      <section style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+      <section style={{ background: 'linear-gradient(135deg, #0f0d0a 0%, #1c1813 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <span style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: '#c5a880', textTransform: 'uppercase', letterSpacing: '2px' }}>
             Help Center
           </span>
           <h1 style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }}>
             Frequently Asked Questions
           </h1>
-          <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
-            Find quick answers about commodity standards, billing methods, quarantine clearance, and shipping options.
+          <p style={{ fontSize: '16px', color: '#f4eee3', lineHeight: '1.6', margin: 0 }}>
+            Find quick answers about footwear sizing, payments, exchanges, and nationwide shipping options.
           </p>
         </div>
       </section>

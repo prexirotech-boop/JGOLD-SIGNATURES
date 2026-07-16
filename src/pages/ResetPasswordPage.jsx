@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
     <div className="auth-container-root">
       <div className="auth-card-wrapper">
         <Link to="/" className="auth-brand-logo">
-          <img src="/logo.png" alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} />
+          <img src="/logo.png" alt={localStorage.getItem('brandName') || 'JGOLD SIGNATURES'} />
         </Link>
         
         <div className="auth-card">

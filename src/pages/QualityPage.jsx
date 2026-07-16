@@ -6,16 +6,16 @@ export default function QualityPage() {
     <div style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
       
       {/* Page Hero Header */}
-      <section style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+      <section style={{ background: 'linear-gradient(135deg, #0f0d0a 0%, #1c1813 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <span style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: '#c5a880', textTransform: 'uppercase', letterSpacing: '2px' }}>
             International Standards
           </span>
           <h1 style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }}>
-            Quality Assurance & Certifications
+            Quality Assurance & Craftsmanship
           </h1>
-          <p style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
-            At MIFAS FARMS, quality is not an afterthought. We maintain rigorous quality assurance frameworks from soil management to export clearance to ensure our buyers receive premium commodities.
+          <p style={{ fontSize: '16px', color: '#f4eee3', lineHeight: '1.6', margin: 0 }}>
+            At JGOLD SIGNATURES, quality is a promise. We maintain rigorous standards from premium leather sourcing to final packaging to ensure our clients receive exquisite products.
           </p>
         </div>
       </section>
@@ -31,23 +31,23 @@ export default function QualityPage() {
           {[
             {
               num: '01',
-              title: 'Source Inspection',
-              desc: 'We work directly with trained farmers. Moisture content and organic agricultural practices are audited right at the farm gate.'
+              title: 'Leather Selection',
+              desc: 'We source only premium full-grain Italian leathers and premium fabrics, auditing textures and durability metrics.'
             },
             {
               num: '02',
-              title: 'Standard Sorting',
-              desc: 'Commodities are transported to our clean Enugu sorting facility. Discolored, undersized, or damaged nuts/seeds are sorted out manually.'
+              title: 'Master Stitching',
+              desc: 'Footwear is handcrafted by master artisans. Stitching tension, alignment, and cuts are manually checked for perfection.'
             },
             {
               num: '03',
-              title: 'Lab Moisture Analysis',
-              desc: 'Ensuring correct moisture percentage is critical to prevent mold during maritime transit. We run moisture calibration checks for every batch.'
+              title: 'Fit & Comfort Audit',
+              desc: 'Ensuring correct sizing and cushioning is critical. We perform strict walking and flexibility checks for every product.'
             },
             {
               num: '04',
-              title: 'Phytosanitary Clearance',
-              desc: 'Official inspection and approval by the Nigerian Agricultural Quarantine Service (NAQS) prior to customs documentation.'
+              title: 'Elegance Packaging',
+              desc: 'Every item is hand-packed in protective custom dust bags and rigid signature boxes before shipment.'
             }
           ].map((item, idx) => (
             <div key={idx} style={{
@@ -60,7 +60,7 @@ export default function QualityPage() {
               gap: '12px'
             }}>
               <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--brand-primary)', opacity: 0.15 }}>{item.num}</div>
-              <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0d2e1a', margin: 0 }}>{item.title}</h3>
+              <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0f0d0a', margin: 0 }}>{item.title}</h3>
               <p style={{ fontSize: '13px', color: '#475569', lineHeight: '1.6', margin: 0 }}>{item.desc}</p>
             </div>
           ))}
@@ -68,27 +68,27 @@ export default function QualityPage() {
       </section>
 
       {/* Certifications & Compliances banner */}
-      <section style={{ padding: '60px 24px', background: '#f0fdf4', borderTop: '1px solid #d1f4df', borderBottom: '1px solid #d1f4df' }}>
+      <section style={{ padding: '60px 24px', background: '#faf8f5', borderTop: '1px solid #e3d5c1', borderBottom: '1px solid #e3d5c1' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }} className="cert-flex">
           <div>
-            <h2 style={{ fontSize: '28px', color: '#0d2e1a', fontWeight: 800, marginBottom: '16px' }}>Compliance & Food Safety</h2>
+            <h2 style={{ fontSize: '28px', color: '#0f0d0a', fontWeight: 800, marginBottom: '16px' }}>Premium Sourcing & Safety</h2>
             <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.7', marginBottom: '12px' }}>
-              MIFAS FARMS agricultural commodities meet strict European Food Safety Authority (EFSA) limits and US FDA guidelines.
+              JGOLD SIGNATURES products meet strict international craftsmanship guidelines and ethical sourcing audits.
             </p>
             <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.7', margin: 0 }}>
-              All shipments carry accredited laboratory testing analysis reports for aflatoxins, pesticide residues, and moisture specifications.
+              All footwear batches carry premium stitching guarantees, comfort cushioning reports, and genuine leather certificates.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             {[
-              'NAQS Certified',
-              'SGS Inspection Available',
-              'HACCP Standard Compliant',
-              'FDA Registered Facility'
+              '100% Genuine Leather',
+              'Artisan Handcrafted',
+              'Ethically Sourced',
+              'Premium Packaging'
             ].map((text, idx) => (
               <div key={idx} style={{
                 background: '#ffffff',
-                border: '1.5px solid #a3e2bb',
+                border: '1.5px solid #c5a880',
                 borderRadius: '6px',
                 padding: '16px',
                 textAlign: 'center',
@@ -107,11 +107,11 @@ export default function QualityPage() {
       {/* Call to action */}
       <section style={{ padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '28px', color: '#0d2e1a', fontWeight: 800, margin: 0 }}>Request Certificate Samples</h2>
+          <h2 style={{ fontSize: '28px', color: '#0f0d0a', fontWeight: 800, margin: 0 }}>Discover Luxury Sizing</h2>
           <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.6', margin: 0 }}>
-            We provide laboratory reports, moisture analyses, and NAQS test receipts to verified buyers upon quotation requests.
+            Explore our catalog online to view sizing guidelines, detailed materials reviews, and select your signature pieces.
           </p>
-          <Link to="/contact" style={{
+          <Link to="/products" style={{
             background: 'var(--brand-primary)',
             color: '#ffffff',
             padding: '12px 28px',
@@ -122,7 +122,7 @@ export default function QualityPage() {
             transition: 'background-color 0.2s'
           }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--brand-hover)'}
              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--brand-primary)'}>
-            Get a Quote Now
+            Explore Products
           </Link>
         </div>
       </section>

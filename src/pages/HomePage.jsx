@@ -44,13 +44,7 @@ export default function HomePage() {
       {/* ─── HERO SECTION ─── */}
       <section style={{ padding: 0, width: '100%', maxWidth: '100%', background: '#ffffff', position: 'relative', overflow: 'hidden' }}>
         
-        {/* Leaf image overlays for decoration */}
-        <div style={{ position: 'absolute', top: '-15px', left: '-15px', opacity: 0.25, zIndex: 1, pointerEvents: 'none' }} className="hero-leaf-tl">
-          <img src="/leaf.png" alt="botanical leaf decoration for MIFAS Agricultural Exports" style={{ width: '100px', height: 'auto', transform: 'rotate(-25deg) scaleX(-1)' }} />
-        </div>
-        <div style={{ position: 'absolute', bottom: '0px', left: '-25px', opacity: 0.35, zIndex: 1, pointerEvents: 'none' }} className="hero-leaf-bl">
-          <img src="/leaf.png" alt="botanical leaf decoration for MIFAS Agricultural Exports" style={{ width: '140px', height: 'auto', transform: 'rotate(15deg)' }} />
-        </div>
+        {/* Decorative elements */}
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', alignItems: 'center', width: '100%' }} className="hero-grid">
           
@@ -59,31 +53,31 @@ export default function HomePage() {
             <h1 style={{ 
               fontSize: '52px', 
               fontWeight: 800, 
-              color: '#0d2e1a', 
+              color: '#0f0d0a', 
               lineHeight: '1.25', 
               margin: 0,
               fontFamily: 'var(--font-heading)',
               letterSpacing: '-1px'
             }} className="hero-title">
-              Connecting Nigeria's<br />
-              Finest Agricultural Products<br />
+              Luxury Meets<br />
+              Sophisticated Style<br />
               <span style={{ 
                 fontFamily: "'Dancing Script', 'Brush Script MT', cursive", 
                 fontWeight: '600', 
-                color: '#246a42', 
+                color: '#dfb26c', 
                 fontSize: '48px', 
                 display: 'block', 
                 marginTop: '8px' 
-              }}>to the Global Marketplace</span>
+              }}>for the Modern Gentleman</span>
             </h1>
             
             <p style={{ fontSize: '17.5px', color: '#475569', lineHeight: '1.8', margin: 0, maxWidth: '560px' }}>
-              We source, process and export premium quality agricultural products from Nigeria to the world with integrity, quality and excellence.
+              Discover our curated collection of exquisite handcrafted leather shoes and elegant clothing accessories, meticulously crafted to help you stand out.
             </p>
 
             <div style={{ display: 'flex', gap: '14px', marginTop: '8px', flexWrap: 'wrap' }} className="hero-actions">
               <Link to="/products" style={{
-                background: '#0d2e1a',
+                background: '#0f0d0a',
                 color: '#fff',
                 padding: '16px 32px',
                 borderRadius: '6px',
@@ -94,15 +88,15 @@ export default function HomePage() {
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'background-color 0.2s',
-                border: '1px solid #0d2e1a'
-              }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#123c24'}
-                 onMouseLeave={e => e.currentTarget.style.backgroundColor = '#0d2e1a'}>
-                Explore Our Products <span>→</span>
+                border: '1px solid #0f0d0a'
+              }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#262520'}
+                 onMouseLeave={e => e.currentTarget.style.backgroundColor = '#0f0d0a'}>
+                Explore Collection <span>→</span>
               </Link>
               <Link to="/contact" style={{
                 background: 'transparent',
-                color: '#0d2e1a',
-                border: '1px solid #0d2e1a',
+                color: '#0f0d0a',
+                border: '1px solid #0f0d0a',
                 padding: '16px 32px',
                 borderRadius: '6px',
                 fontWeight: 700,
@@ -112,7 +106,7 @@ export default function HomePage() {
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s'
-              }} onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc' }}
+              }} onMouseEnter={e => { e.currentTarget.style.background = '#faf8f5' }}
                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
                 Contact Us <span>→</span>
               </Link>
@@ -123,7 +117,7 @@ export default function HomePage() {
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', background: '#ffffff' }} className="hero-image-col">
             <img 
               src="/mifas_hero_image.png" 
-              alt="MIFAS Agricultural Exports premium products collage including cashew nuts, ginger, chili, and cocoa beans" 
+              alt="JGOLD SIGNATURES premium collection collage including handcrafted shoes, leather belts, and cufflinks" 
               style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
             />
           </div>
@@ -164,26 +158,27 @@ export default function HomePage() {
         `}} />
       </section>
 
-      {/* ─── FEATURES HIGHLIGHTS STRIP (Green Background) ─── */}
-      <section style={{ background: '#0d2e1a', color: '#ffffff', padding: '40px 24px', width: '100%', maxWidth: '100%' }}>
+      {/* ─── FEATURES HIGHLIGHTS STRIP ─── */}
+      <section style={{ background: '#0f0d0a', color: '#ffffff', padding: '40px 24px', width: '100%', maxWidth: '100%', borderBottom: '1px solid #332b21' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '24px' }} className="features-grid-new">
           {[
             {
-              title: 'GLOBAL REACH',
-              desc: 'We export to over 20+ countries worldwide.',
+              title: 'NATIONWIDE DELIVERY',
+              desc: 'Express delivery to your doorstep across Nigeria.',
               icon: (
-                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-                  <path d="M2 12h20"/>
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <rect x="1" y="3" width="15" height="13"/>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/>
+                  <circle cx="18.5" cy="18.5" r="2.5"/>
                 </svg>
               )
             },
             {
-              title: 'PREMIUM QUALITY',
-              desc: 'We maintain the highest quality from farm to final delivery.',
+              title: 'HANDCRAFTED QUALITY',
+              desc: 'Meticulously crafted from the finest premium materials.',
               icon: (
-                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                   <circle cx="12" cy="8" r="7"/>
                   <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
                   <polyline points="9 8 11 10 15 6"/>
@@ -191,34 +186,31 @@ export default function HomePage() {
               )
             },
             {
-              title: 'EXPORT READY',
-              desc: 'We meet international standards and export requirements.',
+              title: 'EXCLUSIVE DESIGN',
+              desc: 'Exquisite designs that blend timeless and modern trends.',
               icon: (
-                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <path d="M21.5 12V5.5L12 1.5 2.5 5.5V12c0 5.25 4 10.12 9.5 12 5.5-1.88 9.5-6.75 9.5-12z"/>
-                  <polyline points="8 11.5 11 14.5 16 9.5"/>
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                  <polyline points="2 17 12 22 22 17"/>
+                  <polyline points="2 12 12 17 22 12"/>
                 </svg>
               )
             },
             {
-              title: 'TRUSTED PARTNER',
-              desc: 'Reliable, transparent and customer-focused service.',
+              title: 'PERSONAL STYLING',
+              desc: 'Direct consultation & size reviews on WhatsApp.',
               icon: (
-                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
                 </svg>
               )
             },
             {
-              title: 'SUSTAINABLE SOURCING',
-              desc: 'Supporting local farmers and promoting sustainable agriculture.',
+              title: 'SUPREME COMFORT',
+              desc: 'Engineered for exceptional comfort and durability.',
               icon: (
-                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 22 2c0 5-1.5 9-6.1 14.8A7 7 0 0 1 11 20z"/>
-                  <path d="M9 22v-4"/>
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
               )
             }
@@ -229,12 +221,12 @@ export default function HomePage() {
               alignItems: 'center', 
               gap: '16px', 
               paddingRight: idx < 4 ? '16px' : '0', 
-              borderRight: idx < 4 ? '1px solid rgba(255,255,255,0.15)' : 'none' 
+              borderRight: idx < 4 ? '1px solid rgba(255,255,255,0.12)' : 'none' 
             }} className="features-item-new">
               {item.icon}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <strong style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.5px', color: '#ffffff' }}>{item.title}</strong>
-                <p style={{ fontSize: '11px', color: '#d1f4df', lineHeight: '1.4', margin: 0 }}>{item.desc}</p>
+                <strong style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', color: '#ffffff' }}>{item.title}</strong>
+                <p style={{ fontSize: '11px', color: '#e3d5c1', lineHeight: '1.4', margin: 0 }}>{item.desc}</p>
               </div>
             </div>
           ))}
@@ -242,52 +234,52 @@ export default function HomePage() {
       </section>
 
       {/* ─── ABOUT US SECTION ─── */}
-      <section style={{ padding: '80px 24px', background: '#fcfdfd', width: '100%', maxWidth: '100%', borderBottom: '1px solid #f1f5f9' }}>
+      <section style={{ padding: '80px 24px', background: '#faf8f5', width: '100%', maxWidth: '100%', borderBottom: '1px solid #f1f5f9' }}>
         <div style={{ maxWidth: '1300px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 2.2fr 1fr', gap: '48px', alignItems: 'center' }} className="about-wrapper-new">
           
-          {/* Left Crop Image (Circle) */}
+          {/* Left Circle Image */}
           <div style={{ display: 'flex', justifyContent: 'center' }} className="about-left-circle-col">
-            <div style={{ width: '220px', height: '220px', borderRadius: '50%', overflow: 'hidden', border: '5px solid #246a42', boxShadow: '0 8px 24px rgba(36,106,66,0.12)', transition: 'transform 0.3s ease' }} className="about-circle-container">
-              <img src="/about_left.png" alt="Export-grade Nigerian Kolanuts basket - MIFAS FARMS" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+            <div style={{ width: '220px', height: '220px', borderRadius: '50%', overflow: 'hidden', border: '5px solid #c5a880', boxShadow: '0 8px 24px rgba(197,168,128,0.12)', transition: 'transform 0.3s ease' }} className="about-circle-container">
+              <img src="/about_left.png" alt="Handcrafted Oxford shoes - JGOLD SIGNATURES" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
             </div>
           </div>
 
           {/* Center Text Column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center', alignItems: 'center' }} className="about-text-col">
             
-            {/* Header with horizontal lines and leaf */}
+            {/* Header with horizontal lines and gold star */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', width: '100%' }}>
-              <div style={{ flex: 1, height: '1.5px', backgroundColor: '#e2e8f0', maxWidth: '80px' }} className="about-header-line" />
+              <div style={{ flex: 1, height: '1.5px', backgroundColor: '#cbd5e1', maxWidth: '80px' }} className="about-header-line" />
               <span style={{ 
                 fontSize: '13px', 
                 fontWeight: '800', 
-                color: '#246a42', 
+                color: '#c5a880', 
                 textTransform: 'uppercase', 
                 letterSpacing: '2px', 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px' 
               }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(45deg)' }}>
-                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 22 2c0 5-1.5 9-6.1 14.8A7 7 0 0 1 11 20z" />
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
                 ABOUT US
               </span>
-              <div style={{ flex: 1, height: '1.5px', backgroundColor: '#e2e8f0', maxWidth: '80px' }} className="about-header-line" />
+              <div style={{ flex: 1, height: '1.5px', backgroundColor: '#cbd5e1', maxWidth: '80px' }} className="about-header-line" />
             </div>
             
             <p style={{ fontSize: '15.5px', color: '#1e293b', lineHeight: '1.7', margin: 0, fontWeight: 700 }}>
-              MIFAS FARMS LTD is a Nigerian agribusiness and export company specializing in the sourcing, processing, packaging and export of premium agricultural commodities.
+              Welcome to JGOLD, where luxury meets style. At JGOLD, we believe that every man deserves to shine like a star.
             </p>
             <p style={{ fontSize: '14.5px', color: '#475569', lineHeight: '1.75', margin: 0 }}>
-              We work directly with trusted farmers and producer groups to ensure consistent quality, traceability and sustainable sourcing. Our mission is to connect Nigeria's finest agricultural products to global markets through excellence and reliability.
+              Our curated collection of exquisite shoes and elegant clothing accessories is designed to empower men to express their unique style with confidence and grace. Our brand is dedicated to offering high-quality, luxurious products that blend timeless elegance with modern trends. Each item in our collection is meticulously crafted from the finest materials, ensuring both comfort and durability.
             </p>
           </div>
 
-          {/* Right Crop Image (Circle) */}
+          {/* Right Circle Image */}
           <div style={{ display: 'flex', justifyContent: 'center' }} className="about-right-circle-col">
-            <div style={{ width: '220px', height: '220px', borderRadius: '50%', overflow: 'hidden', border: '5px solid #246a42', boxShadow: '0 8px 24px rgba(36,106,66,0.12)', transition: 'transform 0.3s ease' }} className="about-circle-container">
-              <img src="/about_right.png" alt="Raw Shea butter nuts raw materials - MIFAS FARMS" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+            <div style={{ width: '220px', height: '220px', borderRadius: '50%', overflow: 'hidden', border: '5px solid #c5a880', boxShadow: '0 8px 24px rgba(197,168,128,0.12)', transition: 'transform 0.3s ease' }} className="about-circle-container">
+              <img src="/about_right.png" alt="Premium men's accessories - JGOLD SIGNATURES" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
             </div>
           </div>
 
@@ -341,14 +333,14 @@ export default function HomePage() {
       <section style={{ padding: '80px 24px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '36px', flexWrap: 'wrap', gap: '16px' }} className="section-header-flex">
           <div style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ fontSize: '13px', fontWeight: '800', color: '#246a42', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(45deg)' }}>
-                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 22 2c0 5-1.5 9-6.1 14.8A7 7 0 0 1 11 20z" />
+            <span style={{ fontSize: '13px', fontWeight: '800', color: '#c5a880', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
-              OUR PRODUCTS
+              OUR COLLECTION
             </span>
-            <h2 style={{ fontSize: '34px', color: '#0d2e1a', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }} className="products-section-title">
-              Premium Agricultural Products
+            <h2 style={{ fontSize: '34px', color: '#0f0d0a', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)' }} className="products-section-title">
+              Exquisite Men's Shoes & Accessories
             </h2>
           </div>
           <Link to="/products" style={{
@@ -483,8 +475,8 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* ─── STATS & CALL TO ACTION SECTION (Green Background) ─── */}
-      <section style={{ background: '#0d2e1a', color: '#ffffff', padding: '80px 24px', width: '100%', maxWidth: '100%' }}>
+      {/* ─── STATS & CALL TO ACTION SECTION (Dark Charcoal Background) ─── */}
+      <section style={{ background: '#0f0d0a', color: '#ffffff', padding: '80px 24px', width: '100%', maxWidth: '100%', borderTop: '1px solid #332b21' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.25fr 0.75fr', gap: '48px', alignItems: 'center' }} className="cta-wrapper">
           
           {/* Left Stats Grid */}
@@ -492,30 +484,18 @@ export default function HomePage() {
             {[
               { 
                 val: '100%', 
-                label: 'Natural Products', 
+                label: 'Premium Quality', 
                 icon: (
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 22 2c0 5-1.5 9-6.1 14.8A7 7 0 0 1 11 20z" />
-                    <path d="M9 22v-4" />
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                   </svg>
                 )
               },
               { 
-                val: '20+', 
-                label: 'Countries We Export To', 
+                val: '5000+', 
+                label: 'Dapper Gentlemen Served', 
                 icon: (
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-                    <path d="M2 12h20"/>
-                  </svg>
-                )
-              },
-              { 
-                val: '500+', 
-                label: 'Satisfied Customers', 
-                icon: (
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                     <circle cx="9" cy="7" r="4" />
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -524,27 +504,33 @@ export default function HomePage() {
                 )
               },
               { 
-                val: 'EXPORT READY', 
-                label: 'Packaging & Documentation', 
+                val: 'EXQUISITE', 
+                label: 'Shoes & Accessories', 
                 icon: (
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="16.5 9.4 7.5 4.21 12 1.5 21.5 7 16.5 9.4" />
-                    <polyline points="7.5 4.21 2.5 7 12 12 21.5 7" />
-                    <line x1="2.5" y1="7" x2="2.5" y2="17.5" />
-                    <polyline points="2.5 17.5 12 22.5 12 12" />
-                    <line x1="12" y1="22.5" x2="21.5" y2="17.5" />
-                    <line x1="21.5" y1="17.5" x2="21.5" y2="7" />
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                    <polyline points="2 17 12 22 22 17"/>
                   </svg>
                 )
               },
               { 
-                val: 'QUALITY ASSURED', 
-                label: 'International Standards', 
+                val: 'NATIONWIDE', 
+                label: 'Shipping across Nigeria', 
                 icon: (
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="7"/>
-                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
-                    <polyline points="9 8 11 10 15 6"/>
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13"/>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+                )
+              },
+              { 
+                val: 'STYLING SUPPORT', 
+                label: 'Size and Fit Consultations', 
+                icon: (
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dfb26c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
                   </svg>
                 )
               }
@@ -555,14 +541,14 @@ export default function HomePage() {
                 alignItems: 'center', 
                 gap: '12px',
                 paddingRight: idx < 4 ? '16px' : '0', 
-                borderRight: idx < 4 ? '1px solid rgba(255,255,255,0.15)' : 'none'
+                borderRight: idx < 4 ? '1px solid rgba(255,255,255,0.12)' : 'none'
               }} className="stats-item-new">
-                <div style={{ color: '#f59e0b', display: 'flex', flexShrink: 0 }}>
+                <div style={{ color: '#dfb26c', display: 'flex', flexShrink: 0 }}>
                   {stat.icon}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                   <div style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px', lineHeight: '1.2' }}>{stat.val}</div>
-                  <div style={{ fontSize: '11px', color: '#d1f4df', lineHeight: '1.3', fontWeight: 600 }}>{stat.label}</div>
+                  <div style={{ fontSize: '11px', color: '#e3d5c1', lineHeight: '1.3', fontWeight: 600 }}>{stat.label}</div>
                 </div>
               </div>
             ))}
@@ -587,11 +573,11 @@ export default function HomePage() {
             </div>
             
             <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-              Partner with us for reliable supply of premium Nigerian agricultural products. We handle all logistics, phytosanitary checks, and customs clearing documentation.
+              Discover our exquisite collection of premium men's shoes and accessories. Chat with our styling specialists on WhatsApp for size advice, styling tips, or custom orders.
             </p>
 
             <Link to="/contact" style={{
-              background: '#0d2e1a',
+              background: '#0f0d0a',
               color: '#ffffff',
               padding: '14px 24px',
               borderRadius: '6px',
@@ -601,9 +587,9 @@ export default function HomePage() {
               textAlign: 'center',
               transition: 'background-color 0.2s',
               display: 'block'
-            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#123c24'}
-               onMouseLeave={e => e.currentTarget.style.backgroundColor = '#0d2e1a'}>
-              Get in Touch <span>→</span>
+            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#262520'}
+               onMouseLeave={e => e.currentTarget.style.backgroundColor = '#0f0d0a'}>
+              Chat with a Stylist <span>→</span>
             </Link>
           </div>
 

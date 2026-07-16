@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-const WA_NUMBER = '2348083258714'
+const WA_NUMBER = '2348039714352'
 
 export default function WhatsAppWidget() {
   const location = useLocation()
@@ -22,7 +22,7 @@ export default function WhatsAppWidget() {
   const handleSendMessage = (e) => {
     e.preventDefault()
     const cleanMsg = message.trim()
-    const brandName = localStorage.getItem('brandName') || 'MIFAS FARMS'
+    const brandName = localStorage.getItem('brandName') || 'JGOLD SIGNATURES'
     const defaultMsg = isCheckout 
       ? "Hi! I need help with my payment on the checkout page." 
       : `Hi! I have a question about ${brandName}.`
@@ -70,7 +70,7 @@ export default function WhatsAppWidget() {
               <div style={{ position: 'relative', width: 44, height: 44 }}>
                 <img 
                   src="/favicon.png" 
-                  alt={localStorage.getItem('brandName') || 'MIFAS FARMS'} 
+                  alt={localStorage.getItem('brandName') || 'JGOLD SIGNATURES'} 
                   style={{
                     width: '100%',
                     height: '100%',
@@ -96,7 +96,7 @@ export default function WhatsAppWidget() {
                   justifyContent: 'center',
                   fontWeight: 800,
                   fontSize: '1.2rem'
-                }}>{(localStorage.getItem('brandName') || 'MIFAS FARMS').split(' ').map(w => w[0]).join('').substring(0, 2)}</div>
+                }}>{(localStorage.getItem('brandName') || 'JGOLD SIGNATURES').split(' ').map(w => w[0]).join('').substring(0, 2)}</div>
                 <span style={{
                   position: 'absolute',
                   bottom: 0,
@@ -109,7 +109,7 @@ export default function WhatsAppWidget() {
                 }} />
               </div>
               <div>
-                <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#fff' }}>{localStorage.getItem('brandName') || 'MIFAS FARMS'} Support</h4>
+                <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#fff' }}>{localStorage.getItem('brandName') || 'JGOLD SIGNATURES'} Support</h4>
                 <p style={{ margin: '2px 0 0', fontSize: '0.74rem', color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', gap: 4 }}>
                   Online (Replies instantly)
                 </p>
@@ -158,7 +158,7 @@ export default function WhatsAppWidget() {
               boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
             }}>
               <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--n800)', lineHeight: 1.5 }}>
-                {isCheckout ? "Hi there! Need help with your payment?" : `Hi there! Welcome to ${localStorage.getItem('brandName') || 'MIFAS FARMS'}.`}
+                 {isCheckout ? "Hi there! Need help with your payment?" : `Hi there! Welcome to ${localStorage.getItem('brandName') || 'JGOLD SIGNATURES'}.`}
               </p>
               <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: 'var(--n800)', lineHeight: 1.5 }}>
                 {isCheckout 

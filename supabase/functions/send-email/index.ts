@@ -1,4 +1,4 @@
-// MIFAS E-Commerce Email System — Supabase Edge Function
+// JGOLD SIGNATURES E-Commerce Email System — Supabase Edge Function
 // Handles all transactional emails via Resend API
 //
 // Deploy: supabase functions deploy send-email
@@ -17,8 +17,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || ""
 const ADMIN_EMAIL    = Deno.env.get("ADMIN_EMAIL") || "nprecious.official@gmail.com"
-const FROM_EMAIL     = Deno.env.get("FROM_EMAIL") || "MIFAS Store <orders@mifasfarmsexport.com>"
-const STORE_URL      = Deno.env.get("STORE_URL") || "https://mifasfarmsexport.com"
+const FROM_EMAIL     = Deno.env.get("FROM_EMAIL") || "JGOLD SIGNATURES <orders@jgoldsignatures.com.ng>"
+const STORE_URL      = Deno.env.get("STORE_URL") || "https://jgoldsignatures.com.ng"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,11 +27,11 @@ const corsHeaders = {
 
 // ─── BRAND CONSTANTS ──────────────────────────────────────────────────────────
 const BRAND = {
-  primary:   "#0d2e1a",
-  secondary: "#246a42",
-  accent:    "#16a34a",
-  gold:      "#f59e0b",
-  light:     "#f0fdf4",
+  primary:   "#0f0d0a",
+  secondary: "#1c1813",
+  accent:    "#dfb26c",
+  gold:      "#c5a880",
+  light:     "#faf8f5",
   white:     "#ffffff",
   grey:      "#f8fafc",
   textDark:  "#0f172a",
@@ -47,17 +47,17 @@ function baseTemplate(content: string, previewText = "") {
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-  <title>MIFAS Agricultural Exports</title>
+  <title>JGOLD SIGNATURES</title>
   <!--[if mso]><style>* { font-family: Arial, sans-serif !important; }</style><![endif]-->
 </head>
-<body style="margin:0;padding:0;background-color:#f1f5f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;color:${BRAND.textDark};">
-  ${previewText ? `<div style="display:none;max-height:0;overflow:hidden;font-size:1px;color:#f1f5f0;">${previewText}</div>` : ""}
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1f5f0;min-height:100vh;">
+<body style="margin:0;padding:0;background-color:#faf8f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;color:${BRAND.textDark};">
+  ${previewText ? `<div style="display:none;max-height:0;overflow:hidden;font-size:1px;color:#faf8f5;">${previewText}</div>` : ""}
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf8f5;min-height:100vh;">
     <tr>
       <td align="center" style="padding:40px 16px 60px;">
 
         <!-- Email Card -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(13,46,26,0.10);border:1px solid #d1fae5;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,0.06);border:1px solid #e3d5c1;">
 
           <!-- HEADER -->
           <tr>
@@ -66,9 +66,9 @@ function baseTemplate(content: string, previewText = "") {
                 <tr>
                   <td align="center">
                     <a href="${STORE_URL}" target="_blank" style="text-decoration:none;">
-                      <img src="https://mifasfarmsexport.com/logo.png" alt="MIFAS Agricultural Exports" width="180" style="max-width:220px;height:auto;display:block;margin:0 auto 12px;border:0;" />
+                      <img src="https://jgoldsignatures.com.ng/logo.webp" alt="JGOLD SIGNATURES" width="180" style="max-width:220px;height:auto;display:block;margin:0 auto 12px;border:0;" />
                     </a>
-                    <p style="color:rgba(255,255,255,0.75);margin:0;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;">Premium Agricultural Exports · Nigeria</p>
+                    <p style="color:rgba(255,255,255,0.75);margin:0;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;">Luxury Footwear & Accessories</p>
                   </td>
                 </tr>
               </table>
@@ -80,21 +80,21 @@ function baseTemplate(content: string, previewText = "") {
 
           <!-- FOOTER -->
           <tr>
-            <td style="background:#f8faf8;border-top:1px solid #d1fae5;padding:32px 40px;text-align:center;">
+            <td style="background:#f8fafc;border-top:1px solid #e3d5c1;padding:32px 40px;text-align:center;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="center">
                     <p style="color:${BRAND.textMid};font-size:13px;margin:0 0 8px;line-height:1.6;">
                       Questions? Reply to this email or contact us at
-                      <a href="mailto:${ADMIN_EMAIL}" style="color:${BRAND.secondary};text-decoration:none;font-weight:600;">${ADMIN_EMAIL}</a>
+                      <a href="mailto:${ADMIN_EMAIL}" style="color:${BRAND.gold};text-decoration:none;font-weight:600;">${ADMIN_EMAIL}</a>
                     </p>
                     <p style="color:${BRAND.textLight};font-size:11px;margin:0 0 16px;">
-                      MIFAS Agricultural Exports · Lagos, Nigeria<br/>
+                      JGOLD SIGNATURES · Lagos, Nigeria<br/>
                       <a href="${STORE_URL}" style="color:${BRAND.textLight};text-decoration:none;">${STORE_URL}</a>
                     </p>
                     <div style="border-top:1px solid #e2e8f0;padding-top:16px;">
-                      <p style="color:#c4d1c4;font-size:10px;margin:0;letter-spacing:0.5px;">
-                        © ${new Date().getFullYear()} MIFAS Agricultural Exports. All rights reserved.<br/>
+                      <p style="color:#cbd5e1;font-size:10px;margin:0;letter-spacing:0.5px;">
+                        © ${new Date().getFullYear()} JGOLD SIGNATURES. All rights reserved.<br/>
                         You received this email because of a transaction or account on our platform.
                       </p>
                     </div>
@@ -115,13 +115,13 @@ function baseTemplate(content: string, previewText = "") {
 // ─── PRODUCT IMAGE BLOCK ──────────────────────────────────────────────────────
 function productBlock(d: Record<string, string>) {
   return `
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;border:1px solid #d1fae5;border-radius:12px;overflow:hidden;background:#f0fdf4;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;border:1px solid #e3d5c1;border-radius:12px;overflow:hidden;background:#faf8f5;">
     <tr>
       ${d.product_image ? `<td style="width:80px;padding:16px 0 16px 16px;vertical-align:middle;">
-        <img src="${d.product_image}" alt="${d.product_title || "Product"}" width="64" height="64" style="border-radius:10px;object-fit:cover;display:block;border:1px solid #bbf7d0;"/>
+        <img src="${d.product_image}" alt="${d.product_title || "Product"}" width="64" height="64" style="border-radius:10px;object-fit:cover;display:block;border:1px solid #c5a880;"/>
       </td>` : ""}
       <td style="padding:16px 20px;vertical-align:middle;">
-        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:${BRAND.textDark};">${d.product_title || "MIFAS Product"}</p>
+        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:${BRAND.textDark};">${d.product_title || "JGOLD Product"}</p>
         <p style="margin:0;font-size:12px;color:${BRAND.textMid};text-transform:capitalize;">Type: ${d.product_type || "Physical Product"}</p>
       </td>
       <td style="padding:16px 20px;text-align:right;vertical-align:middle;white-space:nowrap;">
@@ -226,7 +226,7 @@ function emailOrderConfirmed(d: Record<string, string>) {
       </div>
     </td>
   </tr>`
-  return baseTemplate(content, `Order confirmed! Your MIFAS order is being prepared.`)
+  return baseTemplate(content, `Order confirmed! Your JGOLD order is being prepared.`)
 }
 
 // 2. BANK TRANSFER PENDING
@@ -258,7 +258,7 @@ function emailBankTransfer(d: Record<string, string>) {
           </tr>
           <tr>
             <td style="font-size:13px;color:#78350f;padding-bottom:8px;">Account Name</td>
-            <td style="font-size:13.5px;color:#1c1917;font-weight:700;padding-bottom:8px;">${d.account_name || "MIFAS Agri Exports Ltd"}</td>
+            <td style="font-size:13.5px;color:#1c1917;font-weight:700;padding-bottom:8px;">${d.account_name || "JGOLD SIGNATURES"}</td>
           </tr>
           <tr>
             <td style="font-size:13px;color:#78350f;">Amount to Transfer</td>
@@ -280,7 +280,7 @@ function emailBankTransfer(d: Record<string, string>) {
       </div>
     </td>
   </tr>`
-  return baseTemplate(content, `Your MIFAS order is awaiting payment confirmation.`)
+  return baseTemplate(content, `Your JGOLD order is awaiting payment confirmation.`)
 }
 
 // 3. PAYMENT VERIFIED (bank transfer approved)
@@ -331,7 +331,7 @@ function emailOrderShipped(d: Record<string, string>) {
         <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${BRAND.primary};">Your Order is On Its Way!</h1>
         ${statusBadge("Shipped", "#1e40af", "#dbeafe")}
         <p style="margin:16px 0 0;font-size:15px;color:${BRAND.textMid};">
-          Hi ${d.name?.split(" ")[0] || "there"}! Your MIFAS order has been handed over to our delivery partner.
+          Hi ${d.name?.split(" ")[0] || "there"}! Your JGOLD order has been handed over to our delivery partner.
         </p>
       </div>
 
@@ -359,7 +359,7 @@ function emailOrderShipped(d: Record<string, string>) {
       </div>
     </td>
   </tr>`
-  return baseTemplate(content, `Your MIFAS order is on its way! Track your shipment now.`)
+  return baseTemplate(content, `Your JGOLD order is on its way! Track your shipment now.`)
 }
 
 // 5. ORDER DELIVERED
@@ -374,7 +374,7 @@ function emailOrderDelivered(d: Record<string, string>) {
         <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${BRAND.primary};">Order Delivered!</h1>
         ${statusBadge("Delivered", "#166534", "#dcfce7")}
         <p style="margin:16px 0 0;font-size:15px;color:${BRAND.textMid};">
-          Your order has been delivered, ${d.name?.split(" ")[0] || "there"}! We hope you're enjoying your premium MIFAS products.
+          Your order has been delivered, ${d.name?.split(" ")[0] || "there"}! We hope you're enjoying your premium JGOLD products.
         </p>
       </div>
 
@@ -390,8 +390,8 @@ function emailOrderDelivered(d: Record<string, string>) {
       </div>
 
       <div style="background:#f8fafc;border-radius:12px;padding:20px 24px;margin-bottom:24px;text-align:center;">
-        <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:${BRAND.textDark};">Shop More Premium Products</p>
-        <p style="margin:0;font-size:13px;color:${BRAND.textMid};">Explore our full range of premium Nigerian agricultural exports — all sourced fresh and packed to international standards.</p>
+        <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:${BRAND.textDark};">Shop Luxury Footwear</p>
+        <p style="margin:0;font-size:13px;color:${BRAND.textMid};">Explore our full range of premium handcrafted leather footwear and accessories.</p>
         <div style="margin-top:16px;">
           ${ctaButton("Browse Products →", `${STORE_URL}/products`)}
         </div>
@@ -405,7 +405,7 @@ function emailOrderDelivered(d: Record<string, string>) {
       </div>
     </td>
   </tr>`
-  return baseTemplate(content, `Your MIFAS order has been delivered! We'd love to hear from you.`)
+  return baseTemplate(content, `Your JGOLD order has been delivered! We'd love to hear from you.`)
 }
 
 // 6. WELCOME EMAIL
@@ -417,9 +417,9 @@ function emailWelcome(d: Record<string, string>) {
         <div style="display:inline-flex;width:64px;height:64px;border-radius:50%;background:${BRAND.light};margin-bottom:16px;align-items:center;justify-content:center;">
           <span style="font-size:32px;">🌱</span>
         </div>
-        <h1 style="margin:0 0 8px;font-size:28px;font-weight:900;color:${BRAND.primary};">Welcome to MIFAS!</h1>
+        <h1 style="margin:0 0 8px;font-size:28px;font-weight:900;color:${BRAND.primary};">Welcome to JGOLD!</h1>
         <p style="margin:0;font-size:15px;color:${BRAND.textMid};line-height:1.6;">
-          Hello ${d.name?.split(" ")[0] || "there"}, your account is ready. You now have access to premium Nigerian agricultural exports, direct from the source.
+          Hello ${d.name?.split(" ")[0] || "there"}, your account is ready. You now have access to premium luxury footwear and clothing accessories.
         </p>
       </div>
 
@@ -431,8 +431,8 @@ function emailWelcome(d: Record<string, string>) {
                 <tr>
                   <td width="48" style="vertical-align:top;padding-top:4px;font-size:24px;">🛒</td>
                   <td style="vertical-align:top;padding-left:12px;">
-                    <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:${BRAND.primary};">Shop Premium Agric Products</p>
-                    <p style="margin:0;font-size:13px;color:${BRAND.textMid};">Browse our curated selection of export-grade agricultural products sourced fresh from Nigeria.</p>
+                    <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:${BRAND.primary};">Shop Luxury Footwear</p>
+                    <p style="margin:0;font-size:13px;color:${BRAND.textMid};">Browse our curated selection of exquisite shoes and accessories.</p>
                   </td>
                 </tr>
               </table>
@@ -469,7 +469,7 @@ function emailWelcome(d: Record<string, string>) {
       </div>
     </td>
   </tr>`
-  return baseTemplate(content, `Welcome to MIFAS! Your account is ready. Start exploring premium agricultural products.`)
+  return baseTemplate(content, `Welcome to JGOLD! Your account is ready. Start exploring luxury footwear and accessories.`)
 }
 
 // 7. ADMIN NEW ORDER NOTIFICATION
@@ -484,7 +484,7 @@ function emailAdminNewOrder(d: Record<string, string>) {
         </h1>
         ${statusBadge(isPending ? "Pending Review" : "Payment Confirmed", isPending ? BRAND.gold : "#166534", isPending ? "#fffbeb" : "#dcfce7")}
         <p style="margin:12px 0 0;font-size:14px;color:${BRAND.textMid};">
-          A new order has been placed on MIFAS Store. See details below.
+          A new order has been placed on JGOLD Store. See details below.
         </p>
       </div>
 
@@ -511,7 +511,7 @@ function emailAdminNewOrder(d: Record<string, string>) {
       </div>
     </td>
   </tr>`
-  return baseTemplate(content, `New MIFAS order from ${d.name}`)
+  return baseTemplate(content, `New JGOLD order from ${d.name}`)
 }
 
 // 8. CASH ON DELIVERY PENDING
@@ -539,7 +539,7 @@ function emailCodOrder(d: Record<string, string>) {
     </td>
   </tr>
   `
-  return baseTemplate(content, `Order Received (Cash on Delivery) — MIFAS Store`)
+  return baseTemplate(content, `Order Received (Cash on Delivery) — JGOLD Store`)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -572,14 +572,14 @@ serve(async (req: Request) => {
     type EmailType = "order_confirmed" | "bank_transfer" | "payment_verified" | "order_shipped" | "order_delivered" | "welcome" | "admin_new_order" | "cod_order_placed"
 
     const emails: Record<EmailType, { subject: string; html: (d: Record<string, string>) => string }> = {
-      order_confirmed:  { subject: "✅ Order Confirmed — MIFAS Agricultural Exports",       html: emailOrderConfirmed },
-      bank_transfer:    { subject: "⏳ Order Received (Awaiting Payment) — MIFAS Store",     html: emailBankTransfer },
+      order_confirmed:  { subject: "✅ Order Confirmed — JGOLD SIGNATURES",             html: emailOrderConfirmed },
+      bank_transfer:    { subject: "⏳ Order Received (Awaiting Payment) — JGOLD Store",     html: emailBankTransfer },
       payment_verified: { subject: "🎉 Payment Confirmed — Your Order is Being Packed",       html: emailPaymentVerified },
-      order_shipped:    { subject: "🚚 Your MIFAS Order Has Shipped!",                        html: emailOrderShipped },
-      order_delivered:  { subject: "🌿 Delivered! How Was Your MIFAS Experience?",            html: emailOrderDelivered },
-      welcome:          { subject: "🌱 Welcome to MIFAS — Your Account is Ready",             html: emailWelcome },
-      admin_new_order:  { subject: `🔔 New Order${data.name ? ` from ${data.name}` : ""} — MIFAS Store`, html: emailAdminNewOrder },
-      cod_order_placed: { subject: "📦 Order Received (Cash on Delivery) — MIFAS Store",     html: emailCodOrder },
+      order_shipped:    { subject: "🚚 Your JGOLD Order Has Shipped!",                        html: emailOrderShipped },
+      order_delivered:  { subject: "🌿 Delivered! How Was Your JGOLD Experience?",            html: emailOrderDelivered },
+      welcome:          { subject: "✨ Welcome to JGOLD SIGNATURES — Your Account is Ready", html: emailWelcome },
+      admin_new_order:  { subject: `🔔 New Order${data.name ? ` from ${data.name}` : ""} — JGOLD Store`, html: emailAdminNewOrder },
+      cod_order_placed: { subject: "📦 Order Received (Cash on Delivery) — JGOLD Store",     html: emailCodOrder },
     }
 
     const emailConfig = emails[type as EmailType]

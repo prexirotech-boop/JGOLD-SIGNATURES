@@ -87,12 +87,13 @@ export default function ContactPage() {
     return (
         <div className="business-contact-layout" style={{ background: '#ffffff', fontFamily: 'var(--font)', color: '#1e293b' }}>
             {/* Top section with gradient hero */}
-            <section className="contact-hero" style={{ background: 'linear-gradient(135deg, #0d2e1a 0%, #0a2214 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
+            {/* Top section with gradient hero */}
+            <section className="contact-hero" style={{ background: 'linear-gradient(135deg, #0f0d0a 0%, #1c1813 100%)', color: '#ffffff', padding: '80px 24px', textAlign: 'center' }}>
                 <div className="contact-container text-center" style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <span className="contact-badge" style={{ fontSize: '12px', fontWeight: '800', color: '#a3e2bb', textTransform: 'uppercase', letterSpacing: '2px' }}>Trade Support</span>
+                    <span className="contact-badge" style={{ fontSize: '12px', fontWeight: '800', color: '#c5a880', textTransform: 'uppercase', letterSpacing: '2px', background: 'rgba(197,168,128,0.06)', borderColor: 'rgba(197,168,128,0.15)' }}>Client Support</span>
                     <h1 className="hero-title" style={{ fontSize: '40px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)', color: '#ffffff' }}>Get in Touch</h1>
-                    <p className="hero-subtitle" style={{ fontSize: '16px', color: '#d1f4df', lineHeight: '1.6', margin: 0 }}>
-                        We coordinate phytosanitary reviews, customs logistics, and container cargo shipments. Reach out to our Enugu compliance team.
+                    <p className="hero-subtitle" style={{ fontSize: '16px', color: '#f4eee3', lineHeight: '1.6', margin: 0 }}>
+                        Have questions about shoe sizing, order tracking, custom orders, or styling advice? Reach out to our customer experience team.
                     </p>
                 </div>
             </section>
@@ -108,7 +109,7 @@ export default function ContactPage() {
                             {/* Email Card */}
                             <div className="info-card">
                                 <div className="card-header-flex">
-                                    <div className="icon-wrapper email-icon">
+                                    <div className="icon-wrapper email-icon" style={{ background: 'rgba(197,168,128,0.08)', color: '#c5a880' }}>
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                             <polyline points="22,6 12,13 2,6"></polyline>
@@ -116,15 +117,21 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="card-title">Email Support</h3>
-                                        <p className="card-tagline">Quotation inquiries & invoices</p>
+                                        <p className="card-tagline">Order inquiries & styling suggestions</p>
                                     </div>
                                 </div>
                                 <p className="card-desc">
-                                    Experiencing order issues, need invoice records, or custom phytosanitary export documentation? Drop us an email.
+                                    Drop us an email if you need assistance with custom orders, sizing consultations, or receipts.
                                 </p>
-                                <div className="card-action-bar">
-                                    <a href="mailto:mifasfarmservices@gmail.com" className="action-btn email-btn">
-                                        mifasfarmservices@gmail.com
+                                <div className="card-action-bar" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <a href="mailto:admin@jgoldsignatures.com.ng" className="action-btn email-btn" style={{ justifyContent: 'space-between' }}>
+                                        admin@jgoldsignatures.com.ng
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                                        </svg>
+                                    </a>
+                                    <a href="mailto:ebonyjuliet15@yahoo.com" className="action-btn email-btn" style={{ justifyContent: 'space-between' }}>
+                                        ebonyjuliet15@yahoo.com
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M5 12h14M12 5l7 7-7 7"/>
                                         </svg>
@@ -142,14 +149,14 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="card-title">WhatsApp Support</h3>
-                                        <p className="card-tagline">Direct chat for quick resolutions</p>
+                                        <p className="card-tagline">Direct chat for size & fit advice</p>
                                     </div>
                                 </div>
                                 <p className="card-desc">
-                                    Have direct questions about local shipping or need a quick consultation? Chat with a MIFAS FARMS trade agent.
+                                    Need a quick size check or want to chat with a stylist? Message a JGOLD representative.
                                 </p>
                                 <div className="card-action-bar">
-                                    <a href="https://wa.me/2348083258714?text=Hi%20MIFAS%20FARMS%20Support,%20I%20have%20an%20export%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
+                                    <a href="https://wa.me/2348039714352?text=Hi%20JGOLD%20SIGNATURES%20Support,%20I%20have%20a%20styling%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
                                         Chat on WhatsApp
                                         <span className="live-indicator">
                                             <span className="live-dot"></span>
@@ -158,30 +165,45 @@ export default function ContactPage() {
                                 </div>
                             </div>
 
-                            {/* Hours Card */}
+                            {/* Call Support Card */}
                             <div className="info-card">
                                 <div className="card-header-flex">
-                                    <div className="icon-wrapper clock-icon">
+                                    <div className="icon-wrapper clock-icon" style={{ background: 'rgba(197,168,128,0.08)', color: '#c5a880' }}>
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 className="card-title">Operational Hours</h3>
-                                        <p className="card-tagline">When our support is live</p>
+                                        <h3 className="card-title">Call Support</h3>
+                                        <p className="card-tagline">Call us directly</p>
                                     </div>
                                 </div>
-                                <div className="hours-list">
-                                    <div className="hour-row">
-                                        <span className="day">Monday – Friday</span>
-                                        <span className="time">9:00 AM – 5:00 PM WAT</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '14px', color: '#475569', fontWeight: 600 }}>
+                                    <a href="tel:+2347059297121" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#334155' }}>
+                                        <span>+234 705 929 7121</span>
+                                    </a>
+                                    <a href="tel:+2348039714352" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#334155' }}>
+                                        <span>+234 803 971 4352</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Showroom Card */}
+                            <div className="info-card">
+                                <div className="card-header-flex">
+                                    <div className="icon-wrapper clock-icon" style={{ background: 'rgba(197,168,128,0.08)', color: '#c5a880' }}>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                                        </svg>
                                     </div>
-                                    <div className="hour-row weekend">
-                                        <span className="day">Saturday – Sunday</span>
-                                        <span className="time">Email Support Only</span>
+                                    <div>
+                                        <h3 className="card-title">Lagos Showroom</h3>
+                                        <p className="card-tagline">Visit our luxury boutique</p>
                                     </div>
                                 </div>
+                                <p className="card-desc" style={{ fontSize: '13.5px', color: '#334155', fontWeight: 500, margin: 0 }}>
+                                    Shop 2F08 Update plaza, second floor Mandelas, Lagos State, Nigeria
+                                </p>
                             </div>
 
                         </div>

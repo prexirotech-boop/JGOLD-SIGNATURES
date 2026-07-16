@@ -46,15 +46,15 @@ export default function ProductDetailsPage() {
       setActiveImage(prod.cover_image || '/logo.png')
 
       // SEO Dynamic title and description injection
-      document.title = `${prod.title.replace(/\s+slug$/i, '')} — Buy Online | MIFAS Store`
+      document.title = `${prod.title.replace(/\s+slug$/i, '')} — Buy Online | JGOLD Store`
       const metaDesc = document.querySelector('meta[name="description"]')
       if (metaDesc) {
-        metaDesc.setAttribute('content', prod.description || `Buy ${prod.title} at MIFAS Agricultural Exports. Premium quality export-grade produce from Nigeria.`)
+        metaDesc.setAttribute('content', prod.description || `Buy ${prod.title} at JGOLD SIGNATURES. Premium handcrafted footwear.`)
       }
       const ogTitle = document.querySelector('meta[property="og:title"]')
-      if (ogTitle) ogTitle.setAttribute('content', `${prod.title.replace(/\s+slug$/i, '')} — Buy Online | MIFAS Store`)
+      if (ogTitle) ogTitle.setAttribute('content', `${prod.title.replace(/\s+slug$/i, '')} — Buy Online | JGOLD Store`)
       const ogDesc = document.querySelector('meta[property="og:description"]')
-      if (ogDesc) ogDesc.setAttribute('content', prod.description || `Buy ${prod.title} at MIFAS Agricultural Exports.`)
+      if (ogDesc) ogDesc.setAttribute('content', prod.description || `Buy ${prod.title} at JGOLD SIGNATURES.`)
 
       // Pre-select first options of variations if available
       if (prod.variations?.attributes && prod.variations.attributes.length > 0) {
@@ -211,7 +211,7 @@ export default function ProductDetailsPage() {
   if (loading) {
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', fontFamily: "var(--font)", zIndex: 9999 }}>
-        <img src="/logo.png" alt="MIFAS FARMS" style={{ height: 100, width: 'auto', marginBottom: 24 }} />
+        <img src="/logo.png" alt="JGOLD SIGNATURES" style={{ height: 100, width: 'auto', marginBottom: 24 }} />
         <div style={{ width: '40px', height: '40px', border: '3px solid #f1f5f9', borderTopColor: 'var(--brand-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <p style={{ color: '#64748b', marginTop: 16, fontSize: '14px' }}>Loading product details...</p>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -470,8 +470,8 @@ export default function ProductDetailsPage() {
           {/* Product Meta Data list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
             <span><strong>Weight (kg):</strong> {selectedVariant?.weight || product.weight || 'N/A'}</span>
-            <span><strong>Category:</strong> {product.meta_title || (product.type === 'physical' ? 'Agricultural Exports' : 'Resources')}</span>
-            <span><strong>SKU:</strong> MIFAS-{product.id.substring(0, 8).toUpperCase()}</span>
+            <span><strong>Category:</strong> {product.meta_title || (product.type === 'physical' ? 'Exquisite Shoes' : 'Accessories')}</span>
+            <span><strong>SKU:</strong> JGOLD-{product.id.substring(0, 8).toUpperCase()}</span>
           </div>
 
         </div>
