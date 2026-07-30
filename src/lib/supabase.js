@@ -52,31 +52,23 @@ export async function createPendingOrder({
   try {
     const cleanEmail = (email || '').trim().toLowerCase()
 
+    // ── Phase 1: Insert only the guaranteed-core columns ──────────────────
+    // These columns exist in every standard orders table setup.
+    const corePayload = {
+      reference,
+      customer_email: cleanEmail,
+      customer_name: (name || '').trim() || null,
+      customer_phone: (phone || '').trim() || null,
+      product_id: productId || null,
+      amount: amount || 0,
+      status: 'pending',
+      payment_method: paymentMethod,
+      currency: 'NGN',
+    }
+
     const { data, error } = await supabase
       .from('orders')
-      .insert({
-        reference,
-        customer_email: cleanEmail,
-        customer_name: (name || '').trim() || null,
-        customer_phone: (phone || '').trim() || null,
-        product_id: productId || null,
-        amount: amount || 0,
-        status: 'pending',
-        payment_method: paymentMethod,
-        currency: 'NGN',
-        affiliate_code: affiliateCode || null,
-        shipping_name: shippingName || name || null,
-        shipping_phone: shippingPhone || phone || null,
-        shipping_street: shippingStreet || null,
-        shipping_city: shippingCity || null,
-        shipping_state: shippingState || null,
-        shipping_country: shippingCountry || null,
-        shipping_postal_code: shippingPostalCode || null,
-        shipping_notes: shippingNotes || null,
-        shipping_status: shippingStreet ? 'pending' : null,
-        delivery_fee: deliveryFee,
-        bank_receipt_url: bankReceiptUrl,
-      })
+      .insert(corePayload)
       .select('id, product_id')
       .single()
 
@@ -89,8 +81,44 @@ export async function createPendingOrder({
       return { orderId: null, productId, error: error.message }
     }
 
-    console.log('[createPendingOrder] ✅ Pending order created:', data.id)
-    return { orderId: data.id, productId: data.product_id || productId, error: null }
+    const orderId = data.id
+
+    // ── Phase 2: Best-effort update with optional/extended columns ─────────
+    // Each field is tried individually so a missing column never blocks the order.
+    const optionalFields = {
+      affiliate_code: affiliateCode || null,
+      shipping_name: shippingName || name || null,
+      shipping_phone: shippingPhone || phone || null,
+      shipping_street: shippingStreet || null,
+      shipping_city: shippingCity || null,
+      shipping_state: shippingState || null,
+      shipping_country: shippingCountry || null,
+      shipping_postal_code: shippingPostalCode || null,
+      shipping_notes: shippingNotes || null,
+      shipping_status: shippingStreet ? 'pending' : null,
+      delivery_fee: deliveryFee || null,
+      bank_receipt_url: bankReceiptUrl || null,
+    }
+
+    // Remove null-valued keys to keep the update lean
+    const cleanOptional = Object.fromEntries(
+      Object.entries(optionalFields).filter(([, v]) => v !== null && v !== undefined)
+    )
+
+    if (Object.keys(cleanOptional).length > 0) {
+      const { error: extErr } = await supabase
+        .from('orders')
+        .update(cleanOptional)
+        .eq('id', orderId)
+
+      if (extErr && extErr.code !== 'PGRST204') {
+        // PGRST204 = column not in schema cache — silently ignore missing columns
+        console.warn('[createPendingOrder] Optional fields update warning:', extErr.message)
+      }
+    }
+
+    console.log('[createPendingOrder] ✅ Pending order created:', orderId)
+    return { orderId, productId: data.product_id || productId, error: null }
   } catch (err) {
     console.error('[createPendingOrder] Unexpected error:', err)
     return { orderId: null, productId, error: err.message }
