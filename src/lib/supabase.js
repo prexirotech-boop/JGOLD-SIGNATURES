@@ -76,7 +76,6 @@ export async function createPendingOrder({
         shipping_status: shippingStreet ? 'pending' : null,
         delivery_fee: deliveryFee,
         bank_receipt_url: bankReceiptUrl,
-        quantity: quantity || 1,
       })
       .select('id, product_id')
       .single()
