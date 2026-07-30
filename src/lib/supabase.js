@@ -3,6 +3,10 @@ import { CONFIG } from './config'
 
 export const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY)
 
+if (typeof window !== 'undefined') {
+  window.supabase = supabase
+}
+
 // ─── SUPABASE DB HELPERS ──────────────────────────────────────────────────────
 //
 // WooCommerce-style order lifecycle:
