@@ -63,6 +63,13 @@ CREATE TABLE IF NOT EXISTS public.products (
   weight         DECIMAL(10,2) DEFAULT 0.00,
   meta_title     TEXT,
   meta_desc      TEXT,
+  packaging      TEXT,
+  origin         TEXT,
+  free_delivery  BOOLEAN DEFAULT FALSE,
+  delivery_fee   INTEGER DEFAULT 0,
+  shipping_charge_per_item BOOLEAN DEFAULT FALSE,
+  images         TEXT[] DEFAULT '{}',
+  variations     JSONB DEFAULT '{"attributes": [], "variants": []}'::jsonb,
   created_at     TIMESTAMPTZ DEFAULT NOW(),
   updated_at     TIMESTAMPTZ DEFAULT NOW()
 );
