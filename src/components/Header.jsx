@@ -308,7 +308,7 @@ export default function Header() {
                   padding: '5px 10px',
                   fontSize: '11px',
                   fontWeight: 800,
-                  color: 'var(--brand-primary, #123c24)',
+                  color: 'var(--brand-primary, #0f0d0a)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -320,7 +320,7 @@ export default function Header() {
                   whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'var(--brand-primary, #123c24)'
+                  e.currentTarget.style.borderColor = 'var(--brand-primary, #0f0d0a)'
                   e.currentTarget.style.background = '#fcfdfd'
                 }}
                 onMouseLeave={e => {
@@ -331,7 +331,7 @@ export default function Header() {
                 <span>{currency}</span>
                 <span style={{ fontSize: '8px', color: '#64748b', transform: showCurrencyDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>▼</span>
               </button>
-
+ 
               {showCurrencyDropdown && (
                 <div
                   className="currency-dropdown-menu"
@@ -365,13 +365,13 @@ export default function Header() {
                         setShowCurrencyDropdown(false)
                       }}
                       style={{
-                        background: currency === opt.code ? 'rgba(18, 60, 36, 0.06)' : 'none',
+                        background: currency === opt.code ? 'rgba(15, 13, 10, 0.06)' : 'none',
                         border: 'none',
                         borderRadius: '6px',
                         padding: '6px 10px',
                         fontSize: '11px',
                         fontWeight: currency === opt.code ? 800 : 600,
-                        color: currency === opt.code ? 'var(--brand-primary, #123c24)' : '#334155',
+                        color: currency === opt.code ? 'var(--brand-primary, #0f0d0a)' : '#334155',
                         textAlign: 'left',
                         cursor: 'pointer',
                         width: '100%',

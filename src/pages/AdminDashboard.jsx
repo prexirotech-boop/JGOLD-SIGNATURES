@@ -1413,7 +1413,7 @@ function AdminProducts({ featureFlags }) {
 
           {/* Modal Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: 'var(--brand-primary, #123c24)' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: 'var(--brand-primary, #0f0d0a)' }}>
               {editingProduct ? 'Edit Product Details' : 'Register New Product'}
             </h3>
             <button 
@@ -1542,7 +1542,7 @@ function AdminProducts({ featureFlags }) {
                 </div>
 
                 <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-                  <button type="submit" disabled={submitting} style={{ flex: 1, background: 'var(--brand-primary, #123c24)', color: '#fff', border: 'none', padding: '12px', borderRadius: 4, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer' }}>
+                  <button type="submit" disabled={submitting} style={{ flex: 1, background: 'var(--brand-primary, #0f0d0a)', color: '#fff', border: 'none', padding: '12px', borderRadius: 4, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer' }}>
                     {submitting ? 'Saving...' : 'Save Product'}
                   </button>
                   <button 
@@ -1585,7 +1585,7 @@ function AdminProducts({ featureFlags }) {
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <span style={{ fontSize: 13, color: 'var(--brand-primary, #123c24)', fontWeight: 700 }}>
+                    <span style={{ fontSize: 13, color: 'var(--brand-primary, #0f0d0a)', fontWeight: 700 }}>
                       {uploading ? '⌛ Uploading images...' : '📁 Click to Upload from PC'}
                     </span>
                     <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Supports JPG, PNG images</span>
@@ -1811,7 +1811,7 @@ function AdminProducts({ featureFlags }) {
                       onChange={e => setIsVariable(e.target.checked)} 
                       style={{ width: 15, height: 15 }}
                     />
-                    <label htmlFor="toggle-variable" style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand-primary, #123c24)' }}>
+                    <label htmlFor="toggle-variable" style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand-primary, #0f0d0a)' }}>
                       This is a Variable Product (Configure variations, attributes & pricing)
                     </label>
                   </div>
@@ -2298,8 +2298,8 @@ export default function AdminDashboard() {
       flexDirection: 'column', 
       height: '100%', 
       padding: '20px 0 0 0', 
-      background: '#0d2e1a', 
-      borderRight: '1px solid #123c24',
+      background: '#000000', 
+      borderRight: '1px solid #1a1a1a',
       color: '#fff',
       transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
@@ -2455,11 +2455,11 @@ export default function AdminDashboard() {
       {/* Bottom Profile Details */}
       <div style={{ 
         padding: '16px', 
-        borderTop: '1px solid #123c24', 
+        borderTop: '1px solid #1c1813', 
         display: 'flex', 
         flexDirection: 'column', 
         gap: 16,
-        background: '#07190e' 
+        background: '#0a0907' 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
           <img 

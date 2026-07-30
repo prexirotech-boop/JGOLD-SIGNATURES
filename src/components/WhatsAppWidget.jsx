@@ -69,15 +69,16 @@ export default function WhatsAppWidget() {
               {/* Favicon Avatar */}
               <div style={{ position: 'relative', width: 44, height: 44 }}>
                 <img 
-                  src="/favicon.png" 
+                  src="/logo.webp" 
                   alt={localStorage.getItem('brandName') || 'JGOLD SIGNATURES'} 
                   style={{
                     width: '100%',
                     height: '100%',
                     borderRadius: '50%',
-                    background: '#fff',
-                    objectFit: 'cover',
-                    border: '1px solid rgba(255,255,255,0.2)'
+                    background: '#ffffff',
+                    objectFit: 'contain',
+                    padding: '4px',
+                    border: '1px solid rgba(0,0,0,0.06)'
                   }}
                   onError={e => {
                     // Fallback in case favicon doesn't load/exist

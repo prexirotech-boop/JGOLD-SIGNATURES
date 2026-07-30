@@ -230,11 +230,11 @@ function PurchaseHistoryTab({ user, profile }) {
             .title {
               font-size: 20px;
               font-weight: 800;
-              color: #0d2e1a;
+              color: var(--brand-primary, #0f0d0a);
               margin: 0;
               text-transform: uppercase;
               letter-spacing: 1px;
-              background: linear-gradient(135deg, #123c24, #246a42);
+              background: linear-gradient(135deg, var(--brand-primary, #0f0d0a), var(--g500, #af9063));
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
             }
@@ -318,7 +318,7 @@ function PurchaseHistoryTab({ user, profile }) {
             .total-amount {
               font-size: 20px;
               font-weight: 800;
-              color: #123c24;
+              color: var(--brand-primary, #0f0d0a);
             }
             .footer-note {
               text-align: center;
@@ -333,7 +333,7 @@ function PurchaseHistoryTab({ user, profile }) {
               display: block;
               width: 100%;
               padding: 14px;
-              background: linear-gradient(135deg, #123c24, #246a42);
+              background: linear-gradient(135deg, var(--brand-primary, #0f0d0a), var(--brand-hover, #262520));
               color: white;
               border: none;
               border-radius: 8px;
@@ -342,7 +342,7 @@ function PurchaseHistoryTab({ user, profile }) {
               cursor: pointer;
               text-align: center;
               margin-bottom: 28px;
-              box-shadow: 0 4px 10px rgba(18, 60, 36, 0.2);
+              box-shadow: 0 4px 10px rgba(15, 13, 10, 0.15);
               transition: all 0.2s;
             }
             .btn-print:hover {
@@ -2053,8 +2053,8 @@ export default function LMSDashboard() {
         .ud-sidebar {
           width: 260px;
           min-width: 260px;
-          background-color: #0b1329;
-          border-right: 1px solid #1e293b;
+          background-color: #000000;
+          border-right: 1px solid #1a1a1a;
           color: #fff;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           flex-shrink: 0;

@@ -433,7 +433,7 @@ export default function HomePage() {
                   <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', gap: '14px' }}>
                     <div>
                       <Link to={`/product/${prod.slug || prod.id}`} style={{ textDecoration: 'none' }}>
-                        <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px', lineHeight: '1.3' }}>
+                        <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#0f0d0a', margin: '0 0 6px', lineHeight: '1.3' }}>
                           {prod.title.replace(/\s+slug$/i, '')}
                         </h3>
                       </Link>
@@ -443,7 +443,7 @@ export default function HomePage() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a' }}>
+                        <span style={{ fontSize: '15px', fontWeight: 800, color: '#0f0d0a' }}>
                           {hasVariants ? 'From ' : ''}{formatPrice(displayPrice)}
                         </span>
                         {displayOldPrice && (
@@ -569,7 +569,7 @@ export default function HomePage() {
               <svg width="40" height="40" viewBox="0 0 24 24" fill="#25D366" style={{ flexShrink: 0 }}>
                 <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.335 4.978L2 22l5.197-1.361a9.94 9.94 0 0 0 4.814 1.238h.005c5.503 0 9.987-4.479 9.988-9.985a9.97 9.97 0 0 0-2.925-7.062 9.96 9.96 0 0 0-7.067-2.83zm5.73 14.103c-.236.662-1.362 1.217-1.888 1.286-.475.06-1.085.126-3.2-.75a10.963 10.963 0 0 1-4.72-4.14c-.604-.806-1.04-1.79-1.04-2.82 0-1.098.57-1.694.773-1.913.204-.219.538-.288.757-.288.22 0 .438.005.626.012.197.007.457-.075.713.543.264.636.903 2.195.98 2.35.078.156.13.338.026.547-.104.21-.157.339-.313.522-.157.18-.328.403-.47.54-.156.15-.32.313-.138.625.181.312.806 1.326 1.727 2.148.19.17.359.34.542.474.183.136.326.173.542.02.215-.152.926-.926 1.173-1.246.248-.32.496-.264.82-.143.326.12 2.068 1.026 2.427 1.206.36.18.6.269.69.421.09.15.09.87-.146 1.533z" />
               </svg>
-              <strong style={{ fontSize: '19px', color: '#0d2e1a', fontWeight: 800 }}>Let's Work Together</strong>
+              <strong style={{ fontSize: '19px', color: '#0f0d0a', fontWeight: 800 }}>Let's Work Together</strong>
             </div>
             
             <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.6', margin: 0 }}>

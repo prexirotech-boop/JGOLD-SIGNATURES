@@ -457,8 +457,8 @@ ul, ol { list-style: none; }
 
 /* ─── APP SAAS CSS (LMS, Account, Header) ───────────────────────────────── */
 :root {
-  --brand-primary: #123c24;
-  --brand-hover: #0c2918;
+  --brand-primary: #0f0d0a;
+  --brand-hover: #262520;
   --bg-app: #f8fafc;
   --bg-surface: #ffffff;
   --border-color: #e2e8f0;

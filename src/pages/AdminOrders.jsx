@@ -420,7 +420,7 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
                     background: '#f1f5f9', 
                     border: '1px solid #cbd5e1', 
                     borderRadius: '6px', 
-                    color: '#123c24', 
+                    color: 'var(--brand-primary, #0f0d0a)', 
                     fontWeight: 600, 
                     fontSize: '12.5px',
                     textAlign: 'center',

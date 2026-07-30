@@ -2237,7 +2237,7 @@ export default function PaymentPage() {
               <h3 className="sp-section-title">Payment Method</h3>
               
               {/* Paystack Option */}
-              <div className="sp-payment-container" style={{ marginBottom: 12, border: paymentMethod === 'paystack' ? '2px solid var(--brand-primary, #123c24)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
+              <div className="sp-payment-container" style={{ marginBottom: 12, border: paymentMethod === 'paystack' ? '2px solid var(--brand-primary, #0f0d0a)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
                 <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', margin: 0, width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <input 
@@ -2245,7 +2245,7 @@ export default function PaymentPage() {
                       name="payment_method"
                       checked={paymentMethod === 'paystack'} 
                       onChange={() => setPaymentMethod('paystack')}
-                      style={{ accentColor: '#123c24', cursor: 'pointer', width: 18, height: 18 }} 
+                      style={{ accentColor: 'var(--brand-primary, #0f0d0a)', cursor: 'pointer', width: 18, height: 18 }} 
                     />
                     <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b' }}>Secure Paystack Gateway</span>
                   </div>
@@ -2260,7 +2260,7 @@ export default function PaymentPage() {
               </div>
 
               {/* Bank Transfer Option */}
-              <div className="sp-payment-container" style={{ border: paymentMethod === 'bank_transfer' ? '2px solid var(--brand-primary, #123c24)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
+              <div className="sp-payment-container" style={{ border: paymentMethod === 'bank_transfer' ? '2px solid var(--brand-primary, #0f0d0a)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
                 <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', margin: 0, width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <input 
@@ -2268,7 +2268,7 @@ export default function PaymentPage() {
                       name="payment_method"
                       checked={paymentMethod === 'bank_transfer'} 
                       onChange={() => setPaymentMethod('bank_transfer')}
-                      style={{ accentColor: '#123c24', cursor: 'pointer', width: 18, height: 18 }} 
+                      style={{ accentColor: 'var(--brand-primary, #0f0d0a)', cursor: 'pointer', width: 18, height: 18 }} 
                     />
                     <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b' }}>Manual Bank Transfer (Direct Upload)</span>
                   </div>
@@ -2288,7 +2288,7 @@ export default function PaymentPage() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                           {bankAccounts.map((acc, idx) => (
                             <div key={idx} style={{ paddingBottom: idx < bankAccounts.length - 1 ? 10 : 0, borderBottom: idx < bankAccounts.length - 1 ? '1px dashed #cbd5e1' : 'none' }}>
-                              <div style={{ fontSize: 13.5, fontWeight: 700, color: '#123c24' }}>{acc.bank_name}</div>
+                              <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--brand-primary, #0f0d0a)' }}>{acc.bank_name}</div>
                               <div style={{ fontSize: 13, color: '#334155', marginTop: 2 }}>
                                 Account Number: <strong style={{ color: '#0f172a', fontSize: '13.5px' }}>{acc.account_number}</strong>
                               </div>
@@ -2347,7 +2347,7 @@ export default function PaymentPage() {
 
               {/* Cash on Delivery Option */}
               {enableCod && isPhysical && (
-                <div className="sp-payment-container" style={{ marginTop: 12, border: paymentMethod === 'cod' ? '2px solid var(--brand-primary, #123c24)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
+                <div className="sp-payment-container" style={{ marginTop: 12, border: paymentMethod === 'cod' ? '2px solid var(--brand-primary, #0f0d0a)' : '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden' }}>
                   <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', margin: 0, width: '100%', boxSizing: 'border-box' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <input 
@@ -2355,7 +2355,7 @@ export default function PaymentPage() {
                         name="payment_method"
                         checked={paymentMethod === 'cod'} 
                         onChange={() => setPaymentMethod('cod')}
-                        style={{ accentColor: '#123c24', cursor: 'pointer', width: 18, height: 18 }} 
+                        style={{ accentColor: 'var(--brand-primary, #0f0d0a)', cursor: 'pointer', width: 18, height: 18 }} 
                       />
                       <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b' }}>Cash on Delivery (COD)</span>
                     </div>
@@ -2383,7 +2383,7 @@ export default function PaymentPage() {
                   disabled={loading || (emailExists && !user && !loginPassword) || (paymentMethod === 'bank_transfer' && !receiptUrl)}
                   className="sp-submit-btn"
                   style={{
-                    background: 'var(--brand-primary, #123c24)',
+                    background: 'var(--brand-primary, #0f0d0a)',
                     color: '#fff',
                     width: '100%',
                     padding: '14px',

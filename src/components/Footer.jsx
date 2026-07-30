@@ -55,13 +55,9 @@ export default function Footer() {
                   width: 'auto',
                   objectFit: 'contain',
                   cursor: 'pointer',
-                  filter: 'none' // Webp logo color is preserved or matches gold background
+                  filter: 'brightness(0) invert(1)' // Renders the logo in clean white
                 }}
               />
-              <div>
-                <strong style={{ display: 'block', fontSize: '16px', fontWeight: 800, letterSpacing: '0.5px' }}>JGOLD SIGNATURES</strong>
-                <span style={{ fontSize: '11px', color: '#c5a880', fontWeight: 600 }}>Luxury Meets Style</span>
-              </div>
             </div>
 
             <p style={{
@@ -188,7 +184,6 @@ export default function Footer() {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginTop: 2, flexShrink: 0 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ wordBreak: 'break-all' }}>admin@jgoldsignatures.com.ng</span>
                   <span style={{ wordBreak: 'break-all' }}>ebonyjuliet15@yahoo.com</span>
                 </div>
               </div>

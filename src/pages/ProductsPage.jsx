@@ -234,8 +234,8 @@ export default function ProductsPage() {
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 24px', color: '#64748b' }}>
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ marginBottom: '16px' }}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-            <h3 style={{ fontSize: '18px', color: '#0d2e1a', fontWeight: 800, margin: '0 0 6px' }}>No products found</h3>
-            <p style={{ margin: 0, fontSize: '13.5px' }}>Check back soon for new organic harvests!</p>
+            <h3 style={{ fontSize: '18px', color: '#0f0d0a', fontWeight: 800, margin: '0 0 6px' }}>No products found</h3>
+            <p style={{ margin: 0, fontSize: '13.5px' }}>Check back soon for new premium collections!</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }} className="products-grid">
@@ -309,7 +309,7 @@ export default function ProductsPage() {
                   <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', gap: '14px' }}>
                     <div>
                       <Link to={`/product/${product.slug || product.id}`} style={{ textDecoration: 'none' }}>
-                        <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#0d2e1a', margin: '0 0 6px', lineHeight: '1.3' }}>
+                        <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#0f0d0a', margin: '0 0 6px', lineHeight: '1.3' }}>
                           {product.title.replace(/\s+slug$/i, '')}
                         </h3>
                       </Link>
@@ -331,7 +331,7 @@ export default function ProductsPage() {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '15px', fontWeight: 800, color: '#0d2e1a' }}>
+                        <span style={{ fontSize: '15px', fontWeight: 800, color: '#0f0d0a' }}>
                           {hasVariants ? 'From ' : ''}{formatPrice(displayPrice)}
                         </span>
                         {displayOldPrice && (
@@ -369,7 +369,7 @@ export default function ProductsPage() {
       <section style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', padding: '48px 24px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }} className="bottom-banner-flex">
           <div>
-            <h3 style={{ fontSize: '18px', color: '#0d2e1a', fontWeight: 800, margin: '0 0 6px' }}>Already a customer?</h3>
+            <h3 style={{ fontSize: '18px', color: '#0f0d0a', fontWeight: 800, margin: '0 0 6px' }}>Already a customer?</h3>
             <p style={{ margin: 0, fontSize: '13.5px', color: '#64748b' }}>Track your orders and manage shipping options in your account area.</p>
           </div>
           <Link to="/dashboard" style={{
