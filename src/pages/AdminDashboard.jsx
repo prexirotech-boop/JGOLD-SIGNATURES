@@ -1972,6 +1972,16 @@ export default function AdminDashboard() {
   const navigate = useNavigate()
   const location = useLocation()
 
+  // Redirect to login if user is not authenticated or not an admin
+  useEffect(() => {
+    if (!loading) {
+      const isAdmin = user?.app_metadata?.role === 'admin' || profile?.role === 'admin';
+      if (!user || !isAdmin) {
+        navigate('/login')
+      }
+    }
+  }, [user, profile, loading, navigate])
+
   const [featureFlags, setFeatureFlags] = useState({
     enable_academics: localStorage.getItem('enable_academics') === 'true',
     enable_affiliates: localStorage.getItem('enable_affiliates') !== 'false',
