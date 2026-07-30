@@ -65,7 +65,6 @@ export async function createPendingOrder({
         payment_method: paymentMethod,
         currency: 'NGN',
         affiliate_code: affiliateCode || null,
-        affiliate_id: affiliateId || null,
         shipping_name: shippingName || name || null,
         shipping_phone: shippingPhone || phone || null,
         shipping_street: shippingStreet || null,

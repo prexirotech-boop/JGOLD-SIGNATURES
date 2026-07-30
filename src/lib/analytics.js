@@ -114,14 +114,14 @@ export async function trackEvent(eventName, metadata = {}) {
       visitor_id: visitorId,
       session_id: sessionId,
       event_name: eventName,
-      page_path: path,
+      page: path || '/',
       referrer,
       ...utms,
       metadata: {
         ...metadata,
-        timestamp_ms: Date.now()
-      },
-      user_id: userId
+        timestamp_ms: Date.now(),
+        ...(userId ? { user_id: userId } : {})
+      }
     }
 
     // Send to Supabase in a non-blocking background promise
