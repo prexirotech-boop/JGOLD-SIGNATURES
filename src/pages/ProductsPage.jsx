@@ -295,7 +295,7 @@ export default function ProductsPage() {
                   </button>
 
                   {/* Card Image */}
-                  <Link to={`/product/${product.slug || product.id}`} style={{ display: 'block', height: '140px', overflow: 'hidden', background: '#f8fafc' }}>
+                  <Link to={`/product/${product.slug || product.id}`} style={{ display: 'block', width: '100%', aspectRatio: '1 / 1', overflow: 'hidden', background: '#f8fafc' }}>
                     <img 
                       src={product.cover_image || '/logo.png'} 
                       alt={`${product.title.replace(/\s+slug$/i, '')} - Premium product from JGOLD SIGNATURES`} 

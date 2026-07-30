@@ -419,7 +419,7 @@ export default function HomePage() {
                   )}
 
                   {/* Card Image */}
-                  <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', height: '160px', overflow: 'hidden', background: '#f8fafc' }}>
+                  <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', width: '100%', aspectRatio: '1 / 1', overflow: 'hidden', background: '#f8fafc' }}>
                     <img
                       src={prod.cover_image || '/logo.png'}
                       alt={`${prod.title.replace(/\s+slug$/i, '')} - Premium agricultural export grade product`}

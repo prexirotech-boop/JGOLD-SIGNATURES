@@ -1068,41 +1068,56 @@ function AdminProducts({ featureFlags }) {
   }
 
   const handleDuplicateProduct = async (product) => {
-    if (!window.confirm(`Are you sure you want to duplicate "${product.title}"?`)) return
+    const countStr = window.prompt(`How many duplicates of "${product.title}" would you like to create?`, "1")
+    if (countStr === null) return // User cancelled
+    const count = parseInt(countStr, 10)
+    if (isNaN(count) || count <= 0) {
+      alert("Please enter a valid number greater than 0.")
+      return
+    }
+
     try {
-      const uniqueSlug = `${product.slug}-copy-${Date.now().toString().slice(-4)}`
-      const payload = {
-        title: `${product.title} (Copy)`,
-        slug: uniqueSlug,
-        type: product.type,
-        description: product.description || '',
-        price: product.price || 0,
-        old_price: product.old_price || null,
-        cover_image: product.cover_image || '',
-        images: product.images || [],
-        variations: product.variations || { attributes: [], variants: [] },
-        features: product.features || [],
-        is_published: false,
-        is_free: product.is_free || false,
-        stock_quantity: product.stock_quantity,
-        weight: product.weight,
-        meta_title: product.meta_title || null,
-        packaging: product.packaging || null,
-        origin: product.origin || null,
-        free_delivery: product.free_delivery || false,
-        delivery_fee: product.delivery_fee || 0,
-        shipping_charge_per_item: product.shipping_charge_per_item || false
+      const newProducts = []
+      for (let i = 1; i <= count; i++) {
+        const timestamp = Date.now().toString().slice(-4)
+        const rand = Math.floor(Math.random() * 1000)
+        const uniqueSlug = `${product.slug}-copy-${i}-${timestamp}-${rand}`
+        const titleSuffix = count > 1 ? ` (Copy ${i})` : ' (Copy)'
+        const payload = {
+          title: `${product.title}${titleSuffix}`,
+          slug: uniqueSlug,
+          type: product.type,
+          description: product.description || '',
+          price: product.price || 0,
+          old_price: product.old_price || null,
+          cover_image: product.cover_image || '',
+          images: product.images || [],
+          variations: product.variations || { attributes: [], variants: [] },
+          features: product.features || [],
+          is_published: false,
+          is_free: product.is_free || false,
+          stock_quantity: product.stock_quantity,
+          weight: product.weight,
+          meta_title: product.meta_title || null,
+          packaging: product.packaging || null,
+          origin: product.origin || null,
+          free_delivery: product.free_delivery || false,
+          delivery_fee: product.delivery_fee || 0,
+          shipping_charge_per_item: product.shipping_charge_per_item || false
+        }
+
+        const { data, error } = await supabase
+          .from('products')
+          .insert(payload)
+          .select()
+          .single()
+
+        if (error) throw error
+        newProducts.push(data)
       }
 
-      const { data, error } = await supabase
-        .from('products')
-        .insert(payload)
-        .select()
-        .single()
-
-      if (error) throw error
-      setProducts([data, ...products])
-      alert('Product duplicated successfully as Draft!')
+      setProducts([...newProducts, ...products])
+      alert(`${count} duplicate${count > 1 ? 's' : ''} created successfully as Draft!`)
     } catch (err) {
       alert(`Duplication failed: ${err.message}`)
     }
