@@ -334,13 +334,31 @@ CREATE TABLE IF NOT EXISTS public.upsell_impressions (
 
 -- Traffic Events Table
 CREATE TABLE IF NOT EXISTS public.traffic_events (
-  id           UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id      UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
-  page         TEXT NOT NULL,
-  action       TEXT,
-  ip_address   TEXT,
-  affiliate_id UUID REFERENCES public.affiliates(id) ON DELETE SET NULL,
-  created_at   TIMESTAMPTZ DEFAULT NOW()
+  id              UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id         UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  visitor_id      TEXT,
+  session_id      TEXT,
+  event_name      TEXT,
+  page_path       TEXT,
+  referrer        TEXT,
+  utm_source      TEXT,
+  utm_medium      TEXT,
+  utm_campaign    TEXT,
+  utm_term        TEXT,
+  utm_content     TEXT,
+  metadata        JSONB DEFAULT '{}',
+  ip_address      TEXT,
+  affiliate_id    UUID REFERENCES public.affiliates(id) ON DELETE SET NULL,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Wishlist Table
+CREATE TABLE IF NOT EXISTS public.wishlist (
+  id         UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id    UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  product_id UUID REFERENCES public.products(id) ON DELETE CASCADE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, product_id)
 );
 
 -- Funnel Campaigns Table
@@ -500,6 +518,7 @@ ALTER TABLE public.affiliate_payouts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.upsell_offers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.upsell_impressions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.traffic_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wishlist ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.funnel_campaigns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.debug_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.freelance_training_list ENABLE ROW LEVEL SECURITY;
@@ -737,6 +756,10 @@ DROP POLICY IF EXISTS "Allow public insert on debug_logs" ON public.debug_logs;
 
 CREATE POLICY "Allow public read on debug_logs" ON public.debug_logs FOR SELECT USING (true);
 CREATE POLICY "Allow public insert on debug_logs" ON public.debug_logs FOR INSERT WITH CHECK (true);
+
+-- 6.23 WISHLIST POLICIES
+DROP POLICY IF EXISTS "wishlist_self" ON public.wishlist;
+CREATE POLICY "wishlist_self" ON public.wishlist FOR ALL USING (user_id = auth.uid());
 
 
 -- ─── 7. JGOLD BRAND SEED DATA ────────────────────────────────────────────────
