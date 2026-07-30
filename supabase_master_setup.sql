@@ -264,10 +264,20 @@ CREATE TABLE IF NOT EXISTS public.affiliates (
   id             UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id        UUID REFERENCES public.profiles(id) ON DELETE CASCADE UNIQUE NOT NULL,
   affiliate_code TEXT UNIQUE NOT NULL,
+  status         TEXT DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'pending')),
+  tier           TEXT DEFAULT 'bronze' CHECK (tier IN ('bronze', 'silver', 'gold', 'platinum')),
   commission_rate INTEGER DEFAULT 20, -- percentage
+  custom_rate    NUMERIC(5,2),
+  total_clicks   INTEGER DEFAULT 0,
+  total_referrals INTEGER DEFAULT 0,
+  total_earnings BIGINT DEFAULT 0,
+  total_paid     BIGINT DEFAULT 0,
   balance        INTEGER DEFAULT 0,
+  payout_method  TEXT,
   payout_details TEXT,
-  created_at     TIMESTAMPTZ DEFAULT NOW()
+  admin_notes    TEXT,
+  created_at     TIMESTAMPTZ DEFAULT NOW(),
+  updated_at     TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Affiliate Referrals Table

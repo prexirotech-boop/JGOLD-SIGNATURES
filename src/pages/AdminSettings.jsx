@@ -250,6 +250,9 @@ export default function AdminSettings() {
       localStorage.setItem('enable_payouts', enablePayouts)
       localStorage.setItem('enable_upsells', enableUpsells)
 
+      // Dispatch custom event to notify parent AdminDashboard
+      window.dispatchEvent(new Event('brand_settings_updated'))
+
       setMessage('Platform settings & API credentials updated successfully!')
       setTimeout(() => setMessage(''), 3000)
     } catch (err) {

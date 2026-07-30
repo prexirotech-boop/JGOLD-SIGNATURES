@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { usePersistedState } from '../hooks/usePersistedState'
 import AdminCourses from './AdminCourses'
 import AdminCourseBuilder from './AdminCourseBuilder'
 import AdminUsers from './AdminUsers'
@@ -743,7 +744,7 @@ function AdminProducts({ featureFlags }) {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const [productForm, setProductForm] = useState({
+  const initialFormState = {
     title: '',
     slug: '',
     type: featureFlags?.enable_academics ? 'course' : 'physical',
@@ -764,7 +765,9 @@ function AdminProducts({ featureFlags }) {
     delivery_fee: '',
     free_delivery: false,
     shipping_charge_per_item: false
-  })
+  }
+
+  const [productForm, setProductForm] = usePersistedState('admin_product_form', initialFormState)
 
   const [uploading, setUploading] = useState(false)
   const [isVariable, setIsVariable] = useState(false)
@@ -794,29 +797,17 @@ function AdminProducts({ featureFlags }) {
   const handleOpenAdd = () => {
     setEditingProduct(null)
     setIsVariable(false)
-    setProductForm({
-      title: '',
-      slug: '',
-      type: featureFlags.enable_academics ? 'course' : 'physical',
-      description: '',
-      price: '',
-      compare_price: '',
-      cover_image: '',
-      images: [],
-      variations: { attributes: [], variants: [] },
-      features: '',
-      is_published: false,
-      is_free: false,
-      stock_quantity: '',
-      weight: '',
-      category: '',
-      packaging: '',
-      origin: '',
-      delivery_fee: '',
-      free_delivery: false,
-      shipping_charge_per_item: false
-    })
+    // Only reset the form if they haven't typed a draft yet
+    if (!productForm.title && !productForm.description && !productForm.price) {
+      setProductForm(initialFormState)
+    }
     setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setEditingProduct(null)
+    setProductForm(initialFormState)
   }
 
   const handleOpenEdit = (p) => {
@@ -1068,6 +1059,7 @@ function AdminProducts({ featureFlags }) {
       }
       setShowModal(false)
       loadProducts()
+      setProductForm(initialFormState)
     } catch (err) {
       alert(err.message)
     } finally {
@@ -1418,7 +1410,7 @@ function AdminProducts({ featureFlags }) {
             </h3>
             <button 
               type="button" 
-              onClick={() => setShowModal(false)}
+              onClick={handleCloseModal}
               style={{ background: 'none', border: 'none', fontSize: 28, cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               ×
@@ -1547,7 +1539,7 @@ function AdminProducts({ featureFlags }) {
                   </button>
                   <button 
                     type="button" 
-                    onClick={() => setShowModal(false)} 
+                    onClick={handleCloseModal} 
                     style={{ flex: 1, background: '#f7f8f9', color: '#4f566b', border: '1px solid #cbd5e1', padding: '12px', borderRadius: 4, fontWeight: 700, cursor: 'pointer' }}
                   >
                     Cancel
@@ -2019,6 +2011,17 @@ export default function AdminDashboard() {
       }
     }
     loadFlags()
+
+    const handleSettingsUpdate = () => {
+      setFeatureFlags({
+        enable_academics: localStorage.getItem('enable_academics') === 'true',
+        enable_affiliates: localStorage.getItem('enable_affiliates') !== 'false',
+        enable_payouts: localStorage.getItem('enable_payouts') !== 'false',
+        enable_upsells: localStorage.getItem('enable_upsells') !== 'false',
+      })
+    }
+    window.addEventListener('brand_settings_updated', handleSettingsUpdate)
+    return () => window.removeEventListener('brand_settings_updated', handleSettingsUpdate)
   }, [])
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
