@@ -414,7 +414,8 @@ DROP TRIGGER IF EXISTS trigger_create_affiliate ON public.profiles;
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types) VALUES
   ('avatars', 'avatars', true, 3145728, ARRAY['image/jpeg','image/png','image/webp','image/gif']),
   ('course-assets', 'course-assets', true, null, null),
-  ('payment-receipts', 'payment-receipts', true, 5242880, ARRAY['image/jpeg','image/png','image/webp','application/pdf'])
+  ('payment-receipts', 'payment-receipts', true, 5242880, ARRAY['image/jpeg','image/png','image/webp','application/pdf']),
+  ('products', 'products', true, 5242880, ARRAY['image/jpeg','image/png','image/webp','image/gif'])
 ON CONFLICT (id) DO UPDATE SET public = true;
 
 -- Storage Policies: Avatars Bucket
@@ -436,6 +437,15 @@ DROP POLICY IF EXISTS "course-assets auth delete" ON storage.objects;
 CREATE POLICY "course-assets public read" ON storage.objects FOR SELECT TO public USING (bucket_id = 'course-assets');
 CREATE POLICY "course-assets auth upload" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'course-assets');
 CREATE POLICY "course-assets auth delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'course-assets');
+
+-- Storage Policies: Products Bucket
+DROP POLICY IF EXISTS "products public read" ON storage.objects;
+DROP POLICY IF EXISTS "products auth upload" ON storage.objects;
+DROP POLICY IF EXISTS "products auth delete" ON storage.objects;
+
+CREATE POLICY "products public read" ON storage.objects FOR SELECT TO public USING (bucket_id = 'products');
+CREATE POLICY "products auth upload" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'products');
+CREATE POLICY "products auth delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'products');
 
 -- Storage Policies: Payment Receipts Bucket
 DROP POLICY IF EXISTS "Anyone can upload payment receipts" ON storage.objects;
