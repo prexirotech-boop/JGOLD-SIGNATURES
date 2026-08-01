@@ -10,14 +10,15 @@ export default function LandingPageRenderer() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  // Customer Form Fields
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [address, setAddress] = useState('')
-  const [state, setState] = useState('')
-  const [notes, setNotes] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery')
-  const [priceAgreed, setPriceAgreed] = useState(false)
+  // Customer Form Fields (Loaded from localStorage if existing to prevent wiping on refresh)
+  const [name, setName] = useState(() => localStorage.getItem('jgold_lnd_name') || '')
+  const [phone, setPhone] = useState(() => localStorage.getItem('jgold_lnd_phone') || '')
+  const [email, setEmail] = useState(() => localStorage.getItem('jgold_lnd_email') || '')
+  const [address, setAddress] = useState(() => localStorage.getItem('jgold_lnd_address') || '')
+  const [state, setState] = useState(() => localStorage.getItem('jgold_lnd_state') || '')
+  const [notes, setNotes] = useState(() => localStorage.getItem('jgold_lnd_notes') || '')
+  const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('jgold_lnd_paymentMethod') || 'cash_on_delivery')
+  const [priceAgreed, setPriceAgreed] = useState(() => localStorage.getItem('jgold_lnd_priceAgreed') === 'true')
 
   // Selected Items State
   // Format: { [id_number]: { product, sizes: ['42', '43'] } }
@@ -39,6 +40,18 @@ export default function LandingPageRenderer() {
   }, [])
 
   const isMobile = windowWidth < 768
+
+  // Persist form inputs in localStorage
+  useEffect(() => {
+    localStorage.setItem('jgold_lnd_name', name)
+    localStorage.setItem('jgold_lnd_phone', phone)
+    localStorage.setItem('jgold_lnd_email', email)
+    localStorage.setItem('jgold_lnd_address', address)
+    localStorage.setItem('jgold_lnd_state', state)
+    localStorage.setItem('jgold_lnd_notes', notes)
+    localStorage.setItem('jgold_lnd_paymentMethod', paymentMethod)
+    localStorage.setItem('jgold_lnd_priceAgreed', String(priceAgreed))
+  }, [name, phone, email, address, state, notes, paymentMethod, priceAgreed])
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -163,7 +176,7 @@ export default function LandingPageRenderer() {
 
     const emailPayload = {
       name: name.trim(),
-      email: 'customer@jgoldsignatures.com.ng', // Placeholder
+      email: email.trim() || 'customer@jgoldsignatures.com.ng',
       phone: phone.trim(),
       product_title: `Landing Page Order: ${itemsDescription}`,
       amount: grandTotal,
@@ -191,7 +204,7 @@ export default function LandingPageRenderer() {
         await supabase.from('orders').insert({
           reference: orderRef,
           customer_name: name.trim(),
-          customer_email: 'customer@jgoldsignatures.com.ng',
+          customer_email: email.trim(),
           customer_phone: phone.trim(),
           amount: grandTotal,
           total_paid: grandTotal,
@@ -207,6 +220,16 @@ export default function LandingPageRenderer() {
         console.warn('Silent fallback: Could not insert landing order in orders table.', dbErr)
       }
 
+      // Clear stored values on success
+      localStorage.removeItem('jgold_lnd_name')
+      localStorage.removeItem('jgold_lnd_phone')
+      localStorage.removeItem('jgold_lnd_email')
+      localStorage.removeItem('jgold_lnd_address')
+      localStorage.removeItem('jgold_lnd_state')
+      localStorage.removeItem('jgold_lnd_notes')
+      localStorage.removeItem('jgold_lnd_paymentMethod')
+      localStorage.removeItem('jgold_lnd_priceAgreed')
+
       setSuccess(true)
 
       // 3. Format WhatsApp checkout text & redirect
@@ -215,7 +238,7 @@ export default function LandingPageRenderer() {
         itemsWaText += `- *Design:* ${item.id_number}\n- *Size:* ${item.size}\n- *Quantity:* ${item.quantity} pair${item.quantity > 1 ? 's' : ''}\n- *Subtotal:* ₦${Number(item.price * item.quantity).toLocaleString()}\n\n`
       })
 
-      const waText = `Hi JGOLD SIGNATURES,\n\nI just placed an order on your Landing Page (*${pageData.title}*):\n\n*Order Details:*\n${itemsWaText}*Total Amount:* ₦${grandTotal.toLocaleString()}\n*Payment Method:* ${paymentMethod === 'cash_on_delivery' ? 'Cash on Delivery' : 'Bank Transfer'}\n\n*Customer Shipping Info:*\n- *Name:* ${name}\n- *Phone:* ${phone}\n- *Delivery Address:* ${address}, ${state} State\n${notes ? `- *Notes:* ${notes}\n` : ''}\n- *Ref:* #${orderRef}`
+      const waText = `Hi JGOLD SIGNATURES,\n\nI just placed an order on your Landing Page (*${pageData.title}*):\n\n*Order Details:*\n${itemsWaText}*Total Amount:* ₦${grandTotal.toLocaleString()}\n*Payment Method:* ${paymentMethod === 'cash_on_delivery' ? 'Cash on Delivery' : 'Bank Transfer'}\n\n*Customer Shipping Info:*\n- *Name:* ${name}\n- *Email:* ${email}\n- *Phone:* ${phone}\n- *Delivery Address:* ${address}, ${state} State\n${notes ? `- *Notes:* ${notes}\n` : ''}\n- *Ref:* #${orderRef}`
       
       const encodedWaText = encodeURIComponent(waText)
       setTimeout(() => {
@@ -626,26 +649,26 @@ export default function LandingPageRenderer() {
                   />
                 </div>
                 <div>
-                  <label style={formFieldLabelStyle}>WhatsApp / Phone Number</label>
+                  <label style={formFieldLabelStyle}>Email Address</label>
                   <input
-                    type="tel"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value)}
-                    placeholder="Active delivery number"
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="e.g. customer@example.com"
                     style={formInputStyle}
                     required
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '20px', marginBottom: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px', marginBottom: 20 }}>
                 <div>
-                  <label style={formFieldLabelStyle}>Detailed Shipping Address</label>
+                  <label style={formFieldLabelStyle}>WhatsApp / Phone Number</label>
                   <input
-                    type="text"
-                    value={address}
-                    onChange={e => setAddress(e.target.value)}
-                    placeholder="House/Office No, Street, Landmark details"
+                    type="tel"
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    placeholder="Active delivery number"
                     style={formInputStyle}
                     required
                   />
@@ -661,6 +684,18 @@ export default function LandingPageRenderer() {
                     required
                   />
                 </div>
+              </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <label style={formFieldLabelStyle}>Detailed Shipping Address</label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={e => setAddress(e.target.value)}
+                  placeholder="House/Office No, Street, Landmark details"
+                  style={formInputStyle}
+                  required
+                />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px', marginBottom: 28 }}>
