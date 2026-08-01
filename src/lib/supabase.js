@@ -121,7 +121,7 @@ export async function completeOrder({
     // PostgREST .or() needs comma-separated filters in a single string
     const { data: updatedOrders, error: updateErr } = await supabase
       .from('orders')
-      .update({ status: 'paid', paid_at: new Date().toISOString() })
+      .update({ status: 'paid' })
       .or(`reference.eq.${reference},reference.like.${reference}-bump-%`)
       .select('product_id, products(type)')
 
@@ -130,7 +130,7 @@ export async function completeOrder({
       // Fallback: try updating by reference only (no like pattern)
       await supabase
         .from('orders')
-        .update({ status: 'paid', paid_at: new Date().toISOString() })
+        .update({ status: 'paid' })
         .eq('reference', reference)
         .select('product_id')
     } else {

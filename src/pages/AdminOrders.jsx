@@ -737,7 +737,6 @@ export default function AdminOrders() {
         hideConfirm()
         try {
           const updateFields = { status: newStatus }
-          if (newStatus === 'paid') updateFields.paid_at = new Date().toISOString()
           await supabase.from('orders').update(updateFields).eq('id', order.id)
           if (isPaid && order.products?.type === 'course' && order.product_id) {
             const { data: profile } = await supabase.from('profiles').select('id').eq('email', order.customer_email).maybeSingle()
