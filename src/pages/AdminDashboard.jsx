@@ -1395,7 +1395,19 @@ function AdminProducts({ featureFlags }) {
           ) : (
             filteredProducts.map(p => (
               <div key={p.id} style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #e3e8ee' }}>
-                <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedProductIds.includes(p.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedProductIds(prev => [...prev, p.id])
+                      } else {
+                        setSelectedProductIds(prev => prev.filter(id => id !== p.id))
+                      }
+                    }}
+                    style={{ width: 16, height: 16, cursor: 'pointer', flexShrink: 0 }}
+                  />
                   <img src={p.cover_image} alt={p.title} style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }} />
                   <div>
                     <div style={{ fontWeight: 600, fontSize: 14, color: '#1a1f36' }}>{p.title}</div>
@@ -1454,6 +1466,20 @@ function AdminProducts({ featureFlags }) {
             <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f7f8f9', borderBottom: '1px solid #e3e8ee' }}>
+                  <th style={{ padding: '12px 20px', width: '40px' }}>
+                    <input 
+                      type="checkbox"
+                      checked={filteredProducts.length > 0 && selectedProductIds.length === filteredProducts.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedProductIds(filteredProducts.map(p => p.id))
+                        } else {
+                          setSelectedProductIds([])
+                        }
+                      }}
+                      style={{ cursor: 'pointer', width: 15, height: 15 }}
+                    />
+                  </th>
                   <th style={{ padding: '12px 20px', color: '#697386', fontSize: 11, textTransform: 'uppercase', fontWeight: 500 }}>Cover</th>
                   <th style={{ padding: '12px 20px', color: '#697386', fontSize: 11, textTransform: 'uppercase', fontWeight: 500 }}>Title</th>
                   <th style={{ padding: '12px 20px', color: '#697386', fontSize: 11, textTransform: 'uppercase', fontWeight: 500 }}>Type</th>
@@ -1464,10 +1490,24 @@ function AdminProducts({ featureFlags }) {
               </thead>
               <tbody>
                 {filteredProducts.length === 0 ? (
-                  <tr><td colSpan="6" style={{ padding: 24, textAlign: 'center', color: '#697386', fontSize: 13 }}>No products found</td></tr>
+                  <tr><td colSpan="7" style={{ padding: 24, textAlign: 'center', color: '#697386', fontSize: 13 }}>No products found</td></tr>
                 ) : (
                   filteredProducts.map(p => (
                     <tr key={p.id} style={{ borderBottom: '1px solid #f7f8f9' }}>
+                      <td style={{ padding: '12px 20px', width: '40px' }}>
+                        <input 
+                          type="checkbox"
+                          checked={selectedProductIds.includes(p.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedProductIds(prev => [...prev, p.id])
+                            } else {
+                              setSelectedProductIds(prev => prev.filter(id => id !== p.id))
+                            }
+                          }}
+                          style={{ cursor: 'pointer', width: 15, height: 15 }}
+                        />
+                      </td>
                       <td style={{ padding: '12px 20px' }}>
                         <img src={p.cover_image} alt={p.title} style={{ width: 44, height: 28, objectFit: 'cover', borderRadius: 4 }} />
                       </td>
