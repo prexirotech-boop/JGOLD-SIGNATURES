@@ -64,7 +64,7 @@ export default function AdminLandingPages() {
         // Expand array with blank objects
         const diff = count - result.length
         for (let i = 0; i < diff; i++) {
-          result.push({ id_number: '', image_url: '', price: '', colors: '' })
+          result.push({ id_number: '', image_url: '', price: '', colors: '', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] })
         }
       } else if (result.length > count) {
         // Truncate array
@@ -92,9 +92,9 @@ export default function AdminLandingPages() {
     setSlug('')
     setProductCount(3)
     setFormProducts([
-      { id_number: '', image_url: '', price: '', colors: 'blue, red, brown' },
-      { id_number: '', image_url: '', price: '', colors: 'black, white' },
-      { id_number: '', image_url: '', price: '', colors: 'brown, tan' }
+      { id_number: '', image_url: '', price: '', colors: 'blue, red, brown', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] },
+      { id_number: '', image_url: '', price: '', colors: 'black, white', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] },
+      { id_number: '', image_url: '', price: '', colors: 'brown, tan', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] }
     ])
     setHeadline('Handcrafted Luxury For The Modern Gentleman')
     setSubheadline('Experience unmatched comfort and style with our premium bespoke collection, tailored to perfection.')
@@ -296,13 +296,13 @@ export default function AdminLandingPages() {
 
       {error && (
         <div style={{ padding: '12px 16px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 8, color: '#991b1b', fontSize: 14, marginBottom: 16 }}>
-          ⚠️ {error}
+          Error: {error}
         </div>
       )}
 
       {success && (
         <div style={{ padding: '12px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, color: '#166534', fontSize: 14, marginBottom: 16 }}>
-          ✅ {success}
+          Success: {success}
         </div>
       )}
 
@@ -399,7 +399,7 @@ export default function AdminLandingPages() {
           {/* Sales Copy Customization */}
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '20px', marginBottom: '24px' }}>
             <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '700', color: '#0f0d0a', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
-              📝 Sales Copy Customization
+              Sales Copy Customization
             </h4>
             <div style={{ marginBottom: '16px' }}>
               <label style={labelStyle}>Headline</label>
@@ -526,8 +526,34 @@ export default function AdminLandingPages() {
                     value={prod.colors}
                     onChange={e => handleProductFieldChange(idx, 'colors', e.target.value)}
                     placeholder="e.g. blue, red, brown"
-                    style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, marginBottom: 0 }}
+                    style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, marginBottom: 12 }}
                   />
+                </div>
+
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 11 }}>Available Sizes (40-46)</label>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '4px' }}>
+                    {['40', '41', '42', '43', '44', '45', '46'].map(sz => {
+                      const isChecked = (prod.available_sizes || ['40', '41', '42', '43', '44', '45', '46']).includes(sz)
+                      return (
+                        <label key={sz} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', cursor: 'pointer', background: '#fff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '3px 6px' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={isChecked} 
+                            onChange={() => {
+                              const currentSizes = prod.available_sizes || ['40', '41', '42', '43', '44', '45', '46']
+                              const updatedSizes = currentSizes.includes(sz)
+                                ? currentSizes.filter(s => s !== sz)
+                                : [...currentSizes, sz].sort()
+                              handleProductFieldChange(idx, 'available_sizes', updatedSizes)
+                            }}
+                            style={{ margin: 0 }}
+                          />
+                          <span>{sz}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             ))}
