@@ -28,6 +28,7 @@ import LMSCourse from './pages/LMSCourse'
 import AccountPage from './pages/AccountPage'
 import AdminDashboard from './pages/AdminDashboard'
 import BlogPage from './pages/BlogPage'
+import LandingPageRenderer from './pages/LandingPageRenderer'
 import FAQPage from './pages/FAQPage'
 import AffiliatePage from './pages/AffiliatePage'
 import QualityPage from './pages/QualityPage'
@@ -211,6 +212,7 @@ function AppLayout() {
         <Route path="/category/:categorySlug" element={<ProductsPage />} />
         <Route path="/category/:categorySlug/:subcategorySlug" element={<ProductsPage />} />
         <Route path="/product/:productId" element={<ProductDetailsPage />} />
+        <Route path="/l/:slug" element={<LandingPageRenderer />} />
         <Route path="/about" element={<AboutPage />} />
         {featureFlags.enable_academics && (
           <>

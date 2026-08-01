@@ -20,6 +20,7 @@ import AdminUpsells from './AdminUpsells'
 import AdminAnalytics from './AdminAnalytics'
 import AdminPlatformAnalytics from './AdminPlatformAnalytics'
 import AdminCategories from './AdminCategories'
+import AdminLandingPages from './AdminLandingPages'
 
 function AdminOverview({ featureFlags = { enable_academics: true } }) {
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0, productsCount: 0, conversionRate: 0, courseStats: [], unansweredQna: 0 })
@@ -2565,6 +2566,7 @@ export default function AdminDashboard() {
         { name: 'Categories', path: '/admin/categories' },
         { name: 'Orders', path: '/admin/orders' },
         { name: 'Discount Coupons', path: '/admin/coupons' },
+        { name: 'Landing Pages', path: '/admin/landing-pages' },
         featureFlags.enable_affiliates && { name: 'Affiliates', path: '/admin/affiliates' },
         featureFlags.enable_payouts && { name: 'Payouts', path: '/admin/payouts' },
         featureFlags.enable_upsells && { name: 'Upsells', path: '/admin/upsells' }
@@ -2627,7 +2629,7 @@ export default function AdminDashboard() {
       <div style={{ padding: sidebarCollapsed ? '0 12px' : '0 20px', marginBottom: 28, overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'flex-start' }}>
           <img 
-            src="/logo.png" 
+            src="/logo.webp" 
             alt="Logo" 
             style={{ 
               height: sidebarCollapsed ? 28 : 40,
@@ -3127,6 +3129,7 @@ export default function AdminDashboard() {
             <Route path="/payouts" element={<AdminPayouts />} />
             <Route path="/upsells" element={<AdminUpsells />} />
             <Route path="/categories" element={<AdminCategories />} />
+            <Route path="/landing-pages" element={<AdminLandingPages />} />
           </Routes>
         </main>
       </div>

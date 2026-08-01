@@ -1,0 +1,491 @@
+import React, { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+
+export default function AdminLandingPages() {
+  const [pages, setPages] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [editingPage, setEditingPage] = useState(null) // null means list view
+  const [isEditing, setIsEditing] = useState(false) // true = editing existing, false = creating new
+
+  // Form states
+  const [title, setTitle] = useState('')
+  const [slug, setSlug] = useState('')
+  const [productCount, setProductCount] = useState(3)
+  const [formProducts, setFormProducts] = useState([]) // array of { id_number, image_url, price, colors }
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [uploadingIndex, setUploadingIndex] = useState(null)
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const isMobile = windowWidth < 768
+
+  const loadPages = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const { data, error: err } = await supabase
+        .from('landing_pages')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (err) throw err
+      if (data) setPages(data)
+    } catch (err) {
+      console.error(err)
+      setError('Failed to fetch landing pages')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadPages()
+  }, [])
+
+  // Monitor product count changes to resize the products array
+  useEffect(() => {
+    const count = parseInt(productCount) || 0
+    if (count <= 0) {
+      setFormProducts([])
+      return
+    }
+    setFormProducts(prev => {
+      const result = [...prev]
+      if (result.length < count) {
+        // Expand array with blank objects
+        const diff = count - result.length
+        for (let i = 0; i < diff; i++) {
+          result.push({ id_number: '', image_url: '', price: '', colors: '' })
+        }
+      } else if (result.length > count) {
+        // Truncate array
+        return result.slice(0, count)
+      }
+      return result
+    })
+  }, [productCount])
+
+  const handleNameChange = (val) => {
+    setTitle(val)
+    if (!isEditing) {
+      const generatedSlug = val
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+      setSlug(generatedSlug)
+    }
+  }
+
+  const handleOpenAdd = () => {
+    setTitle('')
+    setSlug('')
+    setProductCount(3)
+    setFormProducts([
+      { id_number: '', image_url: '', price: '', colors: 'blue, red, brown' },
+      { id_number: '', image_url: '', price: '', colors: 'black, white' },
+      { id_number: '', image_url: '', price: '', colors: 'brown, tan' }
+    ])
+    setIsEditing(false)
+    setEditingPage(true)
+  }
+
+  const handleOpenEdit = (p) => {
+    setTitle(p.title || '')
+    setSlug(p.slug || '')
+    setProductCount(p.products ? p.products.length : 0)
+    setFormProducts(p.products || [])
+    setIsEditing(true)
+    setEditingPage(p) // Hold the object reference to update
+  }
+
+  const handleDuplicate = async (p) => {
+    if (!window.confirm(`Duplicate landing page "${p.title}"?`)) return
+    try {
+      const randomSuffix = Math.random().toString(36).substring(2, 6)
+      const newPayload = {
+        title: `${p.title} (Copy)`,
+        slug: `${p.slug}-copy-${randomSuffix}`,
+        products: p.products || []
+      }
+      const { error: insErr } = await supabase
+        .from('landing_pages')
+        .insert(newPayload)
+      if (insErr) throw insErr
+      await loadPages()
+      setSuccess('Landing page duplicated successfully!')
+    } catch (err) {
+      console.error(err)
+      alert('Failed to duplicate: ' + err.message)
+    }
+  }
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this landing page? This action cannot be undone.')) return
+    try {
+      const { error: delErr } = await supabase
+        .from('landing_pages')
+        .delete()
+        .eq('id', id)
+      if (delErr) throw delErr
+      await loadPages()
+      setSuccess('Landing page deleted!')
+    } catch (err) {
+      console.error(err)
+      alert('Failed to delete: ' + err.message)
+    }
+  }
+
+  const handleFileUpload = async (index, file) => {
+    if (!file) return
+    setUploadingIndex(index)
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2, 10)}.${fileExt}`
+      const filePath = `landing/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('landing_pages')
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('landing_pages')
+        .getPublicUrl(filePath)
+
+      const updated = [...formProducts]
+      updated[index] = {
+        ...updated[index],
+        image_url: publicUrl
+      }
+      setFormProducts(updated)
+    } catch (err) {
+      console.error(err)
+      alert('Upload failed: ' + err.message)
+    } finally {
+      setUploadingIndex(null)
+    }
+  }
+
+  const handleProductFieldChange = (index, field, value) => {
+    const updated = [...formProducts]
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    }
+    setFormProducts(updated)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!title.trim() || !slug.trim()) return
+
+    setSubmitting(true)
+    setError('')
+    setSuccess('')
+
+    const payload = {
+      title: title.trim(),
+      slug: slug.trim().toLowerCase().replace(/\s+/g, '-'),
+      products: formProducts
+    }
+
+    try {
+      if (isEditing && editingPage?.id) {
+        const { error: updErr } = await supabase
+          .from('landing_pages')
+          .update(payload)
+          .eq('id', editingPage.id)
+        if (updErr) throw updErr
+        setSuccess('Landing page updated successfully!')
+      } else {
+        const { error: insErr } = await supabase
+          .from('landing_pages')
+          .insert(payload)
+        if (insErr) throw insErr
+        setSuccess('Landing page created successfully!')
+      }
+
+      setEditingPage(null)
+      await loadPages()
+    } catch (err) {
+      console.error(err)
+      setError(err.message || 'Failed to save landing page')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  // Styles
+  const cardStyle = {
+    background: '#ffffff',
+    border: '1px solid #e3e8ee',
+    borderRadius: '12px',
+    padding: '24px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+    marginBottom: '24px',
+  }
+
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 14px',
+    borderRadius: '8px',
+    border: '1px solid #cbd5e1',
+    fontSize: '14px',
+    outline: 'none',
+    boxSizing: 'border-box',
+    marginBottom: '16px',
+    fontFamily: 'inherit'
+  }
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: '6px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  }
+
+  return (
+    <div style={{ fontFamily: 'var(--font, sans-serif)', color: '#0f0d0a' }}>
+      
+      {/* HEADER SECTION */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h2 style={{ fontSize: 24, fontWeight: 600, color: '#1a1f36', margin: 0 }}>Custom Landing Pages</h2>
+          <p style={{ color: '#697386', marginTop: 4, fontSize: 14 }}>Create and duplicate fast-loading product templates linked to email orders.</p>
+        </div>
+        {!editingPage && (
+          <button
+            onClick={handleOpenAdd}
+            style={{ background: 'var(--g600, #0f0d0a)', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 20px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+          >
+            <span style={{ fontSize: 18 }}>+</span> Create Landing Page
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <div style={{ padding: '12px 16px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 8, color: '#991b1b', fontSize: 14, marginBottom: 16 }}>
+          ⚠️ {error}
+        </div>
+      )}
+
+      {success && (
+        <div style={{ padding: '12px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, color: '#166534', fontSize: 14, marginBottom: 16 }}>
+          ✅ {success}
+        </div>
+      )}
+
+      {/* LIST VIEW */}
+      {!editingPage && (
+        <div style={cardStyle}>
+          {loading ? (
+            <div style={{ color: '#64748b', fontSize: 14, padding: '20px 0' }}>Loading landing pages...</div>
+          ) : pages.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+              <p style={{ margin: 0, fontSize: 15, fontWeight: 500 }}>No landing pages built yet.</p>
+              <button onClick={handleOpenAdd} style={{ marginTop: 12, background: 'none', border: '1px solid #cbd5e1', borderRadius: 6, padding: '8px 16px', color: '#0f0d0a', fontWeight: 600, cursor: 'pointer' }}>Create your first page</button>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid #f1f5f9' }}>
+                    <th style={{ padding: '12px 16px', fontSize: 13, color: '#475569', fontWeight: 600 }}>Page Title</th>
+                    <th style={{ padding: '12px 16px', fontSize: 13, color: '#475569', fontWeight: 600 }}>URL Path</th>
+                    <th style={{ padding: '12px 16px', fontSize: 13, color: '#475569', fontWeight: 600 }}>Product Grid</th>
+                    <th style={{ padding: '12px 16px', fontSize: 13, color: '#475569', fontWeight: 600, textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pages.map(page => (
+                    <tr key={page.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '16px', fontWeight: 600, color: '#0f0d0a' }}>{page.title}</td>
+                      <td style={{ padding: '16px' }}>
+                        <a href={`/l/${page.slug}`} target="_blank" rel="noreferrer" style={{ color: '#c5a880', fontWeight: 600, textDecoration: 'none' }}>
+                          /l/{page.slug}
+                        </a>
+                      </td>
+                      <td style={{ padding: '16px', fontSize: 13, color: '#64748b' }}>
+                        {page.products ? page.products.length : 0} items (3-cols grid)
+                      </td>
+                      <td style={{ padding: '16px', textAlign: 'right' }}>
+                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                          <button onClick={() => handleOpenEdit(page)} style={{ background: '#f1f5f9', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 13, fontWeight: 600, color: '#334155', cursor: 'pointer' }}>Edit</button>
+                          <button onClick={() => handleDuplicate(page)} style={{ background: '#fef3c7', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 13, fontWeight: 600, color: '#b45309', cursor: 'pointer' }}>Duplicate</button>
+                          <button onClick={() => handleDelete(page.id)} style={{ background: '#fee2e2', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 13, fontWeight: 600, color: '#991b1b', cursor: 'pointer' }}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* CREATE / EDIT VIEW */}
+      {editingPage && (
+        <form onSubmit={handleSubmit} style={cardStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: 16, marginBottom: 24 }}>
+            <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>
+              {isEditing ? `Edit Landing Page: ${title}` : 'Create New Landing Page'}
+            </h3>
+            <button
+              type="button"
+              onClick={() => setEditingPage(null)}
+              style={{ background: 'none', border: '1px solid #cbd5e1', borderRadius: 6, padding: '6px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+            >
+              Cancel
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px', marginBottom: 20 }}>
+            <div>
+              <label style={labelStyle}>Landing Page Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={e => handleNameChange(e.target.value)}
+                placeholder="e.g. Premium Italian Leather Mules"
+                style={inputStyle}
+                required
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Page URL Slug</label>
+              <input
+                type="text"
+                value={slug}
+                onChange={e => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                placeholder="e.g. premium-mules"
+                style={inputStyle}
+                required
+              />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 30, maxWidth: 300 }}>
+            <label style={labelStyle}>Number of Images (Auto-calculates 3-Column Grid)</label>
+            <input
+              type="number"
+              min="1"
+              max="60"
+              value={productCount}
+              onChange={e => setProductCount(Math.max(1, parseInt(e.target.value) || 1))}
+              style={inputStyle}
+              required
+            />
+          </div>
+
+          <h4 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 16px', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+            Grid Images Settings ({formProducts.length} Items total)
+          </h4>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px', marginBottom: 30 }}>
+            {formProducts.map((prod, idx) => (
+              <div
+                key={idx}
+                style={{
+                  border: '1px solid #cbd5e1',
+                  borderRadius: 10,
+                  padding: 16,
+                  background: '#f8fafc',
+                  position: 'relative'
+                }}
+              >
+                <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.6)', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>
+                  {idx + 1}
+                </div>
+
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ ...labelStyle, fontSize: 11 }}>Image Upload</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => handleFileUpload(idx, e.target.files[0])}
+                    style={{ fontSize: 12, marginBottom: 8 }}
+                  />
+                  {prod.image_url ? (
+                    <div style={{ width: 80, height: 80, borderRadius: 6, border: '1px solid #e2e8f0', overflow: 'hidden', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={prod.image_url} alt={`product ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 12, color: '#64748b', fontStyle: 'italic' }}>
+                      {uploadingIndex === idx ? 'Uploading image...' : 'No image uploaded yet'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 11 }}>Product ID Number</label>
+                  <input
+                    type="text"
+                    value={prod.id_number}
+                    onChange={e => handleProductFieldChange(idx, 'id_number', e.target.value)}
+                    placeholder="e.g. JGOLD-101"
+                    style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, marginBottom: 12 }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 11 }}>Price (₦)</label>
+                  <input
+                    type="number"
+                    value={prod.price}
+                    onChange={e => handleProductFieldChange(idx, 'price', e.target.value)}
+                    placeholder="e.g. 45000"
+                    style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, marginBottom: 12 }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 11 }}>Colors (Comma Separated)</label>
+                  <input
+                    type="text"
+                    value={prod.colors}
+                    onChange={e => handleProductFieldChange(idx, 'colors', e.target.value)}
+                    placeholder="e.g. blue, red, brown"
+                    style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, marginBottom: 0 }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 20, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={() => setEditingPage(null)}
+              style={{ background: '#f1f5f9', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, color: '#475569', cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              style={{ background: 'var(--g600, #0f0d0a)', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 32px', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: submitting ? 0.7 : 1 }}
+            >
+              {submitting ? 'Saving...' : 'Save Landing Page'}
+            </button>
+          </div>
+        </form>
+      )}
+
+    </div>
+  )
+}
