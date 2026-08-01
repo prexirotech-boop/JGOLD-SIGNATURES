@@ -66,7 +66,7 @@ function baseTemplate(content: string, previewText = "") {
                 <tr>
                   <td align="center">
                     <a href="${STORE_URL}" target="_blank" style="text-decoration:none;">
-                      <img src="https://jgoldsignatures.com.ng/logo.webp" alt="JGOLD SIGNATURES" width="180" style="max-width:220px;height:auto;display:block;margin:0 auto 12px;border:0;" />
+                      <img src="https://jgoldsignatures.com.ng/logo.webp" alt="JGOLD SIGNATURES" width="180" style="max-width:220px;height:auto;display:block;margin:0 auto 12px;border:0;filter:brightness(0) invert(1);-webkit-filter:brightness(0) invert(1);" />
                     </a>
                     <p style="color:rgba(255,255,255,0.75);margin:0;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;">Luxury Footwear & Accessories</p>
                   </td>
