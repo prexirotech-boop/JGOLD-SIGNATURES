@@ -184,7 +184,8 @@ function AppLayout() {
     location.pathname === '/register' ||
     location.pathname === '/forgot-password' ||
     location.pathname === '/reset-password' ||
-    location.pathname === '/setup-account'
+    location.pathname === '/setup-account' ||
+    location.pathname.startsWith('/l/')
 
   // WhatsApp widget: show in checkout page, course learning center, and user dashboard
   const showWhatsApp = 

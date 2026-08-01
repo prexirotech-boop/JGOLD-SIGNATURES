@@ -13,6 +13,9 @@ export default function AdminLandingPages() {
   const [slug, setSlug] = useState('')
   const [productCount, setProductCount] = useState(3)
   const [formProducts, setFormProducts] = useState([]) // array of { id_number, image_url, price, colors }
+  const [headline, setHeadline] = useState('')
+  const [subheadline, setSubheadline] = useState('')
+  const [highlights, setHighlights] = useState(['', '', ''])
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [uploadingIndex, setUploadingIndex] = useState(null)
@@ -93,6 +96,13 @@ export default function AdminLandingPages() {
       { id_number: '', image_url: '', price: '', colors: 'black, white' },
       { id_number: '', image_url: '', price: '', colors: 'brown, tan' }
     ])
+    setHeadline('Handcrafted Luxury For The Modern Gentleman')
+    setSubheadline('Experience unmatched comfort and style with our premium bespoke collection, tailored to perfection.')
+    setHighlights([
+      'Bespoke craftsmanship with 100% genuine calfskin leather',
+      'Ergonomic inner lining designed for all-day comfort',
+      'Durable Italian outsoles crafted for stability and longevity'
+    ])
     setIsEditing(false)
     setEditingPage(true)
   }
@@ -102,6 +112,9 @@ export default function AdminLandingPages() {
     setSlug(p.slug || '')
     setProductCount(p.products ? p.products.length : 0)
     setFormProducts(p.products || [])
+    setHeadline(p.headline || '')
+    setSubheadline(p.subheadline || '')
+    setHighlights(p.highlights || ['', '', ''])
     setIsEditing(true)
     setEditingPage(p) // Hold the object reference to update
   }
@@ -113,7 +126,10 @@ export default function AdminLandingPages() {
       const newPayload = {
         title: `${p.title} (Copy)`,
         slug: `${p.slug}-copy-${randomSuffix}`,
-        products: p.products || []
+        products: p.products || [],
+        headline: p.headline || null,
+        subheadline: p.subheadline || null,
+        highlights: p.highlights || null
       }
       const { error: insErr } = await supabase
         .from('landing_pages')
@@ -195,7 +211,10 @@ export default function AdminLandingPages() {
     const payload = {
       title: title.trim(),
       slug: slug.trim().toLowerCase().replace(/\s+/g, '-'),
-      products: formProducts
+      products: formProducts,
+      headline: headline.trim() || null,
+      subheadline: subheadline.trim() || null,
+      highlights: highlights.map(h => h.trim()).filter(Boolean)
     }
 
     try {
@@ -374,6 +393,53 @@ export default function AdminLandingPages() {
                 style={inputStyle}
                 required
               />
+            </div>
+          </div>
+
+          {/* Sales Copy Customization */}
+          <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '20px', marginBottom: '24px' }}>
+            <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '700', color: '#0f0d0a', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
+              📝 Sales Copy Customization
+            </h4>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={labelStyle}>Headline</label>
+              <input
+                type="text"
+                value={headline}
+                onChange={e => setHeadline(e.target.value)}
+                placeholder="e.g. Handcrafted Luxury For The Modern Gentleman"
+                style={{ ...inputStyle, marginBottom: 0 }}
+                required
+              />
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={labelStyle}>Subheadline / Description</label>
+              <textarea
+                value={subheadline}
+                onChange={e => setSubheadline(e.target.value)}
+                placeholder="Write a brief, high-converting paragraph explaining why customers should buy..."
+                style={{ ...inputStyle, height: '80px', resize: 'vertical', marginBottom: 0 }}
+                required
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Selling Points / Highlights (Up to 3)</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {highlights.map((hl, hlIdx) => (
+                  <input
+                    key={hlIdx}
+                    type="text"
+                    value={hl}
+                    onChange={e => {
+                      const updated = [...highlights]
+                      updated[hlIdx] = e.target.value
+                      setHighlights(updated)
+                    }}
+                    placeholder={`Highlight #${hlIdx + 1} (e.g. Bespoke craftsmanship with calfskin leather)`}
+                    style={{ ...inputStyle, marginBottom: 0 }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
