@@ -137,7 +137,7 @@ function orderMeta(d: Record<string, string>) {
   const rows = [
     ["Order Reference", d.ref ? `#${String(d.ref).slice(-8).toUpperCase()}` : "—"],
     d.shipping_street ? ["Shipping To", `${d.shipping_street}, ${d.shipping_city || ""}, ${d.shipping_state || ""}`] : null,
-    ["Payment Method", d.payment_method === "bank_transfer" ? "Direct Bank Transfer" : "Paystack (Card / Transfer)"],
+    ["Payment Method", d.payment_method === "bank_transfer" ? "Direct Bank Transfer" : (d.payment_method === "cash_on_delivery" ? "Cash on Delivery" : "Paystack (Card / Transfer)")],
   ].filter(Boolean) as [string, string][]
 
   return `
@@ -474,15 +474,15 @@ function emailWelcome(d: Record<string, string>) {
 
 // 7. ADMIN NEW ORDER NOTIFICATION
 function emailAdminNewOrder(d: Record<string, string>) {
-  const isPending = d.payment_method === "bank_transfer"
+  const isPending = d.payment_method === "bank_transfer" || d.payment_method === "cash_on_delivery"
   const content = `
   <tr>
     <td style="padding:32px 40px 0;">
       <div style="margin-bottom:24px;">
         <h1 style="margin:0 0 8px;font-size:22px;font-weight:900;color:${BRAND.primary};">
-          ${isPending ? "⏳ New Bank Transfer Order" : "💰 New Order Paid!"}
+          ${d.payment_method === "bank_transfer" ? "⏳ New Bank Transfer Order" : (d.payment_method === "cash_on_delivery" ? "📦 New Cash on Delivery Order" : "💰 New Order Paid!")}
         </h1>
-        ${statusBadge(isPending ? "Pending Review" : "Payment Confirmed", isPending ? BRAND.gold : "#166534", isPending ? "#fffbeb" : "#dcfce7")}
+        ${statusBadge(isPending ? (d.payment_method === "cash_on_delivery" ? "COD Pending Dispatch" : "Pending Review") : "Payment Confirmed", isPending ? BRAND.gold : "#166534", isPending ? "#fffbeb" : "#dcfce7")}
         <p style="margin:12px 0 0;font-size:14px;color:${BRAND.textMid};">
           A new order has been placed on JGOLD Store. See details below.
         </p>
@@ -495,7 +495,7 @@ function emailAdminNewOrder(d: Record<string, string>) {
           ["Phone", d.phone || "—"],
           ["Product", d.product_title || "—"],
           ["Amount", `₦${Number(d.amount || 0).toLocaleString()}`],
-          ["Payment", d.payment_method === "bank_transfer" ? "Bank Transfer (Pending)" : "Paystack ✅"],
+          ["Payment", d.payment_method === "bank_transfer" ? "Bank Transfer (Pending)" : (d.payment_method === "cash_on_delivery" ? "Cash on Delivery (Pending)" : "Paystack ✅")],
           ["Reference", d.ref ? `#${String(d.ref).slice(-8).toUpperCase()}` : "—"],
           d.shipping_street ? ["Shipping", `${d.shipping_street}, ${d.shipping_city}, ${d.shipping_state}`] : ["", ""],
         ].filter(([, v]) => v).map(([label, value], i) => `

@@ -67,7 +67,14 @@ export default function AdminLandingPages() {
         // Expand array with blank objects
         const diff = count - result.length
         for (let i = 0; i < diff; i++) {
-          result.push({ id_number: '', image_url: '', price: '', colors: '', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] })
+          const nextIndex = result.length
+          result.push({ 
+            id_number: `JGOLD-${101 + nextIndex}`, 
+            image_url: '', 
+            price: '', 
+            colors: '', 
+            available_sizes: ['40', '41', '42', '43', '44', '45', '46'] 
+          })
         }
       } else if (result.length > count) {
         // Truncate array
@@ -95,9 +102,9 @@ export default function AdminLandingPages() {
     setSlug('')
     setProductCount(3)
     setFormProducts([
-      { id_number: '', image_url: '', price: '', colors: 'blue, red, brown', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] },
-      { id_number: '', image_url: '', price: '', colors: 'black, white', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] },
-      { id_number: '', image_url: '', price: '', colors: 'brown, tan', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] }
+      { id_number: 'JGOLD-101', image_url: '', price: '', colors: 'blue, red, brown', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] },
+      { id_number: 'JGOLD-102', image_url: '', price: '', colors: 'black, white', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] },
+      { id_number: 'JGOLD-103', image_url: '', price: '', colors: 'brown, tan', available_sizes: ['40', '41', '42', '43', '44', '45', '46'] }
     ])
     setHeadline('Handcrafted Luxury For The Modern Gentleman')
     setSubheadline('Experience unmatched comfort and style with our premium bespoke collection, tailored to perfection.')
