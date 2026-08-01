@@ -188,23 +188,6 @@ export default function ContactPage() {
                                 </div>
                             </div>
 
-                            {/* Showroom Card */}
-                            <div className="info-card">
-                                <div className="card-header-flex">
-                                    <div className="icon-wrapper clock-icon" style={{ background: 'rgba(197,168,128,0.08)', color: '#c5a880' }}>
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="card-title">Lagos Showroom</h3>
-                                        <p className="card-tagline">Visit our luxury boutique</p>
-                                    </div>
-                                </div>
-                                <p className="card-desc" style={{ fontSize: '13.5px', color: '#334155', fontWeight: 500, margin: 0 }}>
-                                    Shop 2F08 Update plaza, second floor Mandelas, Lagos State, Nigeria
-                                </p>
-                            </div>
 
                         </div>
 
