@@ -259,12 +259,17 @@ export default function LandingPageRenderer() {
   const subheadlineText = pageData.subheadline || 'Experience unmatched comfort and style with our premium bespoke collection.'
   const highlightsList = Array.isArray(pageData.highlights) ? pageData.highlights : []
 
+  // Disclaimer configurations from DB
+  const showDisclaimerCard = pageData.show_disclaimer !== false
+  const disclaimerTextContent = pageData.disclaimer_text || 'Please only submit an order if you have the cash fully ready and will be available to receive the delivery in 2 to 5 days. Every delivery attempt costs our business money for logistics and verification. Time-wasters, window shoppers, and unserious orders are strictly prohibited.'
+  const urgencyWarningText = pageData.urgency_text || 'High Demand - Limited Quantities Left'
+
   const payments = [
     { value: 'cash_on_delivery', label: 'Cash on Delivery (Pay on arrival)' },
     { value: 'bank_transfer', label: 'Direct Bank Transfer' }
   ]
 
-  // Styles
+  // Styles (Enforcing at least 16px fontSize to prevent auto-zooming on iOS Safari)
   const formFieldLabelStyle = {
     display: 'block',
     fontSize: '13px',
@@ -280,7 +285,7 @@ export default function LandingPageRenderer() {
     padding: '12px 16px',
     borderRadius: '10px',
     border: '1.5px solid #d1d5db',
-    fontSize: '15px',
+    fontSize: '16px', // Prevent auto-zoom on iOS
     outline: 'none',
     boxSizing: 'border-box',
     transition: 'all 0.15s ease-in-out',
@@ -319,20 +324,24 @@ export default function LandingPageRenderer() {
             </div>
           )}
 
-          {/* SERIOUS BUYERS WARNING BANNER & URGENCY */}
-          <div style={{ background: '#fef2f2', border: '1.5px solid #fee2e2', borderRadius: '14px', padding: '20px 24px', textAlign: 'left', maxWidth: '640px', margin: '0 auto', boxSizing: 'border-box' }}>
-            <h3 style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: '800', color: '#991b1b', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-              Attention: Only Serious Buyers Allowed
-            </h3>
-            <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#7f1d1d', lineHeight: 1.5 }}>
-              Please only submit an order if you have the cash fully ready and will be available to receive the delivery in 2 to 5 days. Every delivery attempt costs our business money for logistics and verification. Time-wasters, window shoppers, and unserious orders are strictly prohibited.
-            </p>
-            <div style={{ borderTop: '1px dashed #fca5a5', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Urgency: High Demand - Limited Quantities Left
-              </span>
+          {/* SERIOUS BUYERS WARNING BANNER & URGENCY (DYNAMIC) */}
+          {showDisclaimerCard && (
+            <div style={{ background: '#fef2f2', border: '1.5px solid #fee2e2', borderRadius: '14px', padding: '20px 24px', textAlign: 'left', maxWidth: '640px', margin: '0 auto', boxSizing: 'border-box' }}>
+              <h3 style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: '800', color: '#991b1b', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                Attention: Only Serious Buyers Allowed
+              </h3>
+              <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#7f1d1d', lineHeight: 1.5 }}>
+                {disclaimerTextContent}
+              </p>
+              {urgencyWarningText && (
+                <div style={{ borderTop: '1px dashed #fca5a5', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Urgency: {urgencyWarningText}
+                  </span>
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
 
         {/* INSTRUCTIONS BANNER */}
@@ -435,7 +444,7 @@ export default function LandingPageRenderer() {
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   borderRadius: '4px',
-                                  fontSize: '11px',
+                                  fontSize: '11.5px',
                                   fontWeight: 'bold',
                                   border: '1px dashed #e5e7eb',
                                   color: '#cbd5e1',
@@ -461,7 +470,7 @@ export default function LandingPageRenderer() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 borderRadius: '4px',
-                                fontSize: '11.5px',
+                                fontSize: '16px', // Prevent auto-zoom on iOS
                                 fontWeight: 'bold',
                                 border: isSelected ? '1.5px solid #000' : '1px solid #cbd5e1',
                                 background: isSelected ? '#000' : '#fff',
@@ -555,17 +564,17 @@ export default function LandingPageRenderer() {
                           <button 
                             type="button" 
                             onClick={() => handleQtyChange(item.key, -1)}
-                            style={{ width: 24, height: 24, borderRadius: '4px', border: '1px solid #cbd5e1', background: '#fff', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            style={{ width: 24, height: 24, borderRadius: '4px', border: '1px solid #cbd5e1', background: '#fff', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           >
                             -
                           </button>
-                          <span style={{ fontSize: '14px', fontWeight: 'bold', minWidth: '16px', textAlign: 'center' }}>
+                          <span style={{ fontSize: '16px', fontWeight: 'bold', minWidth: '16px', textAlign: 'center' }}>
                             {item.quantity}
                           </span>
                           <button 
                             type="button" 
                             onClick={() => handleQtyChange(item.key, 1)}
-                            style={{ width: 24, height: 24, borderRadius: '4px', border: '1px solid #cbd5e1', background: '#fff', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            style={{ width: 24, height: 24, borderRadius: '4px', border: '1px solid #cbd5e1', background: '#fff', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           >
                             +
                           </button>
@@ -666,7 +675,7 @@ export default function LandingPageRenderer() {
                       padding: '12px 16px',
                       borderRadius: '10px',
                       border: '1.5px solid #d1d5db',
-                      fontSize: '15px',
+                      fontSize: '16px', // Prevent auto-zoom
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
@@ -706,7 +715,7 @@ export default function LandingPageRenderer() {
                           onClick={() => { setPaymentMethod(p.value); setPaymentOpen(false); }}
                           style={{
                             padding: '10px 16px',
-                            fontSize: '14.5px',
+                            fontSize: '16px', // Prevent auto-zoom
                             cursor: 'pointer',
                             color: '#374151',
                             border: 'none',
@@ -755,9 +764,9 @@ export default function LandingPageRenderer() {
                   checked={priceAgreed}
                   onChange={(e) => setPriceAgreed(e.target.checked)}
                   style={{ cursor: 'pointer', marginTop: '2px', flexShrink: 0 }}
-                  onClick={e => e.stopPropagation()} // Stop triggering double click
+                  onClick={e => e.stopPropagation()}
                 />
-                <span style={{ fontSize: '13px', color: '#374151', lineHeight: '1.4', fontWeight: 500, userSelect: 'none' }}>
+                <span style={{ fontSize: '14px', color: '#374151', lineHeight: '1.4', fontWeight: 500, userSelect: 'none' }}>
                   Kindly click this box to confirm that you agree with the price and you will be available in the next 2 - 5 days to receive your item(s).
                 </span>
               </div>
@@ -772,7 +781,7 @@ export default function LandingPageRenderer() {
                   padding: '16px 24px',
                   border: '1px solid #dfb26c',
                   borderRadius: 10,
-                  fontSize: '16px',
+                  fontSize: '16px', // Prevent auto-zoom
                   fontWeight: 800,
                   cursor: selectedList.length === 0 ? 'not-allowed' : 'pointer',
                   transition: 'all 0.15s ease',
@@ -801,6 +810,27 @@ export default function LandingPageRenderer() {
         </div>
 
       </main>
+
+      {/* BRAND FOOTER (CUSTOM ADAPTED) */}
+      <footer style={{ background: '#0f0d0a', borderTop: '2px solid #dfb26c', padding: '32px 20px', color: '#9ca3af', textAlign: 'center', fontSize: '12px', lineHeight: '1.6', fontFamily: 'inherit' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          <p style={{ margin: '0 0 12px', color: '#c5a880', fontWeight: 600 }}>
+            © 2026 JGOLD SIGNATURES | All Rights Reserved
+          </p>
+          <p style={{ margin: '0 0 16px', color: '#6b7280' }}>
+            This site is not affiliated with Facebook, Google, or Meta in any way. 
+            Results and footwear styles mentioned on this page represent high-ticket luxury craftsmanship; individual experiences and fits will vary. 
+            Verification and order booking are 100% free with no hidden charges.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', borderTop: '1px solid #1f2937', paddingTop: '16px' }}>
+            <a href="/privacy" target="_blank" rel="noreferrer" style={{ color: '#dfb26c', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</a>
+            <span style={{ color: '#374151' }}>|</span>
+            <a href="/terms" target="_blank" rel="noreferrer" style={{ color: '#dfb26c', textDecoration: 'none', fontWeight: 600 }}>Terms of Service</a>
+            <span style={{ color: '#374151' }}>|</span>
+            <a href="/contact" target="_blank" rel="noreferrer" style={{ color: '#dfb26c', textDecoration: 'none', fontWeight: 600 }}>Contact Us</a>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

@@ -16,6 +16,9 @@ export default function AdminLandingPages() {
   const [headline, setHeadline] = useState('')
   const [subheadline, setSubheadline] = useState('')
   const [highlights, setHighlights] = useState(['', '', ''])
+  const [showDisclaimer, setShowDisclaimer] = useState(true)
+  const [disclaimerText, setDisclaimerText] = useState('')
+  const [urgencyText, setUrgencyText] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [uploadingIndex, setUploadingIndex] = useState(null)
@@ -103,6 +106,9 @@ export default function AdminLandingPages() {
       'Ergonomic inner lining designed for all-day comfort',
       'Durable Italian outsoles crafted for stability and longevity'
     ])
+    setShowDisclaimer(true)
+    setDisclaimerText('Please only submit an order if you have the cash fully ready and will be available to receive the delivery in 2 to 5 days. Every delivery attempt costs our business money for logistics and verification. Time-wasters, window shoppers, and unserious orders are strictly prohibited.')
+    setUrgencyText('High Demand - Limited Quantities Left')
     setIsEditing(false)
     setEditingPage(true)
   }
@@ -115,6 +121,9 @@ export default function AdminLandingPages() {
     setHeadline(p.headline || '')
     setSubheadline(p.subheadline || '')
     setHighlights(p.highlights || ['', '', ''])
+    setShowDisclaimer(p.show_disclaimer !== false)
+    setDisclaimerText(p.disclaimer_text || 'Please only submit an order if you have the cash fully ready and will be available to receive the delivery in 2 to 5 days. Every delivery attempt costs our business money for logistics and verification. Time-wasters, window shoppers, and unserious orders are strictly prohibited.')
+    setUrgencyText(p.urgency_text || 'High Demand - Limited Quantities Left')
     setIsEditing(true)
     setEditingPage(p) // Hold the object reference to update
   }
@@ -129,7 +138,10 @@ export default function AdminLandingPages() {
         products: p.products || [],
         headline: p.headline || null,
         subheadline: p.subheadline || null,
-        highlights: p.highlights || null
+        highlights: p.highlights || null,
+        show_disclaimer: p.show_disclaimer !== false,
+        disclaimer_text: p.disclaimer_text || null,
+        urgency_text: p.urgency_text || null
       }
       const { error: insErr } = await supabase
         .from('landing_pages')
@@ -214,7 +226,10 @@ export default function AdminLandingPages() {
       products: formProducts,
       headline: headline.trim() || null,
       subheadline: subheadline.trim() || null,
-      highlights: highlights.map(h => h.trim()).filter(Boolean)
+      highlights: highlights.map(h => h.trim()).filter(Boolean),
+      show_disclaimer: showDisclaimer,
+      disclaimer_text: disclaimerText.trim() || null,
+      urgency_text: urgencyText.trim() || null
     }
 
     try {
@@ -315,6 +330,29 @@ export default function AdminLandingPages() {
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
               <p style={{ margin: 0, fontSize: 15, fontWeight: 500 }}>No landing pages built yet.</p>
               <button onClick={handleOpenAdd} style={{ marginTop: 12, background: 'none', border: '1px solid #cbd5e1', borderRadius: 6, padding: '8px 16px', color: '#0f0d0a', fontWeight: 600, cursor: 'pointer' }}>Create your first page</button>
+            </div>
+          ) : isMobile ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {pages.map(page => (
+                <div key={page.id} style={{ border: '1px solid #f1f5f9', borderRadius: '12px', padding: '16px', background: '#fafbfc' }}>
+                  <div style={{ fontWeight: 700, fontSize: '15px', color: '#0f0d0a', marginBottom: '4px' }}>
+                    {page.title}
+                  </div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <a href={`/l/${page.slug}`} target="_blank" rel="noreferrer" style={{ color: '#c5a880', fontWeight: 600, textDecoration: 'none', fontSize: '13px' }}>
+                      /l/{page.slug}
+                    </a>
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>
+                    {page.products ? page.products.length : 0} items
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button onClick={() => handleOpenEdit(page)} style={{ flex: 1, minWidth: '60px', background: '#f1f5f9', border: 'none', borderRadius: 6, padding: '8px', fontSize: 13, fontWeight: 600, color: '#334155', cursor: 'pointer' }}>Edit</button>
+                    <button onClick={() => handleDuplicate(page)} style={{ flex: 1, minWidth: '80px', background: '#fef3c7', border: 'none', borderRadius: 6, padding: '8px', fontSize: 13, fontWeight: 600, color: '#b45309', cursor: 'pointer' }}>Duplicate</button>
+                    <button onClick={() => handleDelete(page.id)} style={{ flex: 1, minWidth: '70px', background: '#fee2e2', border: 'none', borderRadius: 6, padding: '8px', fontSize: 13, fontWeight: 600, color: '#991b1b', cursor: 'pointer' }}>Delete</button>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -441,6 +479,48 @@ export default function AdminLandingPages() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Disclaimer & Urgency Settings */}
+          <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '20px', marginBottom: '24px' }}>
+            <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '700', color: '#0f0d0a', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
+              Disclaimer & Urgency Card
+            </h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: showDisclaimer ? '16px' : 0 }}>
+              <input
+                type="checkbox"
+                id="showDisclaimer"
+                checked={showDisclaimer}
+                onChange={e => setShowDisclaimer(e.target.checked)}
+                style={{ cursor: 'pointer', margin: 0 }}
+              />
+              <label htmlFor="showDisclaimer" style={{ fontSize: '13px', fontWeight: '600', color: '#475569', cursor: 'pointer', userSelect: 'none' }}>
+                SHOW SERIOUS BUYER DISCLAIMER & URGENCY CARD ON LANDING PAGE
+              </label>
+            </div>
+            {showDisclaimer && (
+              <>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={labelStyle}>Disclaimer Warning Text</label>
+                  <textarea
+                    value={disclaimerText}
+                    onChange={e => setDisclaimerText(e.target.value)}
+                    placeholder="Enter the disclaimer warning text..."
+                    style={{ ...inputStyle, height: '80px', resize: 'vertical', marginBottom: 0 }}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Urgency Warning Text</label>
+                  <input
+                    type="text"
+                    value={urgencyText}
+                    onChange={e => setUrgencyText(e.target.value)}
+                    placeholder="e.g. High Demand - Limited Quantities Left"
+                    style={{ ...inputStyle, marginBottom: 0 }}
+                  />
+                </div>
+              </>
+            )}
           </div>
 
           <div style={{ marginBottom: 30, maxWidth: 300 }}>
