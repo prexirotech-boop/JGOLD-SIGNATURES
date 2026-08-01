@@ -157,7 +157,7 @@ export async function trackEvent(eventName, metadata = {}) {
     // 4. Dispatch event to Google Analytics (gtag)
     if (window.gtag) {
       if (eventName === 'page_view') {
-        window.gtag('config', 'G-ZSGH14H1YK', {
+        window.gtag('config', 'G-NWF1MZXS0L', {
           page_path: path,
           page_title: document.title
         })
