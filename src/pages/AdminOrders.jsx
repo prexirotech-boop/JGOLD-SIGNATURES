@@ -749,7 +749,7 @@ export default function AdminOrders() {
             showToast(isPaid ? `✅ Order marked as Paid` : `Order status updated to ${newStatus}`)
           }
           await loadData()
-          if (selectedOrder?.id === order.id) setSelectedOrder(prev => ({ ...prev, status: newStatus }))
+          if (selectedOrder?.id === order.id) setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null)
 
           // ── Send transactional email based on new status
           const emailData = {
