@@ -19,6 +19,7 @@ import AdminPayouts from './AdminPayouts'
 import AdminUpsells from './AdminUpsells'
 import AdminAnalytics from './AdminAnalytics'
 import AdminPlatformAnalytics from './AdminPlatformAnalytics'
+import AdminCategories from './AdminCategories'
 
 function AdminOverview({ featureFlags = { enable_academics: true } }) {
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0, productsCount: 0, conversionRate: 0, courseStats: [], unansweredQna: 0 })
@@ -740,6 +741,7 @@ function AdminProducts({ featureFlags }) {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const [dbCategories, setDbCategories] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -768,6 +770,7 @@ function AdminProducts({ featureFlags }) {
     stock_quantity: '',
     weight: '',
     category: '',
+    category_id: '',
     packaging: '',
     origin: '',
     delivery_fee: '',
@@ -782,6 +785,15 @@ function AdminProducts({ featureFlags }) {
   const [newAttrName, setNewAttrName] = useState('')
   const [newAttrOptions, setNewAttrOptions] = useState('')
 
+  const loadDbCategories = async () => {
+    try {
+      const { data } = await supabase.from('categories').select('*').order('name')
+      if (data) setDbCategories(data)
+    } catch (err) {
+      console.warn('Failed to load categories:', err)
+    }
+  }
+
   const loadProducts = async () => {
     setLoading(true)
     const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
@@ -792,6 +804,7 @@ function AdminProducts({ featureFlags }) {
 
   useEffect(() => {
     loadProducts()
+    loadDbCategories()
   }, [])
 
   const generateSlug = (title) => {
@@ -839,6 +852,7 @@ function AdminProducts({ featureFlags }) {
       stock_quantity: p.stock_quantity !== null && p.stock_quantity !== undefined ? p.stock_quantity : '',
       weight: p.weight !== null && p.weight !== undefined ? p.weight : '',
       category: p.meta_title || '',
+      category_id: p.category_id || '',
       packaging: p.packaging || '',
       origin: p.origin || '',
       delivery_fee: p.delivery_fee !== null && p.delivery_fee !== undefined ? p.delivery_fee : '',
@@ -1079,6 +1093,7 @@ function AdminProducts({ featureFlags }) {
       stock_quantity: productForm.type === 'physical' && productForm.stock_quantity !== '' ? parseInt(productForm.stock_quantity, 10) : null,
       weight: productForm.type === 'physical' && productForm.weight !== '' ? parseFloat(productForm.weight) : null,
       meta_title: productForm.category ? productForm.category.trim() : null,
+      category_id: productForm.category_id || null,
       packaging: productForm.packaging ? productForm.packaging.trim() : null,
       origin: productForm.origin ? productForm.origin.trim() : null,
       free_delivery: productForm.free_delivery || false,
@@ -1977,16 +1992,32 @@ function AdminProducts({ featureFlags }) {
                       </div>
                     )}
 
-                    {/* Category Field */}
+                    {/* Category Selection */}
                     <div>
-                      <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Category Label</label>
-                      <input 
-                        type="text" 
-                        value={productForm.category || ''} 
-                        onChange={e => setProductForm({ ...productForm, category: e.target.value })} 
-                        placeholder="e.g. Agricultural Exports, Spices, Nuts..." 
+                      <label style={{ display: 'block', fontWeight: 500, fontSize: 13, marginBottom: 6, color: '#3c4257' }}>Product Category</label>
+                      <select 
+                        value={productForm.category_id || ''} 
+                        onChange={e => {
+                          const catId = e.target.value
+                          const catObj = dbCategories.find(c => c.id === catId)
+                          setProductForm({ 
+                            ...productForm, 
+                            category_id: catId,
+                            category: catObj ? catObj.name : '' 
+                          })
+                        }}
                         style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: '1px solid #cbd5e1', fontSize: 13 }} 
-                      />
+                      >
+                        <option value="">Select Category...</option>
+                        {dbCategories.filter(c => !c.parent_id).map(parent => (
+                          <React.Fragment key={parent.id}>
+                            <option value={parent.id}>{parent.name}</option>
+                            {dbCategories.filter(c => c.parent_id === parent.id).map(sub => (
+                              <option key={sub.id} value={sub.id}>&nbsp;&nbsp;— {sub.name}</option>
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </select>
                     </div>
 
                     {/* Packaging Field */}
@@ -2531,6 +2562,7 @@ export default function AdminDashboard() {
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />,
       subItems: [
         { name: 'Products', path: '/admin/products' },
+        { name: 'Categories', path: '/admin/categories' },
         { name: 'Orders', path: '/admin/orders' },
         { name: 'Discount Coupons', path: '/admin/coupons' },
         featureFlags.enable_affiliates && { name: 'Affiliates', path: '/admin/affiliates' },
@@ -3094,6 +3126,7 @@ export default function AdminDashboard() {
             <Route path="/affiliates" element={<AdminAffiliates />} />
             <Route path="/payouts" element={<AdminPayouts />} />
             <Route path="/upsells" element={<AdminUpsells />} />
+            <Route path="/categories" element={<AdminCategories />} />
           </Routes>
         </main>
       </div>

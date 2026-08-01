@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { CONFIG } from '../lib/config'
@@ -31,7 +31,9 @@ export default function ProductsPage() {
   const { user } = useAuth()
   const { formatPrice } = useCurrency()
   const [searchParams] = useSearchParams()
+  const { categorySlug, subcategorySlug } = useParams()
   const [products, setProducts] = useState([])
+  const [dbCategories, setDbCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [wishlistedIds, setWishlistedIds] = useState([])
   const [reviewsMap, setReviewsMap] = useState({})
@@ -57,13 +59,18 @@ export default function ProductsPage() {
   useEffect(() => {
     async function loadProductsAndReviews() {
       try {
-        const [resProducts, resReviews] = await Promise.all([
+        const [resProducts, resReviews, resCategories] = await Promise.all([
           supabase.from('products').select('*').eq('is_published', true).order('created_at', { ascending: false }),
-          supabase.from('reviews').select('course_id, rating')
+          supabase.from('reviews').select('course_id, rating'),
+          supabase.from('categories').select('*').order('name')
         ])
 
         if (resProducts.data) {
           setProducts(resProducts.data)
+        }
+
+        if (resCategories.data) {
+          setDbCategories(resCategories.data)
         }
 
         if (resReviews.data) {
@@ -110,15 +117,25 @@ export default function ProductsPage() {
   }, [user])
 
   useEffect(() => {
-    const cat = searchParams.get('category')
-    if (cat) {
-      setCategoryFilter(cat.toLowerCase())
+    if (subcategorySlug) {
+      setCategoryFilter(subcategorySlug.toLowerCase())
+    } else if (categorySlug) {
+      setCategoryFilter(categorySlug.toLowerCase())
+    } else {
+      const cat = searchParams.get('category')
+      if (cat) {
+        setCategoryFilter(cat.toLowerCase())
+      } else {
+        setCategoryFilter('all')
+      }
     }
     const search = searchParams.get('search')
     if (search) {
       setSearchQuery(search)
+    } else {
+      setSearchQuery('')
     }
-  }, [searchParams])
+  }, [categorySlug, subcategorySlug, searchParams])
 
   const toggleWishlist = async (e, productId) => {
     e.preventDefault()
@@ -168,8 +185,19 @@ export default function ProductsPage() {
     // 3. Category filter
     if (categoryFilter !== 'all') {
       result = result.filter(p => {
-        const cat = (p.meta_title || '').toLowerCase()
-        return cat === categoryFilter || cat.includes(categoryFilter)
+        // Resolve slug to category object
+        const activeCat = dbCategories.find(c => c.slug.toLowerCase() === categoryFilter.toLowerCase())
+        if (!activeCat) {
+          // Fallback to legacy string matching
+          const cat = (p.meta_title || '').toLowerCase()
+          return cat === categoryFilter || cat.includes(categoryFilter)
+        }
+        
+        // Find child subcategories
+        const childIds = dbCategories.filter(c => c.parent_id === activeCat.id).map(c => c.id)
+        const allowedIds = [activeCat.id, ...childIds]
+        
+        return allowedIds.includes(p.category_id)
       })
     }
 
@@ -299,15 +327,15 @@ export default function ProductsPage() {
           Collections
         </h4>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {availableCategories.map(cat => {
-            const isActive = categoryFilter === cat.toLowerCase();
-            const count = products.filter(p => cat === 'all' || (p.meta_title || '').toLowerCase() === cat.toLowerCase()).length;
+          {/* 1. All Collections Button */}
+          {(() => {
+            const isAllActive = categoryFilter === 'all';
+            const allCount = products.filter(p => !CONFIG.ENABLE_DIGITAL_PRODUCTS ? p.type === 'physical' : true).length;
             return (
               <button
-                key={cat}
                 onClick={() => {
-                  setCategoryFilter(cat.toLowerCase());
-                  if (searchParams.get('category')) navigate('/products');
+                  setCategoryFilter('all');
+                  navigate('/products');
                 }}
                 style={{
                   display: 'flex',
@@ -316,37 +344,144 @@ export default function ProductsPage() {
                   padding: '8px 12px',
                   border: 'none',
                   borderRadius: '6px',
-                  background: isActive ? 'rgba(18,60,36,0.06)' : 'transparent',
-                  color: isActive ? 'var(--brand-primary)' : '#475569',
+                  background: isAllActive ? 'rgba(18,60,36,0.06)' : 'transparent',
+                  color: isAllActive ? 'var(--brand-primary)' : '#475569',
                   fontSize: '13px',
-                  fontWeight: isActive ? 700 : 500,
+                  fontWeight: isAllActive ? 700 : 500,
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all 0.15s ease'
                 }}
-                onMouseEnter={e => {
-                  if (!isActive) e.currentTarget.style.background = '#f8fafc'
-                }}
-                onMouseLeave={e => {
-                  if (!isActive) e.currentTarget.style.background = 'transparent'
-                }}
+                onMouseEnter={e => { if (!isAllActive) e.currentTarget.style.background = '#f8fafc' }}
+                onMouseLeave={e => { if (!isAllActive) e.currentTarget.style.background = 'transparent' }}
               >
-                <span style={{ textTransform: 'capitalize' }}>
-                  {cat === 'all' ? 'All Collections' : cat}
-                </span>
-                <span style={{
-                  fontSize: '11px',
-                  background: isActive ? 'var(--brand-primary)' : '#e2e8f0',
-                  color: isActive ? '#ffffff' : '#64748b',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  fontWeight: 600
-                }}>
-                  {count}
+                <span>All Collections</span>
+                <span style={{ fontSize: '11px', background: isAllActive ? 'var(--brand-primary)' : '#e2e8f0', color: isAllActive ? '#ffffff' : '#64748b', padding: '2px 6px', borderRadius: '10px', fontWeight: 600 }}>
+                  {allCount}
                 </span>
               </button>
             );
-          })}
+          })()}
+
+          {/* 2. Hierarchical database categories (if populated) */}
+          {dbCategories.length > 0 ? (
+            dbCategories.filter(c => !c.parent_id).map(parent => {
+              const subs = dbCategories.filter(sub => sub.parent_id === parent.id);
+              const parentActive = categoryFilter === parent.slug.toLowerCase();
+              
+              // Count parent + all child subcategory products
+              const parentChildIds = [parent.id, ...subs.map(s => s.id)];
+              const parentCount = products.filter(p => parentChildIds.includes(p.category_id) && (!CONFIG.ENABLE_DIGITAL_PRODUCTS ? p.type === 'physical' : true)).length;
+
+              return (
+                <div key={parent.id} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {/* Parent Button */}
+                  <button
+                    onClick={() => {
+                      setCategoryFilter(parent.slug.toLowerCase());
+                      navigate(`/category/${parent.slug}`);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 12px',
+                      border: 'none',
+                      borderRadius: '6px',
+                      background: parentActive ? 'rgba(18,60,36,0.06)' : 'transparent',
+                      color: parentActive ? 'var(--brand-primary)' : '#475569',
+                      fontSize: '13px',
+                      fontWeight: parentActive ? 700 : 500,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={e => { if (!parentActive) e.currentTarget.style.background = '#f8fafc' }}
+                    onMouseLeave={e => { if (!parentActive) e.currentTarget.style.background = 'transparent' }}
+                  >
+                    <span>{parent.name}</span>
+                    <span style={{ fontSize: '11px', background: parentActive ? 'var(--brand-primary)' : '#e2e8f0', color: parentActive ? '#ffffff' : '#64748b', padding: '2px 6px', borderRadius: '10px', fontWeight: 600 }}>
+                      {parentCount}
+                    </span>
+                  </button>
+
+                  {/* Subcategories list */}
+                  {subs.map(sub => {
+                    const subActive = categoryFilter === sub.slug.toLowerCase();
+                    const subCount = products.filter(p => p.category_id === sub.id && (!CONFIG.ENABLE_DIGITAL_PRODUCTS ? p.type === 'physical' : true)).length;
+                    return (
+                      <button
+                        key={sub.id}
+                        onClick={() => {
+                          setCategoryFilter(sub.slug.toLowerCase());
+                          navigate(`/category/${parent.slug}/${sub.slug}`);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '6px 12px 6px 24px',
+                          border: 'none',
+                          borderRadius: '6px',
+                          background: subActive ? 'rgba(18,60,36,0.06)' : 'transparent',
+                          color: subActive ? 'var(--brand-primary)' : '#64748b',
+                          fontSize: '12.5px',
+                          fontWeight: subActive ? 700 : 500,
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={e => { if (!subActive) e.currentTarget.style.background = '#f8fafc' }}
+                        onMouseLeave={e => { if (!subActive) e.currentTarget.style.background = 'transparent' }}
+                      >
+                        <span>— {sub.name}</span>
+                        <span style={{ fontSize: '10px', background: subActive ? 'var(--brand-primary)' : '#f1f5f9', color: subActive ? '#ffffff' : '#64748b', padding: '1px 5px', borderRadius: '8px', fontWeight: 600 }}>
+                          {subCount}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })
+          ) : (
+            /* 3. Fallback to legacy string metadata categories */
+            availableCategories.filter(cat => cat !== 'all').map(cat => {
+              const isActive = categoryFilter === cat.toLowerCase();
+              const count = products.filter(p => (p.meta_title || '').toLowerCase() === cat.toLowerCase() && (!CONFIG.ENABLE_DIGITAL_PRODUCTS ? p.type === 'physical' : true)).length;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setCategoryFilter(cat.toLowerCase());
+                    navigate(`/products?category=${cat.toLowerCase()}`);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    background: isActive ? 'rgba(18,60,36,0.06)' : 'transparent',
+                    color: isActive ? 'var(--brand-primary)' : '#475569',
+                    fontSize: '13px',
+                    fontWeight: isActive ? 700 : 500,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#f8fafc' }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <span style={{ textTransform: 'capitalize' }}>{cat}</span>
+                  <span style={{ fontSize: '11px', background: isActive ? 'var(--brand-primary)' : '#e2e8f0', color: isActive ? '#ffffff' : '#64748b', padding: '2px 6px', borderRadius: '10px', fontWeight: 600 }}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 

@@ -208,6 +208,8 @@ function AppLayout() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<ProductsPage />} />
+        <Route path="/category/:categorySlug" element={<ProductsPage />} />
+        <Route path="/category/:categorySlug/:subcategorySlug" element={<ProductsPage />} />
         <Route path="/product/:productId" element={<ProductDetailsPage />} />
         <Route path="/about" element={<AboutPage />} />
         {featureFlags.enable_academics && (
