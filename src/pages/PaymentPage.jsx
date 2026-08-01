@@ -114,6 +114,7 @@ export default function PaymentPage() {
   // Payment method toggle & receipt states
   const [paymentMethod, setPaymentMethod] = useState('paystack')
   const [enableCod, setEnableCod] = useState(false)
+  const [paystackPublicKey, setPaystackPublicKey] = useState(CONFIG.PAYSTACK_PUBLIC_KEY)
   const [bankAccounts, setBankAccounts] = useState([])
   const [receiptUrl, setReceiptUrl] = useState('')
   const [uploadingReceipt, setUploadingReceipt] = useState(false)
@@ -197,6 +198,9 @@ export default function PaymentPage() {
         const { data } = await supabase.from('settings').select('*').eq('id', 'payment_config').maybeSingle()
         if (data?.value) {
           setEnableCod(!!data.value.enable_cod)
+          if (data.value.paystack_public_key) {
+            setPaystackPublicKey(data.value.paystack_public_key)
+          }
         }
       } catch (err) {
         console.warn('[PaymentPage] Failed to fetch payment config:', err)
@@ -920,7 +924,7 @@ export default function PaymentPage() {
 
     try {
       const handler = window.PaystackPop.setup({
-        key: CONFIG.PAYSTACK_PUBLIC_KEY,
+        key: paystackPublicKey,
         email,
         amount: finalTotal * 100,
         currency: 'NGN',
