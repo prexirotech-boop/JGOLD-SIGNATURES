@@ -13,6 +13,13 @@ export default function AdminCategories() {
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
   const [parentId, setParentId] = useState('')
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const loadCategories = async () => {
     setLoading(true)
@@ -175,7 +182,7 @@ export default function AdminCategories() {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 768 ? '1fr' : 'minmax(300px, 1fr) 2fr', gap: '24px' }}>
         {/* CREATE CATEGORY FORM */}
         <div style={cardStyle}>
           <h3 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 700, color: '#0f0d0a', borderBottom: '1px solid #f1f5f9', paddingBottom: 12 }}>Create Category</h3>
