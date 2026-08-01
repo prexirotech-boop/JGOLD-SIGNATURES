@@ -1,0 +1,40 @@
+# JGOLD SIGNATURES robots.txt
+User-agent: *
+Allow: /
+
+# Specifically allow AI search crawlers (ChatGPT, Claude, Gemini, etc.) to crawl and index our premium catalog
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Cohere-crawler
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Disallow administrative/private routes
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /checkout
+Disallow: /payment
+Disallow: /api/
+
+Sitemap: https://jgoldsignatures.com.ng/sitemap.xml

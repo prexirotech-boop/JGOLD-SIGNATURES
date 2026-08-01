@@ -119,6 +119,7 @@ export default function HomePage() {
               src="/mifas_hero_image.png" 
               alt="JGOLD SIGNATURES premium collection collage including handcrafted shoes, leather belts, and cufflinks" 
               style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
+              fetchPriority="high"
             />
           </div>
 
@@ -422,7 +423,7 @@ export default function HomePage() {
                   <Link to={`/product/${prod.slug || prod.id}`} style={{ display: 'block', width: '100%', aspectRatio: '1 / 1', overflow: 'hidden', background: '#f8fafc' }}>
                     <img
                       src={prod.cover_image || '/logo.png'}
-                      alt={`${prod.title.replace(/\s+slug$/i, '')} - Premium agricultural export grade product`}
+                      alt={`${prod.title.replace(/\s+slug$/i, '')} - Premium luxury product from JGOLD SIGNATURES`}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       loading="lazy"
                       onError={e => { e.currentTarget.src = '/logo.png'; e.currentTarget.style.objectFit = 'contain'; e.currentTarget.style.padding = '20px' }}

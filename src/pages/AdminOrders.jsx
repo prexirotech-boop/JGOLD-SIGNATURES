@@ -456,7 +456,7 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
             <DSection title="Shipping & Fulfillment">
               <DRow label="Recipient Name" value={order.shipping_name || order.customer_name} />
               <DRow label="Recipient Phone" value={order.shipping_phone || order.customer_phone} />
-              <DRow label="Address" value={`${order.shipping_street}, ${order.shipping_city}, ${order.shipping_state} ${order.shipping_postal_code || ''}`} />
+              <DRow label="Address" value={`${order.shipping_street}, ${order.shipping_city}, ${order.shipping_state} ${order.shipping_zip || order.shipping_postal_code || ''}`} />
               {order.shipping_notes && <DRow label="Delivery Notes" value={order.shipping_notes} />}
               
               <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -702,9 +702,8 @@ export default function AdminOrders() {
         supabase.from('orders').select(`
           id, reference, customer_email, customer_name, customer_phone,
           amount, currency, status, payment_method, product_id, created_at,
-          shipping_name, shipping_phone, shipping_street, shipping_city,
-          shipping_state, shipping_country, shipping_postal_code, shipping_notes,
-          shipping_status, tracking_number, delivery_fee, bank_receipt_url, quantity,
+          shipping_street, shipping_city, shipping_state, shipping_zip,
+          delivery_fee, bank_receipt_url,
           products ( id, title, type )
         `).order('created_at', { ascending: false }),
         supabase.from('products').select('id, title, price, type'),

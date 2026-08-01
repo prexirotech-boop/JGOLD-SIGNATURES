@@ -737,8 +737,14 @@ function AdminProducts({ featureFlags }) {
   const [typeFilter, setTypeFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all') // all, published, draft
   const [selectedProductIds, setSelectedProductIds] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 8
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, typeFilter, statusFilter])
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth)
@@ -1212,6 +1218,9 @@ function AdminProducts({ featureFlags }) {
     return matchesSearch && matchesType && matchesStatus
   })
 
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
   const isMobile = windowWidth < 768
 
   return (
@@ -1393,7 +1402,7 @@ function AdminProducts({ featureFlags }) {
           {filteredProducts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: 24, color: '#697386', fontSize: 13 }}>No products found</div>
           ) : (
-            filteredProducts.map(p => (
+            paginatedProducts.map(p => (
               <div key={p.id} style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #e3e8ee' }}>
                 <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
                   <input 
@@ -1492,7 +1501,7 @@ function AdminProducts({ featureFlags }) {
                 {filteredProducts.length === 0 ? (
                   <tr><td colSpan="7" style={{ padding: 24, textAlign: 'center', color: '#697386', fontSize: 13 }}>No products found</td></tr>
                 ) : (
-                  filteredProducts.map(p => (
+                  paginatedProducts.map(p => (
                     <tr key={p.id} style={{ borderBottom: '1px solid #f7f8f9' }}>
                       <td style={{ padding: '12px 20px', width: '40px' }}>
                         <input 
@@ -1562,6 +1571,96 @@ function AdminProducts({ featureFlags }) {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── Pagination Controls ── */}
+      {totalPages > 1 && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: 20,
+          padding: '16px 20px',
+          background: '#ffffff',
+          borderRadius: 8,
+          border: '1px solid #e3e8ee',
+          flexWrap: 'wrap',
+          gap: 12
+        }}>
+          <span style={{ fontSize: 13, color: '#697386' }}>
+            Showing <strong>{((currentPage - 1) * itemsPerPage) + 1}</strong> to{' '}
+            <strong>{Math.min(currentPage * itemsPerPage, filteredProducts.length)}</strong> of{' '}
+            <strong>{filteredProducts.length}</strong> products
+          </span>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: '1px solid #e3e8ee',
+                background: currentPage === 1 ? '#f7f8f9' : '#ffffff',
+                color: currentPage === 1 ? '#a3acb9' : '#4f566b',
+                fontSize: 12.5,
+                fontWeight: 500,
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'var(--font)'
+              }}
+            >
+              Previous
+            </button>
+            
+            {Array.from({ length: totalPages }).map((_, idx) => {
+              const pageNum = idx + 1;
+              const isSelected = pageNum === currentPage;
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 6,
+                    border: isSelected ? '1px solid var(--g600)' : '1px solid #e3e8ee',
+                    background: isSelected ? 'var(--g600)' : '#ffffff',
+                    color: isSelected ? '#ffffff' : '#4f566b',
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    fontFamily: 'var(--font)'
+                  }}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: '1px solid #e3e8ee',
+                background: currentPage === totalPages ? '#f7f8f9' : '#ffffff',
+                color: currentPage === totalPages ? '#a3acb9' : '#4f566b',
+                fontSize: 12.5,
+                fontWeight: 500,
+                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'var(--font)'
+              }}
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
