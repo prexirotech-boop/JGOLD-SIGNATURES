@@ -735,6 +735,8 @@ function AdminProducts({ featureFlags }) {
   const [submitting, setSubmitting] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all') // all, published, draft
+  const [selectedProductIds, setSelectedProductIds] = useState([])
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const navigate = useNavigate()
 
@@ -778,6 +780,7 @@ function AdminProducts({ featureFlags }) {
     setLoading(true)
     const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
     if (data) setProducts(data)
+    setSelectedProductIds([])
     setLoading(false)
   }
 
@@ -857,6 +860,48 @@ function AdminProducts({ featureFlags }) {
         .update({ is_published: !p.is_published })
         .eq('id', p.id)
       if (error) throw error
+      loadProducts()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete the ${selectedProductIds.length} selected products?`)) return
+    try {
+      const { error } = await supabase.from('products').delete().in('id', selectedProductIds)
+      if (error) throw error
+      setSelectedProductIds([])
+      loadProducts()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  const handleBulkSetDraft = async () => {
+    if (!confirm(`Are you sure you want to move the ${selectedProductIds.length} selected products to Draft?`)) return
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ is_published: false })
+        .in('id', selectedProductIds)
+      if (error) throw error
+      setSelectedProductIds([])
+      loadProducts()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  const handleBulkPublish = async () => {
+    if (!confirm(`Are you sure you want to publish the ${selectedProductIds.length} selected products?`)) return
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ is_published: true })
+        .in('id', selectedProductIds)
+      if (error) throw error
+      setSelectedProductIds([])
       loadProducts()
     } catch (err) {
       alert(err.message)
@@ -1162,7 +1207,9 @@ function AdminProducts({ featureFlags }) {
     const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           p.slug.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesType = typeFilter === 'all' ? true : p.type === typeFilter
-    return matchesSearch && matchesType
+    const matchesStatus = statusFilter === 'all' ? true : 
+                          statusFilter === 'published' ? p.is_published : !p.is_published
+    return matchesSearch && matchesType && matchesStatus
   })
 
   const isMobile = windowWidth < 768
@@ -1181,6 +1228,52 @@ function AdminProducts({ featureFlags }) {
           + Add Product
         </button>
       </div>
+
+      {/* ── Bulk Actions Banner ── */}
+      {selectedProductIds.length > 0 && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          background: '#f0fdf4',
+          border: '1.5px solid #bbf7d0',
+          padding: '12px 18px',
+          borderRadius: 10,
+          marginBottom: 16,
+          boxShadow: '0 2px 8px rgba(36, 106, 66, 0.04)',
+          flexWrap: 'wrap'
+        }}>
+          <span style={{ fontSize: 13.5, color: '#166534', fontWeight: 600 }}>
+            {selectedProductIds.length} product{selectedProductIds.length > 1 ? 's' : ''} selected
+          </span>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button
+              onClick={handleBulkPublish}
+              style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'background-color 0.15s' }}
+            >
+              Publish Selected
+            </button>
+            <button
+              onClick={handleBulkSetDraft}
+              style={{ background: '#ea580c', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'background-color 0.15s' }}
+            >
+              Move to Draft
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              style={{ background: '#dc2626', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'background-color 0.15s' }}
+            >
+              Delete Selected
+            </button>
+            <button
+              onClick={() => setSelectedProductIds([])}
+              style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', padding: '6px 12px' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Advanced Filter Row ── */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -1249,14 +1342,42 @@ function AdminProducts({ featureFlags }) {
           ))}
         </div>
 
+        {/* Status filter pills */}
+        <div style={{ display: 'flex', gap: 6 }}>
+          {[
+            { label: 'All Statuses', value: 'all' },
+            { label: 'Published', value: 'published' },
+            { label: 'Drafts', value: 'draft' }
+          ].map(s => (
+            <button
+              key={s.value}
+              onClick={() => setStatusFilter(s.value)}
+              style={{
+                padding: '7px 14px',
+                borderRadius: 8,
+                border: `1.5px solid ${statusFilter === s.value ? 'var(--g600)' : '#e2e8f0'}`,
+                background: statusFilter === s.value ? 'var(--g600)' : '#fff',
+                color: statusFilter === s.value ? '#fff' : '#64748b',
+                fontSize: 12.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'var(--font)'
+              }}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
         {/* Results count */}
-        {(searchQuery || typeFilter !== 'all') && (
+        {(searchQuery || typeFilter !== 'all' || statusFilter !== 'all') && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
             <span style={{ fontSize: 12, color: '#64748b' }}>
               <strong style={{ color: '#0f172a' }}>{filteredProducts.length}</strong> result{filteredProducts.length !== 1 ? 's' : ''}
             </span>
             <button
-              onClick={() => { setSearchQuery(''); setTypeFilter('all') }}
+              onClick={() => { setSearchQuery(''); setTypeFilter('all'); setStatusFilter('all'); setSelectedProductIds([]) }}
               style={{ fontSize: 11.5, color: 'var(--g600)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}
             >
               Clear all
