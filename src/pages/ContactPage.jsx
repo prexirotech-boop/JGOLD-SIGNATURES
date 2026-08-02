@@ -156,7 +156,7 @@ export default function ContactPage() {
                                     Need a quick size check or want to chat with a stylist? Message a JGOLD representative.
                                 </p>
                                 <div className="card-action-bar">
-                                    <a href="https://wa.me/2348039714352?text=Hi%20JGOLD%20SIGNATURES%20Support,%20I%20have%20a%20styling%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
+                                    <a href="https://wa.me/2347059297121?text=Hi%20JGOLD%20SIGNATURES%20Support,%20I%20have%20a%20styling%20inquiry..." target="_blank" rel="noopener noreferrer" className="action-btn whatsapp-btn">
                                         Chat on WhatsApp
                                         <span className="live-indicator">
                                             <span className="live-dot"></span>
@@ -181,9 +181,6 @@ export default function ContactPage() {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '14px', color: '#475569', fontWeight: 600 }}>
                                     <a href="tel:+2347059297121" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#334155' }}>
                                         <span>+234 705 929 7121</span>
-                                    </a>
-                                    <a href="tel:+2348039714352" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#334155' }}>
-                                        <span>+234 803 971 4352</span>
                                     </a>
                                 </div>
                             </div>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 import ProductsPage from './pages/ProductsPage'
@@ -111,6 +111,16 @@ const ROUTE_SEO = {
 
 function AppLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // If the URL has a password recovery hash parameter, redirect to the reset password form page
+    if (window.location.hash && 
+       (window.location.hash.includes('type=recovery') || window.location.hash.includes('access_token=')) &&
+       location.pathname !== '/reset-password') {
+      navigate('/reset-password' + window.location.hash)
+    }
+  }, [location, navigate])
 
   const [featureFlags, setFeatureFlags] = useState({
     enable_academics: localStorage.getItem('enable_academics') === 'true',

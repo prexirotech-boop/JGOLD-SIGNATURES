@@ -242,7 +242,7 @@ export default function LandingPageRenderer() {
       
       const encodedWaText = encodeURIComponent(waText)
       setTimeout(() => {
-        window.location.href = `https://wa.me/2348039714352?text=${encodedWaText}`
+        window.location.href = `https://wa.me/2347059297121?text=${encodedWaText}`
       }, 1500)
 
     } catch (err) {
@@ -537,7 +537,7 @@ export default function LandingPageRenderer() {
                 We are redirecting you to WhatsApp now to finalize dispatch details...
               </p>
               <a 
-                href={`https://wa.me/2348039714352`}
+                href={`https://wa.me/2347059297121`}
                 style={{ display: 'inline-block', background: '#25d366', color: '#fff', textDecoration: 'none', borderRadius: 8, padding: '12px 24px', fontWeight: 600 }}
               >
                 Proceed to WhatsApp Chat

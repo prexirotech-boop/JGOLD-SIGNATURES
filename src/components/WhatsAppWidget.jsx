@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-const WA_NUMBER = '2348039714352'
+const WA_NUMBER = '2347059297121'
 
 export default function WhatsAppWidget() {
   const location = useLocation()

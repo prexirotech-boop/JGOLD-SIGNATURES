@@ -36,7 +36,7 @@ export default function FAQPage() {
     {
       category: 'Sizing',
       question: 'How do I select the correct shoe size?',
-      answer: 'We utilize standard European (EU) shoe sizes. Sizing chart details are available on product description pages. If you are unsure, feel free to chat with our style support team on WhatsApp (+2348039714352) for expert guidance.'
+      answer: 'We utilize standard European (EU) shoe sizes. Sizing chart details are available on product description pages. If you are unsure, feel free to chat with our style support team on WhatsApp (+2347059297121) for expert guidance.'
     },
     {
       category: 'Shipping',
