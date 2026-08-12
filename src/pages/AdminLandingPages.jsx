@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { compressImage } from '../lib/imageCompressor'
 
 export default function AdminLandingPages() {
   const [pages, setPages] = useState([])
@@ -178,10 +179,11 @@ export default function AdminLandingPages() {
     }
   }
 
-  const handleFileUpload = async (index, file) => {
-    if (!file) return
+  const handleFileUpload = async (index, rawFile) => {
+    if (!rawFile) return
     setUploadingIndex(index)
     try {
+      const file = await compressImage(rawFile)
       const fileExt = file.name.split('.').pop()
       const fileName = `${Math.random().toString(36).substring(2, 10)}.${fileExt}`
       const filePath = `landing/${fileName}`

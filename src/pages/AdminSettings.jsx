@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { compressImage } from '../lib/imageCompressor'
 import { useAuth } from '../context/AuthContext'
 
 export default function AdminSettings() {
@@ -108,14 +109,15 @@ export default function AdminSettings() {
   }, [profile])
 
   const handleAvatarChange = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     
     setLoading(true)
     setError('')
     setMessage('')
 
     try {
+      const file = await compressImage(rawFile, { maxWidth: 500, maxHeight: 500, quality: 0.6 })
       // 1. Try uploading to Supabase Storage in 'avatars' bucket first
       const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`

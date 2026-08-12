@@ -18,6 +18,7 @@ import AdminAffiliates from './AdminAffiliates'
 import AdminPayouts from './AdminPayouts'
 import AdminUpsells from './AdminUpsells'
 import AdminAnalytics from './AdminAnalytics'
+import { compressImage } from '../lib/imageCompressor'
 import AdminPlatformAnalytics from './AdminPlatformAnalytics'
 import AdminCategories from './AdminCategories'
 import AdminLandingPages from './AdminLandingPages'
@@ -936,7 +937,8 @@ function AdminProducts({ featureFlags }) {
     setUploading(true)
     try {
       const uploadedUrls = []
-      for (const file of files) {
+      for (const rawFile of files) {
+        const file = await compressImage(rawFile)
         const fileExt = file.name.split('.').pop()
         const fileName = `${Math.random().toString(36).substring(2, 10)}.${fileExt}`
         const filePath = `products/${fileName}`

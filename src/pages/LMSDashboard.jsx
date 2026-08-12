@@ -5,6 +5,7 @@ import UserMenu from '../components/UserMenu'
 import { supabase, recoverEnrollmentFromOrders } from '../lib/supabase'
 import StudentCertificates from './StudentCertificates'
 import UserAvatar from '../components/UserAvatar'
+import { compressImage } from '../lib/imageCompressor'
 
 export function getShortDesc(product) {
   if (!product) return ''
@@ -647,19 +648,16 @@ function SettingsTab({ user }) {
   }, [user])
 
   const handleAvatarUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (!file.type.startsWith('image/')) {
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
+    if (!rawFile.type.startsWith('image/')) {
       setAvatarError('Please select an image file.')
-      return
-    }
-    if (file.size > 3 * 1024 * 1024) {
-      setAvatarError('Image must be under 3MB.')
       return
     }
     setAvatarError('')
     setUploadingAvatar(true)
     try {
+      const file = await compressImage(rawFile, { maxWidth: 400, maxHeight: 400, quality: 0.6 })
       const fileExt = file.name.split('.').pop()
       const filePath = `${user.id}/avatar.${fileExt}`
 

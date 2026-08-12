@@ -8,6 +8,7 @@ import { useCurrency } from '../context/CurrencyContext'
 import OrderBump from '../components/OrderBump'
 import { useAffiliate } from '../hooks/useAffiliate'
 import { sendOrderConfirmed, sendBankTransferPending, sendCodOrderPlaced } from '../lib/emailService'
+import { compressImage } from '../lib/imageCompressor'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHOPIFY-STYLE FIELD COMPONENT
@@ -477,12 +478,13 @@ export default function PaymentPage() {
   }
 
   const handleReceiptUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     setUploadingReceipt(true)
-    setReceiptName(file.name)
+    setReceiptName(rawFile.name)
 
     try {
+      const file = await compressImage(rawFile)
       const fileExt = file.name.split('.').pop()
       const fileName = `receipt-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
       

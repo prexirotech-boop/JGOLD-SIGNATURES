@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { compressImage } from '../lib/imageCompressor'
 
 // ─── HELPERS FOR SYLLABUS BULK EDIT ──────────────────────────────────────────
 
@@ -108,11 +109,12 @@ export default function AdminCourses() {
   const [bulkSaving, setBulkSaving] = useState(false)
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     
     setUploadingImage(true)
     try {
+      const file = await compressImage(rawFile)
       const fileExt = file.name.split('.').pop()
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`
       const filePath = `course-covers/${fileName}`
