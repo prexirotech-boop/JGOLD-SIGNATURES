@@ -430,13 +430,13 @@ export default function AdminAnalytics() {
 
   const webinarSessions = new Set(
     events
-      .filter(e => e.event_name === 'page_view' && e.page_path.startsWith('/webinar'))
+      .filter(e => e.event_name === 'page_view' && e.page_path?.startsWith('/webinar'))
       .map(e => e.session_id)
   )
 
   const checkoutSessions = new Set(
     events
-      .filter(e => e.event_name === 'page_view' && e.page_path.startsWith('/checkout'))
+      .filter(e => e.event_name === 'page_view' && e.page_path?.startsWith('/checkout'))
       .map(e => e.session_id)
   )
 
@@ -520,7 +520,7 @@ export default function AdminAnalytics() {
       }
 
       events.forEach(evt => {
-        const path = evt.page_path.toLowerCase()
+        const path = (evt.page_path || '').toLowerCase()
         const isSessionMapped = sessionCampaigns[evt.session_id]?.has(camp.id)
         const isUtmMapped = camp.utm_campaign && evt.utm_campaign?.toLowerCase() === camp.utm_campaign.toLowerCase()
 
