@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { trackEvent } from '../lib/analytics'
 
 export default function LandingPageRenderer() {
   const { slug } = useParams()
@@ -74,6 +75,11 @@ export default function LandingPageRenderer() {
         if (error) throw error
         if (data) {
           setPageData(data)
+          // Fire Meta Pixel ViewContent + GA page_view for this landing page
+          trackEvent('page_view', {
+            content_name: data.title || slug,
+            content_type: 'landing_page'
+          })
         }
       } catch (err) {
         console.error('Landing page not found:', err)
@@ -167,6 +173,15 @@ export default function LandingPageRenderer() {
 
     setSubmitting(true)
 
+    // Fire Meta Pixel InitiateCheckout conversion event
+    trackEvent('initiate_checkout', {
+      value: grandTotal,
+      currency: 'NGN',
+      content_name: pageData?.title || slug,
+      content_type: 'landing_page_order',
+      num_items: selectedList.reduce((acc, i) => acc + i.quantity, 0)
+    })
+
     const orderRef = `JGOLD_LND_${Math.floor(100000 + Math.random() * 900000)}`
     
     // Format list of items for payload
@@ -231,6 +246,15 @@ export default function LandingPageRenderer() {
       localStorage.removeItem('jgold_lnd_priceAgreed')
 
       setSuccess(true)
+
+      // Fire Meta Pixel Purchase (Lead) conversion event — confirmed order
+      trackEvent('purchase', {
+        value: grandTotal,
+        currency: 'NGN',
+        content_name: pageData?.title || slug,
+        content_type: 'landing_page_order',
+        ref: orderRef
+      })
 
       // 3. Format WhatsApp checkout text & redirect
       let itemsWaText = ''

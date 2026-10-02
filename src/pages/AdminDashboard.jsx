@@ -123,14 +123,14 @@ function AdminOverview({ featureFlags = { enable_academics: true } }) {
 
         const revPoints = last7Days.map(dateStr => {
           const dayAmount = (chartOrders || [])
-            .filter(o => o.status === 'paid' && o.created_at.startsWith(dateStr))
+            .filter(o => o.status === 'paid' && o.created_at?.startsWith(dateStr))
             .reduce((sum, o) => sum + (o.amount || 0), 0)
           return { date: dateStr, amount: dayAmount }
         })
 
         const ordPoints = last7Days.map(dateStr => {
           const count = (chartOrders || [])
-            .filter(o => o.created_at.startsWith(dateStr)).length
+            .filter(o => o.created_at?.startsWith(dateStr)).length
           return { date: dateStr, count }
         })
 
