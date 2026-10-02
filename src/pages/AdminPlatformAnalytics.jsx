@@ -145,7 +145,7 @@ export default function AdminPlatformAnalytics() {
 
       const productDetailsViews = new Set(
         trafficEvents
-          .filter(e => e.event_name === 'page_view' && (e.page_path === `/product/${prod.slug}` || e.page_path.includes(prod.id)))
+          .filter(e => e.event_name === 'page_view' && (e.page_path === `/product/${prod.slug}` || e.page_path?.includes(prod.id)))
           .map(e => e.session_id)
       ).size
 

@@ -51,16 +51,16 @@ export default function BlogPage() {
 
   const filteredPosts = posts.filter(post => {
     const matchesSearch = 
-      post.title.toLowerCase().includes(search.toLowerCase()) ||
+      (post.title || '').toLowerCase().includes(search.toLowerCase()) ||
       (post.summary || '').toLowerCase().includes(search.toLowerCase()) ||
-      post.content.toLowerCase().includes(search.toLowerCase())
+      (post.content || '').toLowerCase().includes(search.toLowerCase())
     
     // In our DB, we can match category from summaries/tags or just group them dynamically
     const categoryLower = activeCategory.toLowerCase()
     const matchesCategory = 
       activeCategory === 'All' || 
       (post.summary || '').toLowerCase().includes(categoryLower) ||
-      post.title.toLowerCase().includes(categoryLower)
+      (post.title || '').toLowerCase().includes(categoryLower)
     
     return matchesSearch && matchesCategory
   })

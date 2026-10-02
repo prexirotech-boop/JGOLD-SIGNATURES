@@ -433,7 +433,7 @@ function OrderDrawer({ order, onClose, onStatusChange, onEnroll }) {
                 >
                   View Uploaded Receipt ↗
                 </a>
-                {(order.bank_receipt_url.startsWith('data:image') || order.bank_receipt_url.match(/\.(jpeg|jpg|gif|png|webp)/i) || !order.bank_receipt_url.includes('.')) && (
+                {(order.bank_receipt_url?.startsWith('data:image') || order.bank_receipt_url?.match(/\.(jpeg|jpg|gif|png|webp)/i) || !order.bank_receipt_url?.includes('.')) && (
                   <img 
                     src={order.bank_receipt_url} 
                     alt="Payment Receipt" 
